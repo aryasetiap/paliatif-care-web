@@ -3,7 +3,8 @@
     "allow": [
       "mcp__web-search-prime__webSearchPrime",
       "WebSearch",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
