@@ -4,7 +4,16 @@
       "mcp__web-search-prime__webSearchPrime",
       "WebSearch",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(npx create-next-app:*)",
+      "Bash(npx create-next-app@latest:*)",
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run format:check:*)",
+      "Bash(npm run format:*)",
+      "Bash(timeout:*)",
+      "Bash(npm run type-check:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

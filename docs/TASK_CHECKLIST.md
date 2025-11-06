@@ -26,12 +26,12 @@
 ### **DAY 1-2: SETUP & FOUNDATION (6-7 Nov)**
 
 #### Programmer A Tasks:
-- [ ] **Project Setup (Day 1 - 2 hours)**
-  - [ ] Initialize Next.js 15 project dengan TypeScript
-  - [ ] Setup Tailwind CSS configuration
-  - [ ] Install dan setup shadcn/ui components
-  - [ ] Setup ESLint, Prettier, Husky pre-commit hooks
-  - [ ] Create basic folder structure
+- [x] **Project Setup (Day 1 - 2 hours)** ✅
+  - [x] Initialize Next.js 15 project dengan TypeScript
+  - [x] Setup Tailwind CSS configuration
+  - [x] Install dan setup shadcn/ui components
+  - [x] Setup ESLint, Prettier, Husky pre-commit hooks
+  - [x] Create basic folder structure
 
 - [ ] **UI Component Library (Day 1-2 - 6 hours)**
   - [ ] Setup shadcn/ui components yang dibutuhkan:
