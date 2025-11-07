@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Stethoscope, Menu } from 'lucide-react'
+import { Stethoscope } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { handleAnchorLinkClick } from '@/lib/utils'
 import { motion } from 'framer-motion'

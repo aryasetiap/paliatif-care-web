@@ -50,7 +50,7 @@ export default function ForgotPasswordPage() {
         title: 'Email terkirim',
         description: 'Instruksi reset password telah dikirim ke email Anda.',
       })
-    } catch (error) {
+    } catch {
       toast({
         title: 'Gagal mengirim email',
         description: 'Terjadi kesalahan. Silakan coba lagi.',

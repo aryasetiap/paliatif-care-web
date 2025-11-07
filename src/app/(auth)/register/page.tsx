@@ -53,7 +53,7 @@ export default function RegisterPage() {
 
       // Redirect ke login setelah registrasi berhasil
       router.push('/login')
-    } catch (error) {
+    } catch {
       toast({
         title: 'Registrasi gagal',
         description: 'Terjadi kesalahan. Silakan coba lagi.',

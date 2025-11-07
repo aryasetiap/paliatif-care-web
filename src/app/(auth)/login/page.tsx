@@ -55,7 +55,7 @@ export default function LoginPage() {
           variant: 'destructive',
         })
       }
-    } catch (error) {
+    } catch {
       toast({
         title: 'Terjadi kesalahan',
         description: 'Gagal melakukan login. Silakan coba lagi.',
