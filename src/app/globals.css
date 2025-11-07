@@ -4,58 +4,86 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Healthcare-themed color palette from TECH_SPEC.md */
+    --background: 0 0% 100%;  /* Clean White */
+    --foreground: 210 10% 11%;  /* Professional Dark */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 210 10% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
+    --popover-foreground: 210 10% 11%;
+
+    /* Primary Colors - Navy Blue and Sky Blue theme */
+    --primary: 214 52% 45%;  /* Navy Blue (#6280BA) */
+    --primary-foreground: 0 0% 98%;
+    --primary-light: 198 78% 83%;  /* Sky Blue (#88C6E6) */
+    --primary-cream: 48 38% 96%;  /* Pale Cream (#F7F3E1) */
+
+    /* Secondary Colors */
+    --secondary: 160 84% 39%;  /* Success Green */
+    --secondary-foreground: 0 0% 98%;
+    --accent: 36 84% 57%;  /* Warning Amber */
+    --accent-foreground: 0 0% 98%;
+
+    /* Semantic Colors */
+    --muted: 210 10% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;  /* Medical Alert Red */
+    --destructive-foreground: 0 0% 98%;
+
+    /* Neutral Colors */
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+    --ring: 214 52% 45%;  /* Navy Blue ring */
+
+    /* Chart Colors - Healthcare themed */
+    --chart-1: 214 52% 45%;  /* Navy Blue */
+    --chart-2: 160 84% 39%;  /* Success Green */
+    --chart-3: 36 84% 57%;   /* Warning Amber */
+    --chart-4: 198 78% 83%;  /* Sky Blue */
+    --chart-5: 0 84% 60%;    /* Medical Alert Red */
+
+    /* Typography and spacing */
+    --radius: 0.75rem;  /* More rounded for healthcare feel */
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    /* Dark theme optimized for healthcare applications */
+    --background: 214 20% 8%;  /* Dark Navy background */
+    --foreground: 210 10% 95%;  /* Light text */
+    --card: 214 20% 12%;  /* Slightly lighter cards */
+    --card-foreground: 210 10% 95%;
+    --popover: 214 20% 12%;
+    --popover-foreground: 210 10% 95%;
+
+    /* Primary Colors in dark theme */
+    --primary: 198 78% 63%;  /* Lighter Sky Blue for dark theme */
+    --primary-foreground: 214 20% 8%;
+    --primary-light: 198 78% 73%;  /* Even lighter Sky Blue */
+    --primary-cream: 48 38% 88%;  /* Darker cream for contrast */
+
+    /* Secondary Colors in dark theme */
+    --secondary: 160 70% 45%;  /* Adjusted Success Green */
+    --secondary-foreground: 214 20% 8%;
+    --accent: 36 75% 62%;  /* Adjusted Warning Amber */
+    --accent-foreground: 214 20% 8%;
+
+    /* Semantic Colors in dark theme */
+    --muted: 214 15% 18%;
+    --muted-foreground: 210 10% 65%;
+    --destructive: 0 75% 55%;  /* Softer red for dark theme */
+    --destructive-foreground: 210 10% 95%;
+
+    /* Neutral Colors in dark theme */
+    --border: 214 15% 22%;
+    --input: 214 15% 22%;
+    --ring: 198 78% 63%;  /* Sky Blue ring for dark theme */
+
+    /* Chart Colors in dark theme */
+    --chart-1: 198 78% 63%;  /* Light Sky Blue */
+    --chart-2: 160 70% 45%;  /* Success Green */
+    --chart-3: 36 75% 62%;   /* Warning Amber */
+    --chart-4: 214 52% 65%;  /* Light Navy Blue */
+    --chart-5: 0 75% 55%;    /* Medical Alert Red */
   }
 }
 
@@ -65,5 +93,181 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Remove gradient position variables from gradient classes */
+  .from-white {
+    --tw-gradient-from: #fff !important;
+  }
+  .from-white\/0 {
+    --tw-gradient-from: rgb(255 255 255 / 0) !important;
+  }
+  .to-transparent {
+    --tw-gradient-to: transparent !important;
+  }
+  .to-white {
+    --tw-gradient-to: #fff !important;
+  }
+  .to-white\/0 {
+    --tw-gradient-to: rgb(255 255 255 / 0) !important;
+  }
+}
+
+@layer components {
+  /* Healthcare-specific utility classes */
+  .healthcare-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-light)) 100%);
+  }
+
+  .healthcare-gradient-reverse {
+    background: linear-gradient(135deg, hsl(var(--primary-light)) 0%, hsl(var(--primary)) 100%);
+  }
+
+  .healthcare-shadow {
+    box-shadow: 0 8px 32px rgba(98, 128, 186, 0.15);
+  }
+
+  .healthcare-shadow-lg {
+    box-shadow: 0 16px 64px rgba(98, 128, 186, 0.2);
+  }
+
+  .pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .shake-on-error {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  /* Loading skeleton for healthcare theme */
+  .skeleton-healthcare {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted) / 0.5) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  /* Professional card shadow */
+  .card-shadow {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+
+  .card-shadow-hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+}
+
+@layer utilities {
+  /* Focus styles for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
+  }
+
+  /* Healthcare status colors */
+  .status-low {
+    @apply text-green-600 bg-green-50 border-green-200;
+  }
+
+  .status-medium {
+    @apply text-yellow-600 bg-yellow-50 border-yellow-200;
+  }
+
+  .status-high {
+    @apply text-red-600 bg-red-50 border-red-200;
+  }
+
+  /* Smooth transitions */
+  .transition-healthcare {
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  /* Header spacing utilities */
+  .header-spacing {
+    padding-top: 6rem; /* 96px - default header height */
+  }
+
+  .header-spacing-scrolled {
+    padding-top: 4.5rem; /* 72px - scrolled header height */
+  }
+
+  /* Responsive header spacing */
+  @media (max-width: 768px) {
+    .header-spacing {
+      padding-top: 5rem; /* 80px - mobile header height */
+    }
+
+    .header-spacing-scrolled {
+      padding-top: 4rem; /* 64px - mobile scrolled header height */
+    }
+  }
+
+  /* Smooth scroll behavior */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar for better UX */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}
+
+/* Custom animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-2px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(2px);
+  }
+}
+
+/* Print styles for medical reports */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .card {
+    break-inside: avoid;
   }
 }

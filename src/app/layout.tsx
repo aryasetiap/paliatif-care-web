@@ -1,12 +1,13 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { Toaster } from '@/components/ui/toaster'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Palliative Care Education & Screening',
-  description: 'Website Edukasi & Skrining Paliatif Berbasis Keperawatan',
+  title: 'Pelita Care - Pemetaan Layanan Paliatif Berbasis ESAS',
+  description: 'Pelita Care adalah platform pemetaan layanan paliatif berbasis ESAS untuk edukasi dan skrining 8 penyakit terminal',
 }
 
 export default function RootLayout({
@@ -17,7 +18,10 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className={inter.className}>
-        <div className="min-h-screen bg-background font-sans antialiased">{children}</div>
+        <div className="min-h-screen bg-background font-sans antialiased">
+          {children}
+          <Toaster />
+        </div>
       </body>
     </html>
   )

@@ -79,9 +79,10 @@ Kita akan menggunakan arsitektur Jamstack/Serverless modern yang sangat terinteg
 **Color Palette (Healthcare-Themed):**
 ```css
 /* Primary Colors */
---primary-50: #eff6ff;
---primary-500: #3b82f6;  /* Trust Blue */
---primary-600: #2563eb;
+--primary-50: #F7F3E1;  /* This could be a lighter shade of Pale Cream, or Pale Cream itself */
+--primary-500: #6280BA; /* Navy Blue */
+--primary-600: #88C6E6; /* Sky Blue */
+--primary-700: #F7F3E1; /* Pale Cream, if you need another shade or main cream color */
 
 /* Secondary Colors */
 --secondary-500: #10b981;  /* Success Green */
