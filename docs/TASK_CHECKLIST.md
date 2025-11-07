@@ -52,27 +52,27 @@
   - [x] Loading states dan error handling untuk auth forms ✅
 
 #### Programmer B Tasks:
-- [ ] **Supabase Setup (Day 1 - 3 hours)**
-  - [ ] Create Supabase project
-  - [ ] Setup database tables:
-    - [ ] `profiles` table
-    - [ ] `patients` table
-    - [ ] `screenings` table
-  - [ ] Configure Row Level Security (RLS) policies
-  - [ ] Setup database indexes untuk performance
+- [x] **Supabase Setup (Day 1 - 3 hours)** ✅
+  - [x] Create Supabase project
+  - [x] Setup database tables:
+    - [x] `profiles` table
+    - [x] `patients` table
+    - [x] `screenings` table
+  - [x] Configure Row Level Security (RLS) policies
+  - [x] Setup database indexes untuk performance
 
-- [ ] **Authentication System (Day 1-2 - 5 hours)**
-  - [ ] Setup Supabase Auth configuration
-  - [ ] Create authentication utilities (`/lib/supabase.ts`)
-  - [ ] Implement login/register logic
-  - [ ] Setup middleware untuk route protection
-  - [ ] Create auth state management dengan Zustand
+- [x] **Authentication System (Day 1-2 - 5 hours)** ✅
+  - [x] Setup Supabase Auth configuration
+  - [x] Create authentication utilities (`/lib/supabase.ts`)
+  - [x] Implement login/register logic
+  - [x] Setup middleware untuk route protection
+  - [x] Create auth state management dengan Zustand
 
-- [ ] **Database Migrations (Day 2 - 2 hours)**
-  - [ ] Create migration files untuk semua tables
-  - [ ] Test database operations
-  - [ ] Setup database seed data untuk testing
-  - [ ] Backup database schema
+- [x] **Database Migrations (Day 2 - 2 hours)** ✅
+  - [x] Create migration files untuk semua tables
+  - [x] Test database operations
+  - [x] Setup database seed data untuk testing
+  - [x] Backup database schema
 
 ---
 
