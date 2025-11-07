@@ -61,12 +61,12 @@
   - [x] Configure Row Level Security (RLS) policies
   - [x] Setup database indexes untuk performance
 
-- [ ] **Authentication System (Day 1-2 - 5 hours)**
-  - [ ] Setup Supabase Auth configuration
-  - [ ] Create authentication utilities (`/lib/supabase.ts`)
-  - [ ] Implement login/register logic
-  - [ ] Setup middleware untuk route protection
-  - [ ] Create auth state management dengan Zustand
+- [x] **Authentication System (Day 1-2 - 5 hours)** ✅
+  - [x] Setup Supabase Auth configuration
+  - [x] Create authentication utilities (`/lib/supabase.ts`)
+  - [x] Implement login/register logic
+  - [x] Setup middleware untuk route protection
+  - [x] Create auth state management dengan Zustand
 
 - [ ] **Database Migrations (Day 2 - 2 hours)**
   - [ ] Create migration files untuk semua tables

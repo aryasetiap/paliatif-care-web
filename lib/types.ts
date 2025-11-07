@@ -98,11 +98,28 @@ export interface User {
   user_metadata?: Record<string, any>
 }
 
-export interface Patient extends Database['public']['Tables']['patients']['Row'] {
+export interface Patient {
+  id: string
+  user_id: string
+  name: string
+  age: number
+  gender: 'L' | 'P'
+  facility_name: string | null
+  created_at: string
+  updated_at: string
   screenings?: Screening[]
 }
 
-export interface Screening extends Database['public']['Tables']['screenings']['Row'] {
+export interface Screening {
+  id: string
+  user_id: string
+  patient_id: string
+  screening_type: string
+  status: string
+  screening_data: Record<string, any>
+  recommendation: Record<string, any>
+  created_at: string
+  updated_at: string
   patients?: {
     name: string
     age: number
@@ -111,7 +128,11 @@ export interface Screening extends Database['public']['Tables']['screenings']['R
   }
 }
 
-export interface Profile extends Database['public']['Tables']['profiles']['Row'] {}
+export interface Profile {
+  id: string
+  full_name: string
+  created_at: string
+}
 
 // Form types
 export interface LoginFormData {

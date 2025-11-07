@@ -92,9 +92,9 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             loading: false,
             error: null
           })
-        } catch (error) {
+        } catch (err) {
           set({
-            error: error instanceof Error ? error.message : 'Logout failed',
+            error: err instanceof Error ? err.message : 'Logout failed',
             loading: false
           })
         }
@@ -115,7 +115,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           if (user) {
             await get().loadProfile()
           }
-        } catch (error) {
+        } catch {
           set({
             user: null,
             profile: null,
@@ -133,9 +133,8 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         try {
           const profile = await getProfile(user.id)
           set({ profile })
-        } catch (error) {
+        } catch {
           // Profile might not exist yet, which is okay for new users
-          console.warn('Profile not found:', error)
         }
       },
 
