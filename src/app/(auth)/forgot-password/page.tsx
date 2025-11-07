@@ -8,7 +8,6 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { Loader2, Mail, ArrowLeft, Stethoscope } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -63,262 +62,307 @@ export default function ForgotPasswordPage() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
-        {/* Background Image with Enhanced Overlay */}
-        <div className="absolute inset-0 z-0">
-          <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105 transform"
-            style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`
+      <div className="relative overflow-hidden min-h-screen">
+        {/* Modern Animated Background - Same as Login/Register */}
+        <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900" />
+        <div className="fixed inset-0 bg-gradient-to-b from-blue-900/20 via-transparent to-transparent" />
+        <div className="fixed inset-0">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-700" />
+          <div className="absolute top-1/2 left-1/3 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
+        </div>
+
+        {/* Animated Grid Pattern */}
+        <div
+          className="fixed inset-0 opacity-20"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px',
+            animation: 'slide 20s linear infinite'
+          }}
+        />
+
+        {/* Floating Medical Icons */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <motion.div
+            animate={{
+              y: [0, -30, 0],
+              rotate: [0, 5, -5, 0]
             }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/85 via-indigo-900/75 to-purple-900/85" />
-          <div className="absolute inset-0 bg-black/20" />
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="absolute top-20 left-10 opacity-10"
+          >
+            <Mail className="w-16 h-16 text-white/20" />
+          </motion.div>
         </div>
 
         {/* Success Message */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative z-10 w-full max-w-md mx-4"
-        >
-          <Card className="shadow-2xl bg-white/10 backdrop-blur-md border border-white/20">
-            <CardHeader className="space-y-4 text-center pb-8">
-              {/* Icon with Glass Morphism */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-                className="flex justify-center"
-              >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-600 rounded-3xl blur-xl opacity-50 animate-pulse"></div>
-                  <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 shadow-2xl">
-                    <Mail className="h-10 w-10 text-white" />
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-                className="space-y-2"
-              >
-                <CardTitle className="text-3xl font-bold text-white tracking-tight">
-                  Pelita
-                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-200 to-emerald-200">
-                    Care
-                  </span>
-                </CardTitle>
-                <CardDescription className="text-white/80 text-base">
-                  Email Terkirim
-                </CardDescription>
-              </motion.div>
-            </CardHeader>
-
-            <CardContent className="px-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
-                className="bg-gradient-to-r from-blue-50/10 to-indigo-50/10 p-6 rounded-lg border border-blue-100/30 text-center"
-              >
-                <p className="text-sm text-blue-200 leading-relaxed">
-                  Kami telah mengirimkan link reset password ke alamat email Anda.
-                  Silakan periksa inbox dan folder spam Anda.
-                </p>
-              </motion.div>
-            </CardContent>
-
-            <CardFooter className="px-8 pb-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
-                className="w-full"
-              >
-                <Button
-                  asChild
-                  className="w-full h-12 bg-white text-blue-900 hover:bg-gray-100 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 font-semibold rounded-xl"
-                >
-                  <Link href="/login">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Kembali ke Login
-                  </Link>
-                </Button>
-              </motion.div>
-            </CardFooter>
-          </Card>
-
-          {/* Back to Home */}
+        <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1, ease: "easeOut" }}
-            className="text-center mt-8"
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="w-full max-w-md"
           >
-            <Link
-              href="/"
-              className="inline-flex items-center text-white/80 hover:text-white transition-colors group"
+            {/* Header with Logo and Title */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+              className="text-center mb-8"
             >
-              <svg className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Kembali ke Beranda
-            </Link>
+              <div className="relative mb-6">
+                <div className="relative bg-gradient-to-br from-green-600 to-emerald-600 rounded-full p-4 shadow-xl border border-white/20 mx-auto w-fit">
+                  <Mail className="h-8 w-8 text-white" />
+                </div>
+              </div>
+
+              <h1 className="text-3xl font-bold tracking-tight leading-tight text-white mb-2">
+                Pelita
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-emerald-400 to-green-400">
+                  Care
+                </span>
+              </h1>
+              <p className="text-white/70 text-base">
+                Email Terkirim
+              </p>
+            </motion.div>
+
+            {/* Success Message Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+            >
+              <div className="relative">
+                {/* Glow Effect */}
+                <div className="absolute -inset-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-2xl blur-xl opacity-30"></div>
+
+                {/* Form Content */}
+                <div className="relative bg-white/10 border border-white/10 rounded-2xl p-6">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+                    className="bg-green-500/10 border border-green-400/20 rounded-xl p-4 mb-6"
+                  >
+                    <p className="text-sm text-green-200 leading-relaxed text-center">
+                      Kami telah mengirimkan link reset password ke alamat email Anda.
+                      Silakan periksa inbox dan folder spam Anda.
+                    </p>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
+                    className="w-full space-y-4"
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Button
+                        asChild
+                        className="w-full h-12 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold shadow-lg hover:shadow-green-500/25"
+                      >
+                        <Link href="/login">
+                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          Kembali ke Login
+                        </Link>
+                      </Button>
+                    </motion.div>
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
-      {/* Background Image with Enhanced Overlay */}
-      <div className="absolute inset-0 z-0">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105 transform"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`
+    <div className="relative overflow-hidden min-h-screen">
+      {/* Modern Animated Background - Same as Login/Register */}
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900" />
+      <div className="fixed inset-0 bg-gradient-to-b from-blue-900/20 via-transparent to-transparent" />
+      <div className="fixed inset-0">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-700" />
+        <div className="absolute top-1/2 left-1/3 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
+      </div>
+
+      {/* Animated Grid Pattern */}
+      <div
+        className="fixed inset-0 opacity-20"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px',
+          animation: 'slide 20s linear infinite'
+        }}
+      />
+
+      {/* Floating Medical Icons */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{
+            y: [0, -30, 0],
+            rotate: [0, 5, -5, 0]
           }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/85 via-indigo-900/75 to-purple-900/85" />
-        <div className="absolute inset-0 bg-black/20" />
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute top-20 left-10 opacity-10"
+        >
+          <Mail className="w-16 h-16 text-white/20" />
+        </motion.div>
       </div>
 
       {/* Forgot Password Form */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-md mx-4"
-      >
-        <Card className="shadow-2xl bg-white/10 backdrop-blur-md border border-white/20">
-          <CardHeader className="space-y-4 text-center pb-8">
-            {/* Icon with Glass Morphism */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-              className="flex justify-center"
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl blur-xl opacity-50 animate-pulse"></div>
-                <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 shadow-2xl">
-                  <Stethoscope className="h-10 w-10 text-white" />
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-              className="space-y-2"
-            >
-              <CardTitle className="text-3xl font-bold text-white tracking-tight">
-                Pelita
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">
-                  Care
-                </span>
-              </CardTitle>
-              <CardDescription className="text-white/80 text-base">
-                Lupa Password
-              </CardDescription>
-            </motion.div>
-          </CardHeader>
-
-          <motion.form
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-6"
-          >
-            <CardContent className="space-y-6 px-8">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-white/90 font-medium">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="nama@email.com"
-                  disabled={isLoading}
-                  {...register('email')}
-                  className={`h-12 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder:text-white/50 focus:border-blue-400 focus:ring-blue-400/20 focus:bg-white/15 transition-all duration-300 ${errors.email ? 'border-red-400 focus:border-red-400 focus:ring-red-400/20' : ''}`}
-                />
-                {errors.email && (
-                  <p className="text-sm text-red-300 flex items-center gap-1">
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="bg-amber-50/10 border border-amber-100/30 rounded-lg p-4">
-                <p className="text-sm text-amber-200 leading-relaxed">
-                  Masukkan email yang terdaftar pada akun Anda. Kami akan mengirimkan link untuk mereset password Anda.
-                </p>
-              </div>
-            </CardContent>
-
-            <CardFooter className="flex flex-col space-y-6 px-8 pb-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
-                className="w-full space-y-4"
-              >
-                <Button
-                  type="submit"
-                  className="w-full h-12 bg-white text-blue-900 hover:bg-gray-100 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 font-semibold rounded-xl"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Mengirim email...
-                    </>
-                  ) : (
-                    <>
-                      <Mail className="mr-2 h-4 w-4" />
-                      Kirim Instruksi Reset
-                    </>
-                  )}
-                </Button>
-
-                <div className="text-center">
-                  <Link
-                    href="/login"
-                    className="text-sm text-white/80 hover:text-white inline-flex items-center font-medium transition-colors"
-                  >
-                    <ArrowLeft className="mr-1 h-3 w-3" />
-                    Kembali ke Login
-                  </Link>
-                </div>
-              </motion.div>
-            </CardFooter>
-          </motion.form>
-        </Card>
-
-        {/* Back to Home */}
+      <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1, ease: "easeOut" }}
-          className="text-center mt-8"
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="w-full max-w-md"
         >
-          <Link
-            href="/"
-            className="inline-flex items-center text-white/80 hover:text-white transition-colors group"
+          {/* Header with Logo and Title */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            className="text-center mb-8"
           >
-            <svg className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Kembali ke Beranda
-          </Link>
+            <div className="relative mb-6">
+              <div className="relative bg-gradient-to-br from-blue-600 to-purple-600 rounded-full p-4 shadow-xl border border-white/20 mx-auto w-fit">
+                <Stethoscope className="h-8 w-8 text-white" />
+              </div>
+            </div>
+
+            <h1 className="text-3xl font-bold tracking-tight leading-tight text-white mb-2">
+              Pelita
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                Care
+              </span>
+            </h1>
+            <p className="text-white/70 text-base">
+              Lupa Password
+            </p>
+          </motion.div>
+
+          {/* Forgot Password Form Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+          >
+            <div className="relative">
+              {/* Glow Effect */}
+              <div className="absolute -inset-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-30"></div>
+
+              {/* Form Content */}
+              <div className="relative bg-white/10 border border-white/10 rounded-2xl p-6">
+                <motion.form
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="space-y-5"
+                >
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-white/90 font-semibold text-sm">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="nama@email.com"
+                        disabled={isLoading}
+                        {...register('email')}
+                        className={`bg-white/10 border border-white/20 text-white placeholder-white/50 focus:border-blue-400 focus:ring-blue-400/20 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                      />
+                      {errors.email && (
+                        <motion.p
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="text-sm text-red-400 flex items-center gap-1"
+                        >
+                          {errors.email.message}
+                        </motion.p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Info Note */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-blue-500/10 border border-blue-400/20 rounded-xl p-4"
+                  >
+                    <p className="text-xs text-blue-200 leading-relaxed">
+                      Masukkan email yang terdaftar pada akun Anda. Kami akan mengirimkan link untuk mereset password Anda.
+                    </p>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
+                    className="w-full space-y-4"
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Button
+                        type="submit"
+                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold shadow-lg hover:shadow-blue-500/25 disabled:opacity-50"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Mengirim email...
+                          </>
+                        ) : (
+                          <>
+                            <Mail className="mr-2 h-4 w-4" />
+                            Kirim Instruksi Reset
+                          </>
+                        )}
+                      </Button>
+                    </motion.div>
+
+                    <div className="text-center text-sm text-white/70">
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
+                        <Link
+                          href="/login"
+                          className="text-blue-400 hover:text-blue-300 font-semibold transition-colors inline-flex items-center"
+                        >
+                          <ArrowLeft className="mr-1 h-3 w-3" />
+                          Kembali ke Login
+                        </Link>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                </motion.form>
+              </div>
+            </div>
+          </motion.div>
         </motion.div>
-      </motion.div>
+      </div>
     </div>
   )
 }

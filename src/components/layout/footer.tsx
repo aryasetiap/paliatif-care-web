@@ -1,50 +1,89 @@
 'use client'
 
 import Link from 'next/link'
-import { Separator } from '@/components/ui/separator'
 import {
-  Github,
   Mail,
   Phone,
   MapPin,
   Heart,
   Activity,
+  ShieldCheck,
   FileText,
-  ShieldCheck
+  Users,
+  BookOpen,
+  Stethoscope
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
-const footerLinks = {
-  product: [
-    { name: 'Fitur', href: '/features' },
-    { name: 'Harga', href: '/pricing' },
-    { name: 'Integrasi', href: '/integrations' },
-    { name: 'Changelog', href: '/changelog' },
+const footerSections = {
+  layanan: [
+    {
+      name: 'Edukasi Paliatif',
+      href: '/edukasi',
+      description: 'Panduan lengkap perawatan paliatif'
+    },
+    {
+      name: 'Skrining ESAS',
+      href: '/screening/new',
+      description: 'Asesmen symptom pasien'
+    },
+    {
+      name: 'Dashboard Medis',
+      href: '/dashboard',
+      description: 'Kelola pasien dan data'
+    },
   ],
-  company: [
-    { name: 'Tentang Kami', href: '/about' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Karir', href: '/careers' },
-    { name: 'Kontak', href: '/contact' },
+  perusahaan: [
+    {
+      name: 'Tentang PelitaCare',
+      href: '/about',
+      description: 'Misi dan visi kami'
+    },
+    {
+      name: 'Hubungi Kami',
+      href: '/contact',
+      description: 'Kontak dan lokasi'
+    },
   ],
-  resources: [
-    { name: 'Dokumentasi', href: '/docs' },
-    { name: 'Panduan', href: '/guide' },
-    { name: 'Bantuan', href: '/help' },
-    { name: 'API', href: '/api' },
-  ],
-  legal: [
-    { name: 'Kebijakan Privasi', href: '/privacy' },
-    { name: 'Syarat & Ketentuan', href: '/terms' },
-    { name: 'Kebijakan Cookies', href: '/cookies' },
-    { name: 'Kepatuhan HIPAA', href: '/hipaa' },
+  informasi: [
+    {
+      name: 'Panduan Penggunaan',
+      href: '/guide',
+      description: 'Cara menggunakan platform'
+    },
+    {
+      name: 'Kebijakan Privasi',
+      href: '/privacy',
+      description: 'Perlindungan data Anda'
+    },
+    {
+      name: 'Syarat & Ketentuan',
+      href: '/terms',
+      description: 'Aturan penggunaan'
+    },
   ],
 }
 
-const socialLinks = [
-  { name: 'GitHub', href: '#', icon: Github },
-  { name: 'Email', href: 'mailto:info@duakodelabs.com', icon: Mail },
+const certifications = [
+  {
+    icon: ShieldCheck,
+    label: 'ISO 27001',
+    color: 'text-green-400',
+    bgColor: 'bg-green-400/10'
+  },
+  {
+    icon: FileText,
+    label: 'HIPAA Compliant',
+    color: 'text-blue-400',
+    bgColor: 'bg-blue-400/10'
+  },
+  {
+    icon: Users,
+    label: 'Kemenkes Terdaftar',
+    color: 'text-purple-400',
+    bgColor: 'bg-purple-400/10'
+  },
 ]
 
 export function Footer() {
@@ -55,196 +94,198 @@ export function Footer() {
   }, [])
 
   return (
-    <footer className="relative border-t bg-gradient-to-b from-background to-primary-cream/30">
-      {/* Subtle Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236280BA' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}></div>
-      </div>
+    <footer className="relative bg-slate-900 border-t border-white/10">
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 via-transparent to-transparent" />
 
-      <div className="relative container px-4 py-16">
+      {/* Background Pattern */}
+      <div
+        className="absolute inset-0 opacity-10"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px',
+        }}
+      />
+
+      <div className="relative container mx-auto px-4 py-16">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-5">
-          {/* Brand Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-12">
+          {/* Brand Section - 2 columns on desktop */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             viewport={{ once: true }}
-            className="lg:col-span-2"
+            className="lg:col-span-2 space-y-6"
           >
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center space-x-3 mb-6"
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl healthcare-gradient text-white shadow-lg">
-                <Activity className="h-5 w-5" />
+            {/* Logo and Brand */}
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-lg opacity-50"></div>
+                <div className="relative bg-gradient-to-br from-blue-600 to-purple-600 rounded-full p-3 border border-white/20">
+                  <Stethoscope className="h-6 w-6 text-white" />
+                </div>
               </div>
-              <span className="font-bold text-2xl text-gradient-primary">PelitaCare</span>
-            </motion.div>
+              <div>
+                <h3 className="text-2xl font-bold text-white">Pelita</h3>
+                <p className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-semibold">
+                  Care
+                </p>
+              </div>
+            </div>
 
-            <p className="text-muted-foreground mb-8 max-w-md leading-relaxed">
-              Platform edukasi dan skrining paliatif berbasis keperawatan yang
-              membantu tenaga medis memberikan perawatan terbaik untuk pasien
-              penyakit terminal.
+            {/* Description */}
+            <p className="text-white/70 leading-relaxed max-w-md">
+              Platform digital inovatif untuk perawatan paliatif berbasis ESAS yang membantu tenaga medis memberikan perawatan terbaik dan berkesinambungan bagi pasien penyakit terminal.
             </p>
 
+            {/* Key Metrics */}
+            <div className="grid grid-cols-3 gap-4 py-6 border-y border-white/10">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">1000+</div>
+                <div className="text-xs text-white/60 mt-1">Tenaga Medis</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">5000+</div>
+                <div className="text-xs text-white/60 mt-1">Pasien Terlayani</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">98%</div>
+                <div className="text-xs text-white/60 mt-1">Kepuasan</div>
+              </div>
+            </div>
+
             {/* Contact Info */}
-            <div className="space-y-3 text-muted-foreground">
-              <motion.div
-                whileHover={{ x: 5 }}
-                className="flex items-center space-x-3 p-2 rounded-lg hover:bg-primary/5 transition-colors"
-              >
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                  <Mail className="h-4 w-4 text-primary" />
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${certifications[0].bgColor}`}>
+                  <Mail className={`h-4 w-4 ${certifications[0].color}`} />
                 </div>
-                <span>info@duakodelabs.com</span>
-              </motion.div>
-              <motion.div
-                whileHover={{ x: 5 }}
-                className="flex items-center space-x-3 p-2 rounded-lg hover:bg-primary/5 transition-colors"
-              >
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                  <Phone className="h-4 w-4 text-primary" />
+                <div>
+                  <div className="text-white font-medium text-sm">Email</div>
+                  <div className="text-white/60 text-sm">info@peliacare.id</div>
                 </div>
-                <span>+62 812-3456-7890</span>
-              </motion.div>
-              <motion.div
-                whileHover={{ x: 5 }}
-                className="flex items-center space-x-3 p-2 rounded-lg hover:bg-primary/5 transition-colors"
-              >
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                  <MapPin className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${certifications[1].bgColor}`}>
+                  <Phone className={`h-4 w-4 ${certifications[1].color}`} />
                 </div>
-                <span>Jakarta, Indonesia</span>
-              </motion.div>
+                <div>
+                  <div className="text-white font-medium text-sm">Telepon</div>
+                  <div className="text-white/60 text-sm">+62 21 5555 1234</div>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${certifications[2].bgColor}`}>
+                  <MapPin className={`h-4 w-4 ${certifications[2].color}`} />
+                </div>
+                <div>
+                  <div className="text-white font-medium text-sm">Lokasi</div>
+                  <div className="text-white/60 text-sm">Jakarta, Indonesia</div>
+                </div>
+              </div>
             </div>
           </motion.div>
 
-          {/* Product Links */}
+          {/* Layanan */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
+            className="space-y-6"
           >
-            <h3 className="font-semibold mb-6 text-lg">Produk</h3>
-            <ul className="space-y-4 text-sm">
-              {footerLinks.product.map((item, index) => (
+            <h4 className="text-lg font-semibold text-white flex items-center">
+              <BookOpen className="h-5 w-5 mr-2 text-blue-400" />
+              Layanan Kami
+            </h4>
+            <ul className="space-y-4">
+              {footerSections.layanan.map((item, index) => (
                 <motion.li
                   key={item.name}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -10 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <motion.div
-                    whileHover={{ x: 5 }}
-                    className="block"
+                  <Link
+                    href={item.href}
+                    className="block group"
                   >
-                    <Link
-                      href={item.href}
-                      className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all duration-300 mr-0 group-hover:mr-2 rounded-full"></span>
+                    <div className="text-white/90 font-medium group-hover:text-blue-400 transition-colors duration-200">
                       {item.name}
-                    </Link>
-                  </motion.div>
+                    </div>
+                    <div className="text-white/50 text-sm mt-1">
+                      {item.description}
+                    </div>
+                  </Link>
                 </motion.li>
               ))}
             </ul>
           </motion.div>
 
-          {/* Company Links */}
+          {/* Perusahaan & Informasi */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
+            className="space-y-8"
           >
-            <h3 className="font-semibold mb-6 text-lg">Perusahaan</h3>
-            <ul className="space-y-4 text-sm">
-              {footerLinks.company.map((item, index) => (
-                <motion.li
-                  key={item.name}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <motion.div
-                    whileHover={{ x: 5 }}
-                    className="block"
+            {/* Perusahaan */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold text-white">Perusahaan</h4>
+              <ul className="space-y-3">
+                {footerSections.perusahaan.map((item, index) => (
+                  <motion.li
+                    key={item.name}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
+                    viewport={{ once: true }}
                   >
                     <Link
                       href={item.href}
-                      className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center group"
+                      className="block group"
                     >
-                      <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all duration-300 mr-0 group-hover:mr-2 rounded-full"></span>
-                      {item.name}
+                      <div className="text-white/90 font-medium group-hover:text-blue-400 transition-colors duration-200">
+                        {item.name}
+                      </div>
+                      <div className="text-white/50 text-sm mt-1">
+                        {item.description}
+                      </div>
                     </Link>
-                  </motion.div>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
+                  </motion.li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Resources & Legal */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="font-semibold mb-6 text-lg">Sumber & Legal</h3>
-            <div className="space-y-6 text-sm">
-              <ul className="space-y-4">
-                {footerLinks.resources.slice(0, 2).map((item, index) => (
+            {/* Informasi */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold text-white">Informasi</h4>
+              <ul className="space-y-3">
+                {footerSections.informasi.map((item, index) => (
                   <motion.li
                     key={item.name}
-                    initial={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
                     viewport={{ once: true }}
                   >
-                    <motion.div
-                      whileHover={{ x: 5 }}
-                      className="block"
+                    <Link
+                      href={item.href}
+                      className="block group"
                     >
-                      <Link
-                        href={item.href}
-                        className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center group"
-                      >
-                        <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all duration-300 mr-0 group-hover:mr-2 rounded-full"></span>
+                      <div className="text-white/90 font-medium group-hover:text-blue-400 transition-colors duration-200">
                         {item.name}
-                      </Link>
-                    </motion.div>
-                  </motion.li>
-                ))}
-              </ul>
-              <Separator className="my-6 bg-primary/10" />
-              <ul className="space-y-4">
-                {footerLinks.legal.slice(0, 2).map((item, index) => (
-                  <motion.li
-                    key={item.name}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
-                    viewport={{ once: true }}
-                  >
-                    <motion.div
-                      whileHover={{ x: 5 }}
-                      className="block"
-                    >
-                      <Link
-                        href={item.href}
-                        className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center group"
-                      >
-                        <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all duration-300 mr-0 group-hover:mr-2 rounded-full"></span>
-                        {item.name}
-                      </Link>
-                    </motion.div>
+                      </div>
+                      <div className="text-white/50 text-sm mt-1">
+                        {item.description}
+                      </div>
+                    </Link>
                   </motion.li>
                 ))}
               </ul>
@@ -258,125 +299,71 @@ export function Footer() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.7 }}
           viewport={{ once: true }}
+          className="pt-8 border-t border-white/10"
         >
-          <Separator className="my-12 bg-primary/10" />
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            {/* Copyright */}
-            <div className="flex flex-col items-start gap-2 text-sm text-muted-foreground md:items-center md:flex-row">
-              <motion.p
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ duration: 0.4, delay: 0.8 }}
+          {/* Certifications */}
+          <div className="flex flex-wrap justify-center gap-6 mb-8">
+            {certifications.map((cert, index) => (
+              <motion.div
+                key={cert.label}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.8 + index * 0.1 }}
                 viewport={{ once: true }}
-                className="flex items-center gap-1"
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${cert.bgColor} border border-white/10`}
               >
-                © {currentYear || new Date().getFullYear()} PelitaCare oleh DuaKode Labs.
-              </motion.p>
-              <span className="hidden md:inline">•</span>
-              <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ duration: 0.4, delay: 0.9 }}
-                viewport={{ once: true }}
-                className="flex items-center gap-1"
-              >
-                <span>Dibuat dengan </span>
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  className="inline-flex"
-                >
-                  <Heart className="h-3 w-3 text-red-500" />
-                </motion.div>
-                <span> untuk perawat Indonesia.</span>
+                <cert.icon className={`h-4 w-4 ${cert.color}`} />
+                <span className={`text-sm font-medium ${cert.color}`}>
+                  {cert.label}
+                </span>
               </motion.div>
-            </div>
-
-            {/* Trust Badges */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 1.0 }}
-              viewport={{ once: true }}
-              className="flex items-center gap-6"
-            >
-              <motion.div
-                whileHover={{ scale: 1.05, y: -2 }}
-                className="flex items-center space-x-2 text-xs text-muted-foreground p-2 rounded-lg hover:bg-primary/5 transition-colors"
-              >
-                <ShieldCheck className="h-4 w-4 text-green-600" />
-                <span>ISO 27001</span>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05, y: -2 }}
-                className="flex items-center space-x-2 text-xs text-muted-foreground p-2 rounded-lg hover:bg-primary/5 transition-colors"
-              >
-                <FileText className="h-4 w-4 text-blue-600" />
-                <span>HIPAA Compliant</span>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05, y: -2 }}
-                className="flex items-center space-x-2 text-xs text-muted-foreground p-2 rounded-lg hover:bg-primary/5 transition-colors"
-              >
-                <Activity className="h-4 w-4 text-primary" />
-                <span>Kemenkes Terdaftar</span>
-              </motion.div>
-            </motion.div>
-
-            {/* Social Links */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 1.1 }}
-              viewport={{ once: true }}
-              className="flex items-center space-x-4"
-            >
-              {socialLinks.map((item, index) => {
-                const Icon = item.icon
-                return (
-                  <motion.div
-                    key={item.name}
-                    initial={{ opacity: 0, scale: 0 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.4, delay: 1.2 + index * 0.1 }}
-                    viewport={{ once: true }}
-                  >
-                    <motion.div
-                      whileHover={{ scale: 1.2, rotate: 5 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <Link
-                        href={item.href}
-                        className="text-muted-foreground hover:text-primary transition-colors block"
-                        aria-label={item.name}
-                      >
-                        <Icon className="h-5 w-5" />
-                      </Link>
-                    </motion.div>
-                  </motion.div>
-                )
-              })}
-            </motion.div>
+            ))}
           </div>
 
-          {/* Disclaimer */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.3 }}
-            viewport={{ once: true }}
-            className="mt-12 rounded-xl bg-gradient-to-r from-primary/5 to-primary-cream/30 p-6 text-xs text-muted-foreground border border-primary/10 backdrop-blur-sm"
-          >
-            <div className="space-y-2">
-              <p className="mb-3">
-                <strong className="text-primary">Disclaimer:</strong> Platform ini merupakan alat bantu edukasi dan skrining awal.
-                Hasil screening tidak menggantikan diagnosis medis profesional dari dokter spesialis.
-              </p>
-              <p>
-                Untuk keadaan darurat medis, segera hubungi layanan gawat darurat terdekat atau rumah sakit.
-              </p>
+          {/* Copyright and Love */}
+          <div className="flex flex-col items-center text-center space-y-4">
+            <div className="flex items-center justify-center space-x-2 text-white/60 text-sm">
+              <span>© {currentYear || new Date().getFullYear()} PelitaCare</span>
+              <span>•</span>
+              <span className="flex items-center">
+                Dibuat dengan
+                <Heart className="h-3 w-3 mx-1 text-red-400" fill="currentColor" />
+                untuk perawat Indonesia
+              </span>
             </div>
-          </motion.div>
+
+            {/* Quick CTA */}
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link
+                href="/register"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:from-blue-500 hover:to-purple-500 transition-all duration-200 transform hover:scale-105"
+              >
+                Mulai Gratis
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all duration-200"
+              >
+                Masuk
+              </Link>
+            </div>
+          </div>
+
+          {/* Medical Disclaimer */}
+          <div className="mt-8 text-center">
+            <div className="inline-block bg-blue-500/10 border border-blue-400/20 rounded-xl p-4 max-w-2xl">
+              <div className="flex items-start space-x-2">
+                <ShieldCheck className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                <div className="text-left">
+                  <p className="text-xs text-blue-200 font-medium mb-1">Disclaimer Medis</p>
+                  <p className="text-xs text-blue-100/80 leading-relaxed">
+                    Platform ini merupakan alat bantu edukasi dan skrining awal. Hasil screening tidak menggantikan diagnosis medis profesional.
+                    Untuk keadaan darurat medis, segera hubungi layanan gawat darurat terdekat.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </motion.div>
       </div>
     </footer>
