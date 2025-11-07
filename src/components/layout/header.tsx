@@ -39,65 +39,72 @@ export function Header({ user }: HeaderProps) {
   }
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: Activity },
-    { name: 'Pasien', href: '/pasien', icon: User },
-    { name: 'Screening Baru', href: '/screening/new', icon: FileText },
-    { name: 'Edukasi', href: '/edukasi', icon: Activity },
+    { name: 'Dashboard', href: '/dashboard', icon: Activity, description: 'Overview utama' },
+    { name: 'Pasien', href: '/pasien', icon: User, description: 'Data pasien' },
+    { name: 'Screening', href: '/screening/new', icon: FileText, description: 'Screening baru' },
+    { name: 'Edukasi', href: '/edukasi', icon: Activity, description: '8 penyakit terminal' },
   ]
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60 shadow-sm">
       <div className="container flex h-16 items-center justify-between px-4">
         {/* Logo and Brand */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
           {/* Mobile Menu Trigger */}
           <Sheet>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
-                className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
+                className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 lg:hidden"
               >
-                <Menu className="h-6 w-6" />
+                <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="pr-0">
+            <SheetContent side="left" className="pr-0 w-80">
               <MobileNav navigation={navigation} />
             </SheetContent>
           </Sheet>
 
-          <Link href="/dashboard" className="flex items-center space-x-2 group">
-            <motion.div
-              whileHover={{ scale: 1.1, rotate: 5 }}
+          <Link href="/dashboard" className="flex items-center space-x-3 group">
+            <motion.img
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex h-8 w-8 items-center justify-center rounded-lg healthcare-gradient text-white shadow-md group-hover:shadow-lg transition-shadow"
-            >
-              <Activity className="h-4 w-4" />
-            </motion.div>
-            <span className="hidden font-bold text-lg sm:inline-block text-gradient-primary">
-              PelitaCare
-            </span>
+              src="/assets/logo_poltekes.png"
+              alt="Poltekes"
+              className="h-auto w-10 transition-all duration-300"
+              style={{ height: 'auto', maxHeight: '2.5rem' }}
+            />
+            <div className="hidden sm:block">
+              <span className="font-bold text-lg text-gradient-primary block leading-tight">
+                PelitaCare
+              </span>
+              <span className="text-xs text-muted-foreground">
+                Sistem Paliatif Terpadu
+              </span>
+            </div>
           </Link>
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8 text-sm font-medium">
+        <nav className="hidden lg:flex items-center space-x-1 text-sm font-medium">
           {navigation.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
             return (
               <motion.div
                 key={item.name}
-                whileHover={{ y: -2 }}
+                whileHover={{ y: -1 }}
                 whileTap={{ y: 0 }}
+                className="relative"
               >
                 <Link
                   href={item.href}
                   className={cn(
-                    "flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200",
+                    "group relative flex items-center space-x-3 px-4 py-2.5 rounded-xl transition-all duration-200 mx-0.5",
                     isActive
                       ? "bg-primary/10 text-primary shadow-sm"
-                      : "text-foreground/60 hover:text-foreground hover:bg-gray-50"
+                      : "text-foreground/70 hover:text-foreground hover:bg-gray-50/80"
                   )}
                 >
                   <motion.div
@@ -105,11 +112,23 @@ export function Header({ user }: HeaderProps) {
                       scale: isActive ? 1.1 : 1,
                     }}
                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    className="flex-shrink-0"
                   >
                     <Icon className="h-4 w-4" />
                   </motion.div>
-                  <span className="font-medium">{item.name}</span>
+                  <div className="flex flex-col leading-tight">
+                    <span className="font-medium">{item.name}</span>
+                    <span className="text-xs text-muted-foreground leading-tight">{item.description}</span>
+                  </div>
                 </Link>
+                {/* Active indicator */}
+                {isActive && (
+                  <motion.div
+                    layoutId="activeNav"
+                    className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-primary rounded-full"
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                )}
               </motion.div>
             )
           })}
@@ -203,6 +222,7 @@ interface MobileNavProps {
     name: string
     href: string
     icon: any
+    description: string
   }>
 }
 
@@ -210,18 +230,31 @@ function MobileNav({ navigation }: MobileNavProps) {
   const pathname = usePathname()
 
   return (
-    <div className="flex flex-col space-y-4 p-4">
+    <div className="flex flex-col h-full">
+      {/* Header */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="flex items-center space-x-3 pb-4 border-b border-gray-100"
+        className="flex items-center space-x-3 p-6 border-b border-gray-100 bg-gray-50/50"
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg healthcare-gradient text-white shadow-md">
-          <Activity className="h-4 w-4" />
+        <motion.img
+          src="/assets/logo_poltekes.png"
+          alt="Poltekes"
+          className="h-auto w-10"
+          style={{ height: 'auto', maxHeight: '2.5rem' }}
+        />
+        <div>
+          <span className="font-bold text-lg text-gradient-primary block leading-tight">
+            PelitaCare
+          </span>
+          <span className="text-xs text-muted-foreground">
+            Sistem Paliatif Terpadu
+          </span>
         </div>
-        <span className="font-bold text-lg text-gradient-primary">PelitaCare</span>
       </motion.div>
-      <nav className="flex flex-col space-y-1">
+
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-1">
         {navigation.map((item, index) => {
           const Icon = item.icon
           const isActive = pathname === item.href
@@ -235,10 +268,10 @@ function MobileNav({ navigation }: MobileNavProps) {
               <Link
                 href={item.href}
                 className={cn(
-                  "flex items-center space-x-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200",
+                  "flex items-center space-x-4 rounded-xl px-4 py-4 text-sm font-medium transition-all duration-200 group",
                   isActive
-                    ? "bg-primary/10 text-primary shadow-sm"
-                    : "text-foreground/60 hover:text-foreground hover:bg-gray-50"
+                    ? "bg-primary/10 text-primary shadow-sm border border-primary/20"
+                    : "text-foreground/70 hover:text-foreground hover:bg-gray-50/80"
                 )}
               >
                 <motion.div
@@ -246,15 +279,37 @@ function MobileNav({ navigation }: MobileNavProps) {
                     scale: isActive ? 1.1 : 1,
                   }}
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-lg transition-colors",
+                    isActive ? "bg-primary text-white" : "bg-gray-100 text-gray-600 group-hover:bg-gray-200"
+                  )}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-5 w-5" />
                 </motion.div>
-                <span className="font-medium">{item.name}</span>
+                <div className="flex flex-col leading-tight flex-1">
+                  <span className="font-medium">{item.name}</span>
+                  <span className="text-xs text-muted-foreground leading-tight">{item.description}</span>
+                </div>
+                {isActive && (
+                  <motion.div
+                    layoutId="mobileActiveNav"
+                    className="w-2 h-2 bg-primary rounded-full"
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                )}
               </Link>
             </motion.div>
           )
         })}
       </nav>
+
+      {/* Footer */}
+      <div className="p-4 border-t border-gray-100 bg-gray-50/30">
+        <div className="text-xs text-muted-foreground text-center">
+          <p>Poliiteknik Kesehatan</p>
+          <p>Sistem Paliatif Terpadu v1.0</p>
+        </div>
+      </div>
     </div>
   )
 }

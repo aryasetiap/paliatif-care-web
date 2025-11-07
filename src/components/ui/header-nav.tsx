@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Stethoscope } from 'lucide-react'
+import { Activity, Settings } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { handleAnchorLinkClick } from '@/lib/utils'
 import { motion } from 'framer-motion'
@@ -31,223 +32,185 @@ export default function HeaderNav() {
     }
   }, [])
 
-  // Get current header height for smooth scroll calculations
-  // const getHeaderHeight = () => {
-  //   if (typeof window !== 'undefined') {
-  //     const header = document.querySelector('header')
-  //     return header ? header.offsetHeight : 88
-  //   }
-  //   return 88
-  // }
-
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-out ${
         isScrolled
-          ? 'bg-white/98 backdrop-blur-xl shadow-xl border-b border-gray-100/50 py-2'
-          : 'bg-transparent py-4'
+          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100/50'
+          : 'bg-transparent'
       }`}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16 max-w-7xl mx-auto">
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-500 ease-out transform group-hover:scale-110 ${
-              isScrolled
-                ? 'healthcare-gradient shadow-lg shadow-primary/25'
-                : 'bg-white/20 backdrop-blur-md shadow-xl shadow-white/10'
-            }`}>
-              <div className={`absolute inset-0 rounded-xl healthcare-gradient opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
-              <Stethoscope className={`relative h-5 w-5 transition-all duration-300 ${
-                isScrolled ? 'text-white' : 'text-white'
-              }`} />
-            </div>
-            <span className={`font-bold text-xl tracking-tight transition-all duration-300 ${
-              isScrolled ? 'text-gray-900' : 'text-white'
-            }`}>
-              Pelita
-              <span className={`block text-sm font-normal transition-all duration-300 ${
-                isScrolled ? 'text-primary' : 'text-primary-light'
-              }`}>
-                Care
-              </span>
-            </span>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center justify-center"
+            >
+              <Image
+                src="/assets/logo_poltekes.png"
+                alt="Poltekes"
+                width={40}
+                height={40}
+                className="object-contain"
+              />
+            </motion.div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-6">
             <a
               href="#features"
               onClick={(e) => handleAnchorLinkClick(e, '#features')}
-              className={`relative transition-all duration-300 font-medium group ${
+              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-gray-50/80 ${
                 isScrolled
-                  ? 'text-gray-600 hover:text-primary'
-                  : 'text-white/80 hover:text-white'
+                  ? 'text-gray-700 hover:text-blue-600'
+                  : 'text-white/90 hover:text-white hover:bg-white/10'
               }`}
             >
               Fitur
-              <span className={`absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
-                isScrolled ? 'bg-primary' : 'bg-white'
-              }`}></span>
             </a>
             <a
               href="#about"
               onClick={(e) => handleAnchorLinkClick(e, '#about')}
-              className={`relative transition-all duration-300 font-medium group ${
+              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-gray-50/80 ${
                 isScrolled
-                  ? 'text-gray-600 hover:text-primary'
-                  : 'text-white/80 hover:text-white'
+                  ? 'text-gray-700 hover:text-blue-600'
+                  : 'text-white/90 hover:text-white hover:bg-white/10'
               }`}
             >
               Tentang
-              <span className={`absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
-                isScrolled ? 'bg-primary' : 'bg-white'
-              }`}></span>
             </a>
-            <Button
-              size="sm"
-              className={`relative transition-all duration-300 font-medium rounded-full group shadow-lg hover:shadow-xl transform hover:scale-105 px-6 py-2 border-0 ${
-                isScrolled
-                  ? 'bg-gradient-to-r from-primary to-primary-light hover:from-primary/90 hover:to-primary-light/90 text-white'
-                  : 'bg-white/20 backdrop-blur-sm border-2 border-white/40 text-white hover:bg-white hover:text-primary hover:border-transparent'
-              }`}
-              asChild
-            >
-              <Link href="/login">
-                Masuk
-              </Link>
-            </Button>
-            <Button
-              className={`relative transition-all duration-300 font-medium rounded-full overflow-hidden group shadow-lg hover:shadow-xl transform hover:scale-105 ${
-                isScrolled
-                  ? 'healthcare-gradient text-white hover:from-primary/90 hover:to-primary-light/90'
-                  : 'bg-white text-primary hover:bg-primary-cream/50'
-              }`}
-              asChild
-            >
-              <Link href="/register">
-                Daftar
-                <div className={`absolute inset-0 transition-all duration-300 ${
-                  isScrolled
-                    ? 'healthcare-gradient opacity-0 group-hover:opacity-100'
-                    : 'bg-primary opacity-0 group-hover:opacity-100'
-                }`}></div>
-              </Link>
-            </Button>
           </nav>
 
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`px-5 py-2 text-sm font-medium transition-all duration-300 rounded-full ${
+                isScrolled ? 'text-gray-700 hover:bg-gray-100' : 'text-white hover:bg-white/20'
+              }`}
+              asChild
+            >
+              <Link href="/login">Masuk</Link>
+            </Button>
+            <Button
+              size="sm"
+              className={`px-5 py-2 text-sm font-medium transition-all duration-300 rounded-full shadow-md hover:shadow-lg ${
+                isScrolled
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-white text-blue-600 hover:bg-gray-50'
+              }`}
+              asChild
+            >
+              <Link href="/register">Daftar</Link>
+            </Button>
+          </div>
+
           {/* Mobile menu button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className={`md:hidden transition-all duration-300 rounded-xl group ${
-              isScrolled
-                ? 'text-gray-700 hover:bg-gray-100 hover:scale-110'
-                : 'text-white hover:bg-white/20 backdrop-blur-md hover:scale-110'
-            }`}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <div className="relative w-5 h-5">
-              <span className={`absolute top-1 left-0 w-5 h-0.5 transition-all duration-300 ${
-                isMenuOpen ? 'rotate-45 translate-y-2' : ''
-              } ${
-                isScrolled ? 'bg-gray-700' : 'bg-white'
-              }`}></span>
-              <span className={`absolute top-2.5 left-0 w-5 h-0.5 transition-all duration-300 ${
-                isMenuOpen ? 'opacity-0' : ''
-              } ${
-                isScrolled ? 'bg-gray-700' : 'bg-white'
-              }`}></span>
-              <span className={`absolute top-4 left-0 w-5 h-0.5 transition-all duration-300 ${
-                isMenuOpen ? '-rotate-45 -translate-y-2' : ''
-              } ${
-                isScrolled ? 'bg-gray-700' : 'bg-white'
-              }`}></span>
-            </div>
-          </Button>
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`md:hidden transition-all duration-300 rounded-xl group ${
+                isScrolled
+                  ? 'text-gray-700 hover:bg-gray-100'
+                  : 'text-white hover:bg-white/20 backdrop-blur-md'
+              }`}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <div className="relative w-6 h-6">
+                <motion.span
+                  animate={{
+                    rotate: isMenuOpen ? 45 : 0,
+                    y: isMenuOpen ? 8 : 0,
+                  }}
+                  className={`absolute top-1.5 left-0 w-6 h-0.5 transition-colors duration-300 ${
+                    isScrolled ? 'bg-gray-700' : 'bg-white'
+                  }`}
+                />
+                <motion.span
+                  animate={{
+                    opacity: isMenuOpen ? 0 : 1,
+                  }}
+                  className={`absolute top-3 left-0 w-6 h-0.5 transition-colors duration-300 ${
+                    isScrolled ? 'bg-gray-700' : 'bg-white'
+                  }`}
+                />
+                <motion.span
+                  animate={{
+                    rotate: isMenuOpen ? -45 : 0,
+                    y: isMenuOpen ? -8 : 0,
+                  }}
+                  className={`absolute top-4.5 left-0 w-6 h-0.5 transition-colors duration-300 ${
+                    isScrolled ? 'bg-gray-700' : 'bg-white'
+                  }`}
+                />
+              </div>
+            </Button>
+          </motion.div>
         </div>
 
         {/* Mobile Navigation */}
         <motion.div
-          initial={{ opacity: 0, y: -20, height: 0 }}
-          animate={isMenuOpen ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -20, height: 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          className={`md:hidden mt-4 rounded-2xl overflow-hidden transition-all duration-300 ${
+          initial={{ opacity: 0, y: -10, height: 0 }}
+          animate={
+            isMenuOpen ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }
+          }
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+          className={`md:hidden mt-3 rounded-xl overflow-hidden transition-all duration-300 ${
             isScrolled
-              ? 'bg-white/98 backdrop-blur-xl shadow-2xl border border-gray-100/50'
-              : 'bg-white/20 backdrop-blur-md border border-white/30'
+              ? 'bg-white shadow-xl border border-gray-100'
+              : 'bg-white/95 backdrop-blur-md border border-gray-200'
           }`}
         >
-          <nav className="p-6 space-y-4">
-            <motion.a
+          <nav className="p-3 space-y-1">
+            <a
               href="#features"
-              initial={{ opacity: 0, x: -20 }}
-              animate={isMenuOpen ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-              transition={{ duration: 0.2, delay: 0.1 }}
-              className={`block transition-colors duration-300 font-medium ${
-                isScrolled
-                  ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                  : 'text-white/90 hover:text-white hover:bg-white/10'
-              } py-3 px-4 rounded-lg`}
+              className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
               onClick={(e) => {
                 handleAnchorLinkClick(e, '#features')
                 setIsMenuOpen(false)
               }}
             >
-              Fitur
-            </motion.a>
-            <motion.a
+              <div className="w-6 h-6 flex items-center justify-center rounded bg-blue-100">
+                <Activity className="h-3.5 w-3.5 text-blue-600" />
+              </div>
+              <span>Fitur</span>
+            </a>
+            <a
               href="#about"
-              initial={{ opacity: 0, x: -20 }}
-              animate={isMenuOpen ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-              transition={{ duration: 0.2, delay: 0.2 }}
-              className={`block transition-colors duration-300 font-medium ${
-                isScrolled
-                  ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                  : 'text-white/90 hover:text-white hover:bg-white/10'
-              } py-3 px-4 rounded-lg`}
+              className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
               onClick={(e) => {
                 handleAnchorLinkClick(e, '#about')
                 setIsMenuOpen(false)
               }}
             >
-              Tentang
-            </motion.a>
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={isMenuOpen ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-              transition={{ duration: 0.2, delay: 0.3 }}
-              className="pt-2 border-t border-gray-200/20"
-            >
+              <div className="w-6 h-6 flex items-center justify-center rounded bg-blue-100">
+                <Settings className="h-3.5 w-3.5 text-blue-600" />
+              </div>
+              <span>Tentang</span>
+            </a>
+
+            <div className="pt-2 mt-2 border-t border-gray-200 space-y-2">
               <Link
                 href="/login"
-                className={`block transition-colors duration-300 font-medium ${
-                  isScrolled
-                    ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                    : 'text-white/90 hover:text-white hover:bg-white/10'
-                } py-3 px-4 rounded-lg`}
+                className="flex items-center justify-center px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Masuk
               </Link>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={isMenuOpen ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-              transition={{ duration: 0.2, delay: 0.4 }}
-            >
               <Button
-                className={`w-full transition-all duration-300 rounded-full font-medium shadow-lg hover:shadow-xl transform hover:scale-105 ${
-                  isScrolled
-                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
-                    : 'bg-white text-blue-900 hover:bg-gray-50'
-                }`}
+                className="w-full px-4 py-2.5 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors"
                 asChild
               >
                 <Link href="/register" onClick={() => setIsMenuOpen(false)}>
                   Daftar
                 </Link>
               </Button>
-            </motion.div>
+            </div>
           </nav>
         </motion.div>
       </div>
