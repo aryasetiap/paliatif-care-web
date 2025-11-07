@@ -15,7 +15,13 @@
       "Bash(timeout:*)",
       "Bash(npm run type-check:*)",
       "Bash(npx shadcn-ui@latest add:*)",
-      "Bash(npx shadcn@latest add:*)"
+      "Bash(npx shadcn@latest add:*)",
+      "mcp__supabase__list_migrations",
+      "Bash(npx husky install:*)",
+      "Bash(npm pkg set:*)",
+      "Bash(npx husky init:*)",
+      "Bash(npx husky add:*)",
+      "Bash(chmod:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

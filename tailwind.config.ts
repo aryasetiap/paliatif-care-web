@@ -9,6 +9,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Medical alert colors
+        medical: {
+          alert: '#ef4444', // Medical Alert Red
+          warning: '#f59e0b', // Caution Yellow
+          info: '#06b6d4', // Information Cyan
+          success: '#10b981', // Positive Green
+        },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
@@ -24,6 +31,17 @@ const config: Config = {
           foreground: 'hsl(var(--primary-foreground))',
           light: 'hsl(var(--primary-light))',
           cream: 'hsl(var(--primary-cream))',
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6', // Trust Blue
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+          950: '#172554',
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
