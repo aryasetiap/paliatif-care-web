@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
     },
   })
 
-  const onSubmit = async (data: ForgotPasswordFormData) => {
+  const onSubmit = async () => {
     setIsLoading(true)
 
     try {

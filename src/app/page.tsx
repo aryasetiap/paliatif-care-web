@@ -1,12 +1,24 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Activity, Users, FileText, BookOpen, ArrowRight, Stethoscope, Heart, ShieldCheck } from 'lucide-react'
+import {
+  Activity,
+  Users,
+  FileText,
+  BookOpen,
+  ArrowRight,
+  Stethoscope,
+  Heart,
+  ShieldCheck,
+} from 'lucide-react'
 import HeaderNav from '@/components/ui/header-nav'
+import { Footer } from '@/components/layout/footer'
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
+import '@/styles/patterns.css'
 
 export default function Home() {
   const leftSectionRef = useRef(null)
@@ -57,23 +69,18 @@ export default function Home() {
   ]
 
   return (
-    <div className="min-h-screen relative overflow-hidden healthcare-gradient">
+    <div className="relative overflow-hidden healthcare-gradient">
       {/* Healthcare Background Pattern - Applied to entire homepage */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}></div>
-      </div>
+      <div className="absolute inset-0 opacity-20 healthcare-pattern"></div>
 
       {/* Healthcare-Themed Floating Shapes - Applied to entire homepage */}
-      <div className="absolute top-10 left-10 w-64 h-64 bg-primary-cream/20 rounded-full blur-2xl"></div>
-      <div className="absolute bottom-10 right-10 w-80 h-80 bg-primary-light/20 rounded-full blur-2xl"></div>
-      <div className="absolute top-1/2 right-1/3 w-72 h-72 bg-white/10 rounded-full blur-2xl"></div>
-      <div className="absolute bottom-1/3 left-1/4 w-96 h-96 bg-primary-cream/30 rounded-full blur-3xl"></div>
+      <div className="absolute floating-shape-1 rounded-full"></div>
+      <div className="absolute floating-shape-2 rounded-full"></div>
+      <div className="absolute floating-shape-3 rounded-full"></div>
+      <div className="absolute floating-shape-4 rounded-full"></div>
 
       {/* Hero Section with Healthcare Theme */}
       <section className="relative min-h-screen flex items-start justify-center overflow-hidden pt-24 lg:pt-32">
-
         {/* Navigation */}
         <HeaderNav />
 
@@ -85,14 +92,14 @@ export default function Home() {
               ref={leftSectionRef}
               initial={{ opacity: 0, x: -50 }}
               animate={leftSectionInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="text-gray-900 lg:text-left text-center"
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+              className="text-gray-900 lg:text-left text-center gpu-accelerated"
             >
               {/* Professional Healthcare Icon */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={leftSectionInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+                transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
                 className="flex mb-8 lg:justify-start justify-center"
               >
                 <div className="relative">
@@ -108,7 +115,7 @@ export default function Home() {
                 <motion.h1
                   initial={{ opacity: 0, y: 30 }}
                   animate={leftSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-                  transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+                  transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
                   className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-tight"
                 >
                   Pelita
@@ -120,15 +127,15 @@ export default function Home() {
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={leftSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-                  transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+                  transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
                   className="space-y-4"
                 >
                   <h2 className="text-xl md:text-2xl lg:text-3xl font-light text-white/90">
                     Pemetaan Layanan Paliatif Berbasis ESAS
                   </h2>
                   <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                    Membantu tenaga medis memberikan perawatan paliatif terbaik
-                    untuk pasien penyakit terminal melalui edukasi dan skrining terstandar.
+                    Membantu tenaga medis memberikan perawatan paliatif terbaik untuk pasien
+                    penyakit terminal melalui edukasi dan skrining terstandar.
                   </p>
                 </motion.div>
               </div>
@@ -137,7 +144,7 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={leftSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-                transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
+                transition={{ duration: 0.8, delay: 0.8, ease: 'easeOut' }}
                 className="flex flex-col sm:flex-row gap-6 items-center lg:items-start justify-center lg:justify-start"
               >
                 <Button
@@ -171,26 +178,34 @@ export default function Home() {
               ref={rightSectionRef}
               initial={{ opacity: 0, x: 50 }}
               animate={rightSectionInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
-              transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+              transition={{ duration: 0.8, delay: 0.5, ease: 'easeOut' }}
               className="relative flex justify-center items-center mt-12 lg:mt-0"
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.8, rotateY: 30 }}
-                animate={rightSectionInView ? { opacity: 1, scale: 1, rotateY: 0 } : { opacity: 0, scale: 0.8, rotateY: 30 }}
-                transition={{ duration: 1, delay: 0.7, ease: "easeOut" }}
+                animate={
+                  rightSectionInView
+                    ? { opacity: 1, scale: 1, rotateY: 0 }
+                    : { opacity: 0, scale: 0.8, rotateY: 30 }
+                }
+                transition={{ duration: 1, delay: 0.7, ease: 'easeOut' }}
                 className="relative"
               >
                 {/* Image Container */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={rightSectionInView ? { opacity: 1 } : { opacity: 0 }}
-                  transition={{ duration: 1, delay: 0.9, ease: "easeOut" }}
+                  transition={{ duration: 1, delay: 0.9, ease: 'easeOut' }}
                   className="relative rounded-3xl overflow-hidden shadow-2xl group"
                 >
-                  <img
+                  <Image
                     src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
                     alt="Medical Team"
+                    width={800}
+                    height={600}
                     className="w-full max-w-sm md:max-w-md lg:max-w-lg rounded-3xl object-cover group-hover:scale-105 transition-transform duration-700"
+                    priority
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent rounded-3xl group-hover:from-primary/90 transition-all duration-500"></div>
                 </motion.div>
@@ -198,8 +213,12 @@ export default function Home() {
                 {/* Floating Stats Cards */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0, x: 20, y: -20 }}
-                  animate={rightSectionInView ? { opacity: 1, scale: 1, x: 0, y: 0 } : { opacity: 0, scale: 0, x: 20, y: -20 }}
-                  transition={{ duration: 0.6, delay: 1.1, ease: "easeOut" }}
+                  animate={
+                    rightSectionInView
+                      ? { opacity: 1, scale: 1, x: 0, y: 0 }
+                      : { opacity: 0, scale: 0, x: 20, y: -20 }
+                  }
+                  transition={{ duration: 0.6, delay: 1.1, ease: 'easeOut' }}
                   className="absolute -top-2 -right-2 lg:-top-4 lg:-right-4 bg-white/10 backdrop-blur-md rounded-xl lg:rounded-2xl p-3 lg:p-4 border border-white/20 shadow-xl hover:bg-white/20 transition-all duration-300 group"
                 >
                   <div className="text-center">
@@ -210,8 +229,12 @@ export default function Home() {
 
                 <motion.div
                   initial={{ opacity: 0, scale: 0, x: -20, y: 20 }}
-                  animate={rightSectionInView ? { opacity: 1, scale: 1, x: 0, y: 0 } : { opacity: 0, scale: 0, x: -20, y: 20 }}
-                  transition={{ duration: 0.6, delay: 1.3, ease: "easeOut" }}
+                  animate={
+                    rightSectionInView
+                      ? { opacity: 1, scale: 1, x: 0, y: 0 }
+                      : { opacity: 0, scale: 0, x: -20, y: 20 }
+                  }
+                  transition={{ duration: 0.6, delay: 1.3, ease: 'easeOut' }}
                   className="absolute -bottom-2 -left-2 lg:-bottom-4 lg:-left-4 bg-white/10 backdrop-blur-md rounded-xl lg:rounded-2xl p-3 lg:p-4 border border-white/20 shadow-xl hover:bg-white/20 transition-all duration-300 group"
                 >
                   <div className="text-center">
@@ -227,7 +250,7 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={leftSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-            transition={{ duration: 0.8, delay: 1.5, ease: "easeOut" }}
+            transition={{ duration: 0.8, delay: 1.5, ease: 'easeOut' }}
             className="mt-8 lg:mt-12 mb-16 grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8"
           >
             {stats.map((stat, index) => {
@@ -236,8 +259,10 @@ export default function Home() {
                 <motion.div
                   key={stat.label}
                   initial={{ opacity: 0, scale: 0.8 }}
-                  animate={leftSectionInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.6, delay: 1.6 + index * 0.1, ease: "easeOut" }}
+                  animate={
+                    leftSectionInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }
+                  }
+                  transition={{ duration: 0.6, delay: 1.6 + index * 0.1, ease: 'easeOut' }}
                   className="text-center"
                 >
                   <div className="bg-white/90 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-white/30 hover:shadow-xl transition-all duration-300 group">
@@ -265,11 +290,14 @@ export default function Home() {
               </div>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
-              Fitur <span className="text-transparent bg-clip-text bg-gradient-to-r from-white/90 to-white">Unggulan</span>
+              Fitur{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white/90 to-white">
+                Unggulan
+              </span>
             </h2>
             <p className="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
-              Solusi lengkap untuk kebutuhan edukasi dan skrining paliatif
-              dalam satu platform terintegrasi yang modern dan mudah digunakan.
+              Solusi lengkap untuk kebutuhan edukasi dan skrining paliatif dalam satu platform
+              terintegrasi yang modern dan mudah digunakan.
             </p>
           </div>
 
@@ -278,12 +306,17 @@ export default function Home() {
             {features.map((feature) => {
               const Icon = feature.icon
               return (
-                <Card key={feature.title} className="group relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white/80 backdrop-blur-sm border border-white/30">
+                <Card
+                  key={feature.title}
+                  className="group relative overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white/80 backdrop-blur-sm border border-white/30"
+                >
                   {/* Gradient Border */}
                   <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
 
                   <CardHeader className="text-center pb-6 relative">
-                    <div className={`inline-flex h-16 w-16 items-center justify-center rounded-2xl ${feature.bgColor} mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border border-primary/20 healthcare-gradient`}>
+                    <div
+                      className={`inline-flex h-16 w-16 items-center justify-center rounded-2xl ${feature.bgColor} mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border border-primary/20 healthcare-gradient`}
+                    >
                       <Icon className={`h-8 w-8 text-white`} />
                     </div>
                     <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
@@ -315,7 +348,6 @@ export default function Home() {
 
       {/* CTA Section with Healthcare Theme */}
       <section id="about" className="relative py-32 overflow-hidden mt-0">
-
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4">
           <Card className="max-w-5xl mx-auto bg-gradient-to-br from-white/95 to-primary-cream/30 backdrop-blur-sm shadow-2xl border border-white/30 rounded-3xl">
@@ -339,8 +371,8 @@ export default function Home() {
                   </span>
                 </h2>
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                  Bergabunglah dengan ribuan tenaga medis yang telah menggunakan
-                  PelitaCare untuk memberikan perawatan terbaik bagi pasien mereka.
+                  Bergabunglah dengan ribuan tenaga medis yang telah menggunakan PelitaCare untuk
+                  memberikan perawatan terbaik bagi pasien mereka.
                 </p>
               </div>
 
@@ -388,6 +420,12 @@ export default function Home() {
           </Card>
         </div>
       </section>
+
+      {/* Spacer before footer */}
+      <div className="h-16"></div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

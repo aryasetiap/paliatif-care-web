@@ -4,6 +4,9 @@ export { Sidebar } from './sidebar'
 export { Footer } from './footer'
 export { LayoutWrapper, PublicLayout, AuthLayout } from './layout-wrapper'
 
+// Public Navigation (for landing page)
+export { default as HeaderNav } from '../ui/header-nav'
+
 // Loading and Error Components
 export {
   LoadingSpinner,

@@ -32,13 +32,13 @@ export default function HeaderNav() {
   }, [])
 
   // Get current header height for smooth scroll calculations
-  const getHeaderHeight = () => {
-    if (typeof window !== 'undefined') {
-      const header = document.querySelector('header')
-      return header ? header.offsetHeight : 88
-    }
-    return 88
-  }
+  // const getHeaderHeight = () => {
+  //   if (typeof window !== 'undefined') {
+  //     const header = document.querySelector('header')
+  //     return header ? header.offsetHeight : 88
+  //   }
+  //   return 88
+  // }
 
   return (
     <header

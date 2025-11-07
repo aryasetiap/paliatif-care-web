@@ -21,7 +21,11 @@
       "Bash(npm pkg set:*)",
       "Bash(npx husky init:*)",
       "Bash(npx husky add:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "mcp__supabase__search_docs",
+      "Bash(curl:*)",
+      "Bash(npm run build)",
+      "Bash(npm run dev:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

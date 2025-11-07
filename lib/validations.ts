@@ -51,7 +51,6 @@ export const patientSchema = z.object({
     .positive('Usia harus angka positif'),
   gender: z.enum(['L', 'P'], {
     required_error: 'Jenis kelamin harus dipilih',
-    errorMap: () => ({ message: 'Jenis kelamin harus L atau P' }),
   }),
   facility_name: z
     .string()

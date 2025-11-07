@@ -116,12 +116,13 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             await get().loadProfile()
           }
         } catch {
+          // Don't show error for unauthorized users
           set({
             user: null,
             profile: null,
             isAuthenticated: false,
             loading: false,
-            error: null // Don't show error for unauthorized users
+            error: null
           })
         }
       },
@@ -135,6 +136,8 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           set({ profile })
         } catch {
           // Profile might not exist yet, which is okay for new users
+          // Optional: Log this for debugging
+          // console.warn('Profile not found:', error)
         }
       },
 

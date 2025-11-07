@@ -38,7 +38,7 @@ export default function RegisterPage() {
 
   const password = watch('password')
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const onSubmit = async () => {
     setIsLoading(true)
 
     try {
@@ -88,12 +88,39 @@ export default function RegisterPage() {
   const passwordStrength = getPasswordStrength(password)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-cream via-blue-50/30 to-sky-50/20 flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236280BA' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}></div>
+    <div className="min-h-screen subtle-gradient-bg flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Modern Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0 modern-gradient"></div>
+      </div>
+
+      {/* Floating Elements for Modern Effect */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{
+            y: [0, -20, 0],
+            x: [0, 10, 0],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute -top-20 -right-20 w-72 h-72 bg-primary-light/10 rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{
+            y: [0, 20, 0],
+            x: [0, -10, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+          className="absolute -bottom-20 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
+        />
       </div>
 
       {/* Register Form */}
@@ -103,7 +130,7 @@ export default function RegisterPage() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="w-full max-w-md relative z-10"
       >
-        <Card className="bg-white shadow-xl border-0 rounded-2xl overflow-hidden">
+        <Card className="enhanced-card p-1 micro-interaction">
           <CardHeader className="space-y-6 text-center pb-8 pt-8">
             {/* Professional Icon */}
             <motion.div
@@ -144,41 +171,49 @@ export default function RegisterPage() {
           >
             <CardContent className="space-y-6 px-8">
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-gray-700 font-medium">Nama Lengkap</Label>
+                <Label htmlFor="fullName" className="text-gray-700 font-semibold">Nama Lengkap</Label>
                 <Input
                   id="fullName"
                   type="text"
                   placeholder="Masukkan nama lengkap"
                   disabled={isLoading}
                   {...register('fullName')}
-                  className={`h-12 rounded-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200 ${errors.fullName ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                  className={`modern-input ${errors.fullName ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
                 />
                 {errors.fullName && (
-                  <p className="text-sm text-red-500 flex items-center gap-1">
+                  <motion.p
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="text-sm text-red-500 flex items-center gap-1"
+                  >
                     {errors.fullName.message}
-                  </p>
+                  </motion.p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
+                <Label htmlFor="email" className="text-gray-700 font-semibold">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="nama@email.com"
                   disabled={isLoading}
                   {...register('email')}
-                  className={`h-12 rounded-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                  className={`modern-input ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
                 />
                 {errors.email && (
-                  <p className="text-sm text-red-500 flex items-center gap-1">
+                  <motion.p
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="text-sm text-red-500 flex items-center gap-1"
+                  >
                     {errors.email.message}
-                  </p>
+                  </motion.p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
+                <Label htmlFor="password" className="text-gray-700 font-semibold">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -186,46 +221,69 @@ export default function RegisterPage() {
                     placeholder="Minimal 6 karakter"
                     disabled={isLoading}
                     {...register('password')}
-                    className={`h-12 rounded-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 pr-12 transition-all duration-200 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                    className={`modern-input pr-12 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
                   />
-                  <button
+                  <motion.button
                     type="button"
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-primary transition-colors"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isLoading}
+                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.1 }}
                   >
                     {showPassword ? (
                       <EyeOff className="h-5 w-5" />
                     ) : (
                       <Eye className="h-5 w-5" />
                     )}
-                  </button>
+                  </motion.button>
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-red-500 flex items-center gap-1">
+                  <motion.p
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="text-sm text-red-500 flex items-center gap-1"
+                  >
                     {errors.password.message}
-                  </p>
+                  </motion.p>
                 )}
 
-                {/* Password Strength Indicator */}
+                {/* Enhanced Password Strength Indicator */}
                 {password && (
-                  <div className="space-y-2">
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-2"
+                  >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500 font-medium">Kekuatan Password:</span>
-                      <span className="text-xs text-gray-500">{passwordStrength.text}</span>
+                      <span className="text-xs text-gray-600 font-semibold">Kekuatan Password:</span>
+                      <motion.span
+                        key={passwordStrength.text}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className={`text-xs font-semibold ${
+                          passwordStrength.score <= 1 ? 'text-red-500' :
+                          passwordStrength.score === 2 ? 'text-yellow-500' :
+                          passwordStrength.score === 3 ? 'text-blue-500' : 'text-green-500'
+                        }`}
+                      >
+                        {passwordStrength.text}
+                      </motion.span>
                     </div>
-                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full ${passwordStrength.color} transition-all duration-300`}
+                    <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                      <motion.div
+                        className={`h-full rounded-full transition-all duration-500 ${passwordStrength.color.replace('bg-', 'bg-opacity-80 bg-')}`}
                         style={{ width: `${(passwordStrength.score / 4) * 100}%` }}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(passwordStrength.score / 4) * 100}%` }}
                       />
                     </div>
-                  </div>
+                  </motion.div>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">Konfirmasi Password</Label>
+                <Label htmlFor="confirmPassword" className="text-gray-700 font-semibold">Konfirmasi Password</Label>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
@@ -233,33 +291,43 @@ export default function RegisterPage() {
                     placeholder="Ulangi password"
                     disabled={isLoading}
                     {...register('confirmPassword')}
-                    className={`h-12 rounded-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 pr-12 transition-all duration-200 ${errors.confirmPassword ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                    className={`modern-input pr-12 ${errors.confirmPassword ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
                   />
-                  <button
+                  <motion.button
                     type="button"
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-primary transition-colors"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     disabled={isLoading}
+                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.1 }}
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="h-5 w-5" />
                     ) : (
                       <Eye className="h-5 w-5" />
                     )}
-                  </button>
+                  </motion.button>
                 </div>
                 {errors.confirmPassword && (
-                  <p className="text-sm text-red-500 flex items-center gap-1">
+                  <motion.p
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="text-sm text-red-500 flex items-center gap-1"
+                  >
                     {errors.confirmPassword.message}
-                  </p>
+                  </motion.p>
                 )}
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100/50 rounded-xl p-4"
+              >
                 <p className="text-xs text-blue-700 leading-relaxed">
                   Dengan mendaftar, Anda setuju dengan syarat dan ketentuan yang berlaku untuk penggunaan sistem Pelita Care.
                 </p>
-              </div>
+              </motion.div>
             </CardContent>
 
             <CardFooter className="flex flex-col space-y-6 px-8 pb-8">
@@ -269,32 +337,39 @@ export default function RegisterPage() {
                 transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
                 className="w-full space-y-4"
               >
-                <Button
-                  type="submit"
-                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
-                  disabled={isLoading}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Sedang mendaftar...
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus className="mr-2 h-4 w-4" />
-                      Daftar
-                    </>
-                  )}
-                </Button>
+                  <Button
+                    type="submit"
+                    className="w-full h-12 modern-button healthcare-gradient hover:from-primary/90 hover:to-primary-light/90 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sedang mendaftar...
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Daftar
+                      </>
+                    )}
+                  </Button>
+                </motion.div>
 
                 <div className="text-center text-sm text-gray-600">
                   Sudah punya akun?{' '}
-                  <Link
-                    href="/login"
-                    className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
-                  >
-                    Login sekarang
-                  </Link>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
+                    <Link
+                      href="/login"
+                      className="text-primary hover:text-primary/80 font-semibold transition-colors text-gradient-primary"
+                    >
+                      Login sekarang
+                    </Link>
+                  </motion.div>
                 </div>
               </motion.div>
             </CardFooter>

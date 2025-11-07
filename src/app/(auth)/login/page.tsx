@@ -67,12 +67,39 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-cream via-blue-50/30 to-sky-50/20 flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236280BA' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}></div>
+    <div className="min-h-screen subtle-gradient-bg flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Modern Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0 modern-gradient"></div>
+      </div>
+
+      {/* Floating Elements for Modern Effect */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{
+            y: [0, -20, 0],
+            x: [0, 10, 0],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute -top-20 -left-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{
+            y: [0, 20, 0],
+            x: [0, -10, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+          className="absolute -bottom-20 -right-20 w-96 h-96 bg-primary-light/10 rounded-full blur-3xl"
+        />
       </div>
 
       {/* Login Form */}
@@ -82,7 +109,7 @@ export default function LoginPage() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="w-full max-w-md relative z-10"
       >
-        <Card className="bg-white/95 backdrop-blur-sm shadow-xl border border-primary/20 rounded-2xl overflow-hidden">
+        <Card className="enhanced-card p-1 micro-interaction">
           <CardHeader className="space-y-6 text-center pb-8 pt-8">
             {/* Professional Icon */}
             <motion.div
@@ -123,24 +150,28 @@ export default function LoginPage() {
           >
             <CardContent className="space-y-6 px-8">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
+                <Label htmlFor="email" className="text-gray-700 font-semibold">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="nama@email.com"
                   disabled={isLoading}
                   {...register('email')}
-                  className={`h-12 rounded-lg border-gray-200 focus:border-primary focus:ring-primary/20 transition-all duration-200 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                  className={`modern-input ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
                 />
                 {errors.email && (
-                  <p className="text-sm text-red-500 flex items-center gap-1">
+                  <motion.p
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="text-sm text-red-500 flex items-center gap-1"
+                  >
                     {errors.email.message}
-                  </p>
+                  </motion.p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
+                <Label htmlFor="password" className="text-gray-700 font-semibold">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -148,25 +179,31 @@ export default function LoginPage() {
                     placeholder="Masukkan password"
                     disabled={isLoading}
                     {...register('password')}
-                    className={`h-12 rounded-lg border-gray-200 focus:border-primary focus:ring-primary/20 pr-12 transition-all duration-200 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                    className={`modern-input pr-12 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
                   />
-                  <button
+                  <motion.button
                     type="button"
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-primary transition-colors"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isLoading}
+                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.1 }}
                   >
                     {showPassword ? (
                       <EyeOff className="h-5 w-5" />
                     ) : (
                       <Eye className="h-5 w-5" />
                     )}
-                  </button>
+                  </motion.button>
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-red-500 flex items-center gap-1">
+                  <motion.p
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="text-sm text-red-500 flex items-center gap-1"
+                  >
                     {errors.password.message}
-                  </p>
+                  </motion.p>
                 )}
               </div>
             </CardContent>
@@ -178,9 +215,13 @@ export default function LoginPage() {
                 transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
                 className="w-full space-y-4"
               >
+                <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 <Button
                   type="submit"
-                  className="w-full h-12 healthcare-gradient hover:from-primary/90 hover:to-primary-light/90 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                  className="w-full h-12 modern-button healthcare-gradient hover:from-primary/90 hover:to-primary-light/90 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -194,24 +235,29 @@ export default function LoginPage() {
                     </>
                   )}
                 </Button>
+              </motion.div>
 
-                <div className="flex flex-col space-y-3 text-center">
+                <div className="flex flex-col space-y-4 text-center">
                   <div className="text-sm text-gray-600">
                     Belum punya akun?{' '}
-                    <Link
-                      href="/register"
-                      className="text-primary hover:text-primary/80 font-medium transition-colors"
-                    >
-                      Daftar sekarang
-                    </Link>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
+                      <Link
+                        href="/register"
+                        className="text-primary hover:text-primary/80 font-semibold transition-colors text-gradient-primary"
+                      >
+                        Daftar sekarang
+                      </Link>
+                    </motion.div>
                   </div>
 
-                  <Link
-                    href="/forgot-password"
-                    className="text-sm text-gray-500 hover:text-primary transition-colors"
-                  >
-                    Lupa password?
-                  </Link>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
+                    <Link
+                      href="/forgot-password"
+                      className="text-sm text-gray-500 hover:text-primary transition-colors"
+                    >
+                      Lupa password?
+                    </Link>
+                  </motion.div>
                 </div>
               </motion.div>
             </CardFooter>
