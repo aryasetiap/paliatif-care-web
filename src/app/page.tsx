@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Activity,
   Users,
@@ -13,8 +12,6 @@ import {
   Stethoscope,
   Heart,
   ShieldCheck,
-  Shield,
-  Star,
 } from 'lucide-react'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
@@ -40,7 +37,8 @@ export default function Home() {
     {
       icon: FileText,
       title: 'Skrining',
-      description: 'Kenali kebutuhan fisik, emosional, dan sosial Anda secara holistik. Dapatkan perawatan tepat untuk kualitas hidup terbaik.',
+      description:
+        'Kenali kebutuhan fisik, emosional, dan sosial Anda secara holistik. Dapatkan perawatan tepat untuk kualitas hidup terbaik.',
       href: '/screening/new',
       color: 'text-primary',
       bgColor: 'bg-primary-cream/60',
@@ -86,12 +84,12 @@ export default function Home() {
         <motion.div
           animate={{
             y: [0, -30, 0],
-            rotate: [0, 5, -5, 0]
+            rotate: [0, 5, -5, 0],
           }}
           transition={{
             duration: 8,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: 'easeInOut',
           }}
           className="absolute top-20 left-10 opacity-10"
         >
@@ -100,13 +98,13 @@ export default function Home() {
         <motion.div
           animate={{
             y: [0, 30, 0],
-            rotate: [0, -5, 5, 0]
+            rotate: [0, -5, 5, 0],
           }}
           transition={{
             duration: 10,
             repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
+            ease: 'easeInOut',
+            delay: 2,
           }}
           className="absolute top-40 right-20 opacity-10"
         >
@@ -115,13 +113,13 @@ export default function Home() {
         <motion.div
           animate={{
             x: [0, 20, 0],
-            y: [0, -20, 0]
+            y: [0, -20, 0],
           }}
           transition={{
             duration: 12,
             repeat: Infinity,
-            ease: "easeInOut",
-            delay: 4
+            ease: 'easeInOut',
+            delay: 4,
           }}
           className="absolute bottom-40 left-20 opacity-10"
         >
@@ -138,7 +136,7 @@ export default function Home() {
             linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
           `,
           backgroundSize: '50px 50px',
-          animation: 'slide 20s linear infinite'
+          animation: 'slide 20s linear infinite',
         }}
       />
 
@@ -186,7 +184,8 @@ export default function Home() {
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                     Care
                   </span>
-                </motion.h1>              {/* Remaining Stats Cards */}
+                </motion.h1>{' '}
+                {/* Remaining Stats Cards */}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={leftSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
@@ -194,9 +193,10 @@ export default function Home() {
                   className="space-y-4"
                 >
                   <p className="text-lg md:text-xl text-white/70 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                    Skrining ini membantu mengenali kebutuhan fisik, emosional, dan sosial Anda secara
-                    menyeluruh. Dengan memahami kondisi secara lebih dalam, Anda dapat melakukan
-                    perawatan yang tepat untuk menjaga kenyamanan dan kualitas hidup terbaik Anda.
+                    Skrining ini membantu mengenali kebutuhan fisik, emosional, dan sosial Anda
+                    secara menyeluruh. Dengan memahami kondisi secara lebih dalam, Anda dapat
+                    melakukan perawatan yang tepat untuk menjaga kenyamanan dan kualitas hidup
+                    terbaik Anda.
                   </p>
                 </motion.div>
               </div>
@@ -251,7 +251,9 @@ export default function Home() {
                 {/* Main Image - Professional Healthcare Photo */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
-                  animate={rightSectionInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+                  animate={
+                    rightSectionInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }
+                  }
                   transition={{ duration: 1, delay: 0.7, ease: 'easeOut' }}
                   className="relative"
                 >
@@ -269,10 +271,13 @@ export default function Home() {
                   </div>
                 </motion.div>
 
-  
                 <motion.div
                   initial={{ opacity: 0, scale: 0, x: -15 }}
-                  animate={rightSectionInView ? { opacity: 1, scale: 1, x: 0 } : { opacity: 0, scale: 0, x: -15 }}
+                  animate={
+                    rightSectionInView
+                      ? { opacity: 1, scale: 1, x: 0 }
+                      : { opacity: 0, scale: 0, x: -15 }
+                  }
                   transition={{ duration: 0.6, delay: 1.3, ease: 'easeOut' }}
                   className="absolute -bottom-4 -left-4 lg:-bottom-5 lg:-left-5 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-3 shadow-lg border border-purple-400/20"
                 >
@@ -284,38 +289,6 @@ export default function Home() {
               </div>
             </motion.div>
           </div>
-
-          {/* Professional Trust Indicators */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={leftSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-            transition={{ duration: 0.8, delay: 1.5, ease: 'easeOut' }}
-            className="mt-8 lg:mt-10 mb-12 grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6"
-          >
-            {stats.map((stat, index) => {
-              const Icon = stat.icon
-              return (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={
-                    leftSectionInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }
-                  }
-                  transition={{ duration: 0.6, delay: 1.6 + index * 0.1, ease: 'easeOut' }}
-                  className="text-center"
-                >
-                  <div className="group relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 to-purple-500/15 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                    <div className="relative bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all duration-300">
-                      <Icon className="h-6 w-6 mx-auto mb-2 text-blue-400 group-hover:scale-110 transition-transform duration-300" />
-                      <div className="text-xl font-bold text-white mb-1">{stat.value}</div>
-                      <div className="text-xs text-white/70">{stat.label}</div>
-                    </div>
-                  </div>
-                </motion.div>
-              )
-            })}
-          </motion.div>
         </div>
 
         {/* Decorative Elements - Removed gradient overlay */}
@@ -357,8 +330,8 @@ export default function Home() {
               </span>
             </h2>
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
-              Platform terintegrasi dengan teknologi terkini untuk mendukung tenaga medis
-              memberikan perawatan paliatif terbaik dan berstandar internasional.
+              Platform terintegrasi dengan teknologi terkini untuk mendukung tenaga medis memberikan
+              perawatan paliatif terbaik dan berstandar internasional.
             </p>
           </motion.div>
 
@@ -420,6 +393,36 @@ export default function Home() {
             })}
           </div>
         </div>
+
+        {/* Professional Trust Indicators */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={leftSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.8, delay: 1.5, ease: 'easeOut' }}
+          className="px-36 mt-8 lg:mt-10 mb-12 grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6"
+        >
+          {stats.map((stat, index) => {
+            const Icon = stat.icon
+            return (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={leftSectionInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.6, delay: 1.6 + index * 0.1, ease: 'easeOut' }}
+                className="text-center"
+              >
+                <div className="group relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 to-purple-500/15 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+                  <div className="relative bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all duration-300">
+                    <Icon className="h-6 w-6 mx-auto mb-2 text-blue-400 group-hover:scale-110 transition-transform duration-300" />
+                    <div className="text-xl font-bold text-white mb-1">{stat.value}</div>
+                    <div className="text-xs text-white/70">{stat.label}</div>
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })}
+        </motion.div>
       </section>
 
       {/* Professional About Section */}
@@ -471,12 +474,12 @@ export default function Home() {
                     {/* Icon with Animation */}
                     <motion.div
                       animate={{
-                        y: [0, -5, 0]
+                        y: [0, -5, 0],
                       }}
                       transition={{
                         duration: 3,
                         repeat: Infinity,
-                        ease: "easeInOut"
+                        ease: 'easeInOut',
                       }}
                       className="flex justify-center mb-6"
                     >
@@ -488,9 +491,7 @@ export default function Home() {
                     </motion.div>
 
                     {/* Card Title */}
-                    <h3 className="text-xl font-bold text-white mb-4">
-                      Transformasi Digital
-                    </h3>
+                    <h3 className="text-xl font-bold text-white mb-4">Transformasi Digital</h3>
 
                     {/* Key Stats */}
                     <div className="space-y-3 mb-6">
@@ -510,10 +511,10 @@ export default function Home() {
                         <span className="text-white/70 text-sm">Penyakit Terminal</span>
                         <span className="text-white font-semibold">8</span>
                       </div>
-                </div>
+                    </div>
 
-                {/* CTA Button */}
-                <Button
+                    {/* CTA Button */}
+                    <Button
                       className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 font-semibold"
                       asChild
                     >
@@ -541,18 +542,20 @@ export default function Home() {
                       Revolusi Perawatan Paliatif Indonesia
                     </h3>
                     <p className="text-white/70 leading-relaxed">
-                      Skrining ini membantu mengenali kebutuhan fisik, emosional, dan sosial Anda secara menyeluruh.
-                      Dengan memahami kondisi secara lebih dalam, Anda dapat melakukan perawatan yang tepat untuk menjaga
-                      kenyamanan dan kualitas hidup terbaik Anda.
+                      Skrining ini membantu mengenali kebutuhan fisik, emosional, dan sosial Anda
+                      secara menyeluruh. Dengan memahami kondisi secara lebih dalam, Anda dapat
+                      melakukan perawatan yang tepat untuk menjaga kenyamanan dan kualitas hidup
+                      terbaik Anda.
                     </p>
                   </div>
 
-              {/* Mission Statement */}
-              <div className="bg-blue-500/10 border border-blue-400/20 rounded-xl p-4">
+                  {/* Mission Statement */}
+                  <div className="bg-blue-500/10 border border-blue-400/20 rounded-xl p-4">
                     <h4 className="text-blue-200 font-semibold mb-2">Misi Kami</h4>
                     <p className="text-blue-100/80 text-sm leading-relaxed">
-                      Memberikan akses perawatan paliatif berkualitas tinggi kepada semua pasien yang membutuhkan,
-                      dengan dukungan teknologi yang memudahkan tenaga medis memberikan perawatan terbaik dan berkesinambungan.
+                      Memberikan akses perawatan paliatif berkualitas tinggi kepada semua pasien
+                      yang membutuhkan, dengan dukungan teknologi yang memudahkan tenaga medis
+                      memberikan perawatan terbaik dan berkesinambungan.
                     </p>
                   </div>
                 </div>

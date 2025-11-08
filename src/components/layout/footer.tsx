@@ -5,16 +5,12 @@ import {
   Mail,
   MapPin,
   Heart,
-  Activity,
-  ShieldCheck,
-  FileText,
   Users,
   BookOpen,
   Stethoscope,
   Instagram
 } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { useState, useEffect } from 'react'
 
 const footerSections = {
   layanan: [
@@ -65,33 +61,7 @@ const footerSections = {
   ],
 }
 
-const certifications = [
-  {
-    icon: ShieldCheck,
-    label: 'ISO 27001',
-    color: 'text-green-400',
-    bgColor: 'bg-green-400/10'
-  },
-  {
-    icon: FileText,
-    label: 'HIPAA Compliant',
-    color: 'text-blue-400',
-    bgColor: 'bg-blue-400/10'
-  },
-  {
-    icon: Users,
-    label: 'Kemenkes Terdaftar',
-    color: 'text-purple-400',
-    bgColor: 'bg-purple-400/10'
-  },
-]
-
 export function Footer() {
-  const [currentYear, setCurrentYear] = useState<number | null>(null)
-
-  useEffect(() => {
-    setCurrentYear(new Date().getFullYear())
-  }, [])
 
   return (
     <footer className="relative bg-slate-900 border-t border-white/10">

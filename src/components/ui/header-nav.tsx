@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Stethoscope, BookOpen, Users, Menu, X, FileText } from 'lucide-react'
+import { BookOpen, Users, Menu, X, FileText } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { handleAnchorLinkClick } from '@/lib/utils'
 import { motion } from 'framer-motion'
