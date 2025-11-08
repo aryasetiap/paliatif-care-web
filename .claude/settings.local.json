@@ -26,7 +26,9 @@
       "Bash(curl:*)",
       "Bash(npm run build)",
       "Bash(npm run dev:*)",
-      "Bash(src/test-husky.ts)"
+      "Bash(src/test-husky.ts)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
