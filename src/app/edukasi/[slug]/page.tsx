@@ -13,16 +13,13 @@ import {
 } from 'lucide-react'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
-import { motion, useInView } from 'framer-motion'
-import { useRef, useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
 import educationData from '@/data/edukasi-penyakit-terminal.json'
 import { EducationData, Disease, SymptomDisplay } from '@/types/edukasi'
 import '@/styles/modern-patterns.css'
 
 export default function EducationDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const leftSectionRef = useRef(null)
-  const leftSectionInView = useInView(leftSectionRef, { once: true, amount: 0.3 })
-
   const [disease, setDisease] = useState<Disease | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -32,9 +29,7 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
       const { slug } = resolvedParams
 
       const data = educationData as EducationData
-      const foundDisease = data.edukasi_penyakit_terminal.diseases.find(
-        (d) => d.slug === slug
-      )
+      const foundDisease = data.edukasi_penyakit_terminal.diseases.find((d) => d.slug === slug)
       setDisease(foundDisease || null)
       setLoading(false)
     }
@@ -42,6 +37,7 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
     loadData()
   }, [params])
 
+  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
@@ -66,46 +62,51 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
   // Helper function untuk format symptoms
   const formatSymptoms = (symptoms: Disease['symptoms']): SymptomDisplay[] => {
     if (Array.isArray(symptoms)) {
-      return [{ category: 'Gejala Umum', items: symptoms }];
+      return [{ category: 'Gejala Umum', items: symptoms }]
     }
 
     if ('tahapan' in symptoms) {
       return symptoms.tahapan.map((tahap) => ({
         category: tahap.tahap,
         items: [tahap.gejala],
-      }));
+      }))
     }
 
-    const result: SymptomDisplay[] = [];
+    const result: SymptomDisplay[] = []
 
     if (symptoms.utama) {
-      result.push({ category: 'Gejala Utama', items: symptoms.utama });
+      result.push({ category: 'Gejala Utama', items: symptoms.utama })
     }
     if (symptoms.sisi_kiri) {
-      result.push({ category: 'Gejala Sisi Kiri', items: symptoms.sisi_kiri });
+      result.push({ category: 'Gejala Sisi Kiri', items: symptoms.sisi_kiri })
     }
     if (symptoms.sisi_kanan) {
-      result.push({ category: 'Gejala Sisi Kanan', items: symptoms.sisi_kanan });
+      result.push({ category: 'Gejala Sisi Kanan', items: symptoms.sisi_kanan })
     }
 
-    return result;
-  };
+    return result
+  }
 
   // Helper function untuk format risk factors
   const formatRiskFactors = (riskFactors: Disease['risk_factors']) => {
-    if (!riskFactors) return null;
+    if (!riskFactors) return null
 
     // Check if it's an array of objects with kategori property
-    if (Array.isArray(riskFactors) && riskFactors.length > 0 && typeof riskFactors[0] === 'object' && 'kategori' in riskFactors[0]) {
+    if (
+      Array.isArray(riskFactors) &&
+      riskFactors.length > 0 &&
+      typeof riskFactors[0] === 'object' &&
+      'kategori' in riskFactors[0]
+    ) {
       return (riskFactors as Array<{ kategori: string; faktor: string }>).map((factor) => ({
         category: factor.kategori,
         items: [factor.faktor],
-      }));
+      }))
     }
 
     // Check if it's a simple array of strings
     if (Array.isArray(riskFactors)) {
-      return [{ category: 'Faktor Risiko', items: riskFactors as string[] }];
+      return [{ category: 'Faktor Risiko', items: riskFactors as string[] }]
     }
 
     // Check if it's an object with unchangeable/changeable properties
@@ -113,14 +114,14 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
       return [
         { category: 'Faktor Risiko Tidak Dapat Diubah', items: riskFactors.unchangeable || [] },
         { category: 'Faktor Risiko Dapat Diubah', items: riskFactors.changeable || [] },
-      ];
+      ]
     }
 
-    return null;
-  };
+    return null
+  }
 
-  const formattedSymptoms = formatSymptoms(disease.symptoms);
-  const formattedRiskFactors = formatRiskFactors(disease.risk_factors);
+  const formattedSymptoms = formatSymptoms(disease.symptoms)
+  const formattedRiskFactors = formatRiskFactors(disease.risk_factors)
 
   return (
     <div className="relative overflow-hidden">
@@ -178,102 +179,155 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
           animation: 'slide 20s linear infinite',
         }}
       />
+      <HeaderNav />
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-start justify-center overflow-hidden pt-24 lg:pt-32">
-        {/* Navigation */}
-        <HeaderNav />
+      {/* Overview Section */}
+      <section id="overview" className="relative pt-20 pb-16">
+        {/* Background Blur */}
+        <div className="absolute inset-0 bg-white/3 backdrop-blur-xl"></div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 container mx-auto px-4 pt-8">
-          <div className="text-center max-w-4xl mx-auto min-h-[calc(100vh-200px)] flex flex-col justify-center pb-24">
-            {/* Disease Badge */}
+        <div className="relative z-10 container mx-auto px-4 pt-16">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            viewport={{ once: true }}
+            className="max-w-6xl mx-auto"
+          >
+            {/* Section Header */}
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-6">
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                  {disease.name}
+                </span>
+              </h2>
+
+              <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
+                Informasi lengkap mengenai {disease.name.toLowerCase()} untuk pemahaman yang lebih
+                baik dalam perawatan paliatif.
+              </p>
+            </div>
+
+            {/* Enhanced Info Cards */}
+            <div className="grid md:grid-cols-3 gap-6 mb-12">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
+                viewport={{ once: true }}
+                className="group"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+                  <div className="relative bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Activity className="h-5 w-5 text-blue-400" />
+                      <h4 className="font-semibold text-white">Kategori</h4>
+                    </div>
+                    <p className="text-white/80 capitalize">{disease.category}</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
+                viewport={{ once: true }}
+                className="group"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+                  <div className="relative bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300">
+                    <div className="flex items-center gap-3 mb-2">
+                      <AlertTriangle className="h-5 w-5 text-orange-400" />
+                      <h4 className="font-semibold text-white">Total Gejala</h4>
+                    </div>
+                    <p className="text-white/80">
+                      {formattedSymptoms.reduce((sum, group) => sum + group.items.length, 0)} gejala
+                      teridentifikasi
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
+                viewport={{ once: true }}
+                className="group"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+                  <div className="relative bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Users className="h-5 w-5 text-purple-400" />
+                      <h4 className="font-semibold text-white">Faktor Risiko</h4>
+                    </div>
+                    <p className="text-white/80">
+                      {formattedRiskFactors
+                        ? `${formattedRiskFactors.reduce((sum, group) => sum + group.items.length, 0)} faktor risiko`
+                        : 'Berbagai faktor risiko'}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Key Information Summary */}
             <motion.div
-              ref={leftSectionRef}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={leftSectionInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
-              className="flex justify-center mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
+              viewport={{ once: true }}
+              className="relative mb-12"
             >
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
-                <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 flex items-center space-x-2">
-                  <Activity className="h-5 w-5 text-blue-400" />
-                  <span className="text-sm font-medium text-white/90">{disease.category}</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl blur-lg"></div>
+              <div className="relative bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8">
+                <h3 className="text-xl font-bold text-white mb-6">Informasi Penting</h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="text-white/90 font-semibold mb-3">Penyebab Utama</h4>
+                    <div className="space-y-2">
+                      {disease.causes.slice(0, 3).map((cause, index) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
+                          <p className="text-white/70 text-sm">{cause}</p>
+                        </div>
+                      ))}
+                      {disease.causes.length > 3 && (
+                        <p className="text-white/50 text-sm italic">
+                          Dan {disease.causes.length - 3} penyebab lainnya...
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-white/90 font-semibold mb-3">Gejala Perhatian</h4>
+                    <div className="space-y-2">
+                      {formattedSymptoms[0]?.items.slice(0, 3).map((symptom, index) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
+                          <p className="text-white/70 text-sm">{symptom}</p>
+                        </div>
+                      ))}
+                      {formattedSymptoms[0]?.items.length > 3 && (
+                        <p className="text-white/50 text-sm italic">
+                          Dan {formattedSymptoms[0].items.length - 3} gejala lainnya...
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
-
-            {/* Disease Name */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={leftSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
-              className="space-y-6 mb-10"
-            >
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
-                <span className="text-white">{disease.name}</span>
-              </h1>
-
-              {/* Definition */}
-              <div className="max-w-3xl mx-auto">
-                {typeof disease.definition === 'string' ? (
-                  <p className="text-lg md:text-xl text-white/80 leading-relaxed">
-                    {disease.definition}
-                  </p>
-                ) : (
-                  <div className="space-y-4 text-lg md:text-xl text-white/80 leading-relaxed">
-                    <p><strong className="text-blue-400">HIV:</strong> {disease.definition.hiv}</p>
-                    <p><strong className="text-purple-400">AIDS:</strong> {disease.definition.aids}</p>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-
-            {/* Call to Action Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={leftSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
-              className="flex justify-center gap-4"
-            >
-              <Button
-                size="lg"
-                className="relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold group border-0 overflow-hidden"
-                onClick={() => {
-                  const element = document.getElementById('symptoms')
-                  if (element) {
-                    element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                  }
-                }}
-              >
-                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                <div className="relative flex items-center">
-                  <AlertTriangle className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
-                  <span>Lihat Gejala</span>
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                </div>
-              </Button>
-
-              <Button
-                size="lg"
-                className="relative bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 shadow-lg hover:shadow-white/10 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold group"
-                asChild
-              >
-                <Link href="/edukasi">
-                  <div className="relative flex items-center">
-                    <BookOpen className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
-                    <span>Kembali</span>
-                  </div>
-                </Link>
-              </Button>
-            </motion.div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Symptoms Section */}
-      <section id="symptoms" className="relative pt-32 pb-20">
+      <section id="symptoms" className="relative pt-20 pb-20">
         {/* Background Blur */}
         <div className="absolute inset-0 bg-white/5 backdrop-blur-xl"></div>
 
@@ -303,52 +357,16 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
               </motion.div>
 
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-6">
-                <span className="text-white">Gejala</span>
+                <span className="text-white">Gejala &amp; Tanda</span>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-red-400 to-pink-400">
                   {disease.name}
                 </span>
               </h2>
 
-              {/* Quick Navigation */}
-              <div className="flex flex-wrap justify-center gap-4 mt-8">
-                {formattedRiskFactors && formattedRiskFactors.length > 0 && (
-                  <button
-                    onClick={() => {
-                      const element = document.getElementById('risk-factors')
-                      if (element) {
-                        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                      }
-                    }}
-                    className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white/80 hover:text-white hover:bg-white/20 transition-all duration-300 text-sm"
-                  >
-                    Faktor Risiko
-                  </button>
-                )}
-                <button
-                  onClick={() => {
-                    const element = document.getElementById('causes')
-                    if (element) {
-                      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                    }
-                  }}
-                  className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white/80 hover:text-white hover:bg-white/20 transition-all duration-300 text-sm"
-                >
-                  Penyebab
-                </button>
-                {disease.references && disease.references.length > 0 && (
-                  <button
-                    onClick={() => {
-                      const element = document.getElementById('references')
-                      if (element) {
-                        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                      }
-                    }}
-                    className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white/80 hover:text-white hover:bg-white/20 transition-all duration-300 text-sm"
-                  >
-                    Referensi
-                  </button>
-                )}
-              </div>
+              <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
+                Pahami berbagai gejala dan tanda yang muncul pada {disease.name.toLowerCase()}
+                untuk deteksi dini dan penanganan yang tepat.
+              </p>
             </div>
 
             {/* Symptoms Cards */}
@@ -677,12 +695,10 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
                   </div>
                 </motion.div>
 
-                <h2 className="text-3xl font-bold text-white mb-4">
-                  Pelajari Lebih Lanjut
-                </h2>
+                <h2 className="text-3xl font-bold text-white mb-4">Pelajari Lebih Lanjut</h2>
                 <p className="text-white/70 mb-8 max-w-2xl mx-auto">
-                  Terus tingkatkan pengetahuan Anda tentang perawatan paliatif untuk memberikan
-                  yang terbaik bagi pasien penyakit terminal.
+                  Terus tingkatkan pengetahuan Anda tentang perawatan paliatif untuk memberikan yang
+                  terbaik bagi pasien penyakit terminal.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
