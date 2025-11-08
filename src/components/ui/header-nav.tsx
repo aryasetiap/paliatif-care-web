@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Stethoscope, BookOpen, Users, Menu, X } from 'lucide-react'
+import { Stethoscope, BookOpen, Users, Menu, X, FileText } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { handleAnchorLinkClick } from '@/lib/utils'
 import { motion } from 'framer-motion'
@@ -63,17 +63,14 @@ export default function HeaderNav() {
               whileTap={{ scale: 0.95 }}
               className="flex items-center justify-center"
             >
-              <img
+              <Image
+                src="/assets/logo_poltekes.png"
                 alt="Poltekes"
-                loading="lazy"
-                width="150"
-                height="40"
-                decoding="async"
-                data-nimg="1"
+                width="180"
+                height="48"
+                priority
+                quality={95}
                 className="object-contain transition-all duration-300 group-hover:opacity-90"
-                style={{color: 'transparent'}}
-                srcSet="/_next/image?url=%2Fassets%2Flogo_poltekes.png&amp;w=48&amp;q=75 1x, /_next/image?url=%2Fassets%2Flogo_poltekes.png&amp;w=96&amp;q=75 2x"
-                src="/_next/image?url=%2Fassets%2Flogo_poltekes.png&amp;w=96&amp;q=75"
               />
             </motion.div>
           </Link>
@@ -92,6 +89,7 @@ export default function HeaderNav() {
             >
               Fitur
             </a>
+
             {/* Tentang Link */}
             <a
               href="#about"
@@ -103,6 +101,30 @@ export default function HeaderNav() {
               }`}
             >
               Tentang
+            </a>
+
+            {/* Edukasi Link */}
+            <a
+              href="/edukasi"
+              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/10 ${
+                isScrolled
+                  ? 'text-white/80 hover:text-white hover:bg-white/10'
+                  : 'text-white/90 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Edukasi
+            </a>
+
+            {/* Skrining Link */}
+            <a
+              href="/screening/new"
+              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/10 ${
+                isScrolled
+                  ? 'text-white/80 hover:text-white hover:bg-white/10'
+                  : 'text-white/90 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Skrining
             </a>
 
             {/* Login Button */}
@@ -178,6 +200,8 @@ export default function HeaderNav() {
                 </div>
                 <span>Fitur Layanan</span>
               </a>
+
+              {/* Tentang Kami Link */}
               <a
                 href="#about"
                 className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
@@ -190,6 +214,30 @@ export default function HeaderNav() {
                   <Users className="h-4 w-4 text-purple-400" />
                 </div>
                 <span>Tentang Kami</span>
+              </a>
+
+              {/* Edukasi Link */}
+              <a
+                href="/edukasi"
+                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-green-500/20 border border-green-400/30">
+                  <BookOpen className="h-4 w-4 text-green-400" />
+                </div>
+                <span>Edukasi</span>
+              </a>
+
+              {/* Skrining Link */}
+              <a
+                href="/screening/new"
+                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-amber-500/20 border border-amber-400/30">
+                  <FileText className="h-4 w-4 text-amber-400" />
+                </div>
+                <span>Skrining</span>
               </a>
 
               <div className="pt-2 mt-2 border-t border-white/10 space-y-2">

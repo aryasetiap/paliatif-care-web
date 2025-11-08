@@ -40,7 +40,7 @@ export default function Home() {
     {
       icon: FileText,
       title: 'Skrining',
-      description: 'Form skrining interaktif untuk assessmen kebutuhan paliatif pasien.',
+      description: 'Kenali kebutuhan fisik, emosional, dan sosial Anda secara holistik. Dapatkan perawatan tepat untuk kualitas hidup terbaik.',
       href: '/screening/new',
       color: 'text-primary',
       bgColor: 'bg-primary-cream/60',
@@ -64,10 +64,10 @@ export default function Home() {
   ]
 
   const stats = [
-    { label: 'Penyakit Terminal', value: '8', icon: Stethoscope },
-    { label: 'Form Skrining', value: '50+', icon: FileText },
     { label: 'Tenaga Medis', value: '1000+', icon: Users },
     { label: 'Pasien Terlayani', value: '5000+', icon: Heart },
+    { label: 'Terapi Pilihan', value: '20+', icon: Activity },
+    { label: 'Penyakit Terminal', value: '8', icon: Stethoscope },
   ]
 
   return (
@@ -186,20 +186,17 @@ export default function Home() {
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                     Care
                   </span>
-                </motion.h1>
-
+                </motion.h1>              {/* Remaining Stats Cards */}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={leftSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                   transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
                   className="space-y-4"
                 >
-                  <h2 className="text-xl md:text-2xl lg:text-3xl font-light text-white/90">
-                    Perawatan Paliatif Digital
-                  </h2>
                   <p className="text-lg md:text-xl text-white/70 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                    Platform modern untuk tenaga medis dalam memberikan perawatan terbaik
-                    bagi pasien dengan penyakit terminal melalui teknologi terkini.
+                    Skrining ini membantu mengenali kebutuhan fisik, emosional, dan sosial Anda secara
+                    menyeluruh. Dengan memahami kondisi secara lebih dalam, Anda dapat melakukan
+                    perawatan yang tepat untuk menjaga kenyamanan dan kualitas hidup terbaik Anda.
                   </p>
                 </motion.div>
               </div>
@@ -261,7 +258,7 @@ export default function Home() {
                   <div className="absolute -inset-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-xl opacity-20 animate-pulse"></div>
                   <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-1.5">
                     <Image
-                      src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+                      src="/assets/hero-image.jpg"
                       alt="Healthcare Professional with Patient"
                       width={600}
                       height={450}
@@ -272,19 +269,7 @@ export default function Home() {
                   </div>
                 </motion.div>
 
-                {/* Floating Stats Cards - Professional Design */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0, y: -15 }}
-                  animate={rightSectionInView ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0, y: -15 }}
-                  transition={{ duration: 0.6, delay: 1.1, ease: 'easeOut' }}
-                  className="absolute -top-4 -right-4 lg:-top-5 lg:-right-5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-3 shadow-lg border border-blue-400/20"
-                >
-                  <div className="text-center text-white">
-                    <div className="text-xl lg:text-2xl font-bold mb-1">8</div>
-                    <div className="text-xs text-blue-100">Penyakit Terminal</div>
-                  </div>
-                </motion.div>
-
+  
                 <motion.div
                   initial={{ opacity: 0, scale: 0, x: -15 }}
                   animate={rightSectionInView ? { opacity: 1, scale: 1, x: 0 } : { opacity: 0, scale: 0, x: -15 }}
@@ -517,14 +502,18 @@ export default function Home() {
                         <span className="text-white/70 text-sm">Pasien Terlayani</span>
                         <span className="text-white font-semibold">5000+</span>
                       </div>
-                      <div className="flex justify-between items-center py-2">
-                        <span className="text-white/70 text-sm">Tingkat Kepuasan</span>
-                        <span className="text-white font-semibold">98%</span>
+                      <div className="flex justify-between items-center py-2 border-b border-white/10">
+                        <span className="text-white/70 text-sm">Terapi Pilihan</span>
+                        <span className="text-white font-semibold">20+</span>
                       </div>
-                    </div>
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-white/70 text-sm">Penyakit Terminal</span>
+                        <span className="text-white font-semibold">8</span>
+                      </div>
+                </div>
 
-                    {/* CTA Button */}
-                    <Button
+                {/* CTA Button */}
+                <Button
                       className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 font-semibold"
                       asChild
                     >
@@ -552,55 +541,14 @@ export default function Home() {
                       Revolusi Perawatan Paliatif Indonesia
                     </h3>
                     <p className="text-white/70 leading-relaxed">
-                      Pelita Care adalah platform terdepan yang membawa transformasi digital ke dunia perawatan paliatif di Indonesia. Kami mengintegrasikan teknologi ESAS (Edmonton Symptom Assessment System) dengan pendekatan keperawatan yang holistik untuk memberikan perawatan terbaik bagi pasien penyakit terminal.
+                      Skrining ini membantu mengenali kebutuhan fisik, emosional, dan sosial Anda secara menyeluruh.
+                      Dengan memahami kondisi secara lebih dalam, Anda dapat melakukan perawatan yang tepat untuk menjaga
+                      kenyamanan dan kualitas hidup terbaik Anda.
                     </p>
                   </div>
 
-                  {/* Features Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                        <Users className="h-4 w-4 text-blue-400" />
-                      </div>
-                      <div>
-                        <h4 className="text-white font-semibold mb-1">Tim Profesional</h4>
-                        <p className="text-white/60 text-sm">Didukung oleh tenaga medis berpengalaman dan tersertifikasi</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                        <Shield className="h-4 w-4 text-purple-400" />
-                      </div>
-                      <div>
-                        <h4 className="text-white font-semibold mb-1">Standar Internasional</h4>
-                        <p className="text-white/60 text-sm">Mengikuti protokol medis global dan standar keamanan tinggi</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-                        <Activity className="h-4 w-4 text-green-400" />
-                      </div>
-                      <div>
-                        <h4 className="text-white font-semibold mb-1">Monitoring Real-time</h4>
-                        <p className="text-white/60 text-sm">Pantau kondisi pasien secara kontinyu dengan teknologi canggih</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center">
-                        <Star className="h-4 w-4 text-amber-400" />
-                      </div>
-                      <div>
-                        <h4 className="text-white font-semibold mb-1">Kepuasan Terjamin</h4>
-                        <p className="text-white/60 text-sm">Tingkat kepuasan 98% dari pasien dan keluarga</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Mission Statement */}
-                  <div className="bg-blue-500/10 border border-blue-400/20 rounded-xl p-4">
+              {/* Mission Statement */}
+              <div className="bg-blue-500/10 border border-blue-400/20 rounded-xl p-4">
                     <h4 className="text-blue-200 font-semibold mb-2">Misi Kami</h4>
                     <p className="text-blue-100/80 text-sm leading-relaxed">
                       Memberikan akses perawatan paliatif berkualitas tinggi kepada semua pasien yang membutuhkan,
