@@ -1,15 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import {
-  Mail,
-  MapPin,
-  Heart,
-  Users,
-  BookOpen,
-  Stethoscope,
-  Instagram
-} from 'lucide-react'
+import { Mail, MapPin, Heart, Users, BookOpen, Stethoscope, Instagram } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const footerSections = {
@@ -17,52 +9,51 @@ const footerSections = {
     {
       name: 'Edukasi Paliatif',
       href: '/edukasi',
-      description: 'Panduan lengkap perawatan paliatif'
+      description: 'Panduan lengkap perawatan paliatif',
     },
     {
       name: 'Skrining ESAS',
       href: '/screening/new',
-      description: 'Asesmen symptom pasien'
+      description: 'Asesmen symptom pasien',
     },
     {
       name: 'Dashboard Medis',
       href: '/dashboard',
-      description: 'Kelola pasien dan data'
+      description: 'Kelola pasien dan data',
     },
   ],
   perusahaan: [
     {
       name: 'Tentang PelitaCare',
       href: '/about',
-      description: 'Misi dan visi kami'
+      description: 'Misi dan visi kami',
     },
     {
       name: 'Hubungi Kami',
       href: '/contact',
-      description: 'Kontak dan lokasi'
+      description: 'Kontak dan lokasi',
     },
   ],
   informasi: [
     {
       name: 'Panduan Penggunaan',
       href: '/guide',
-      description: 'Cara menggunakan platform'
+      description: 'Cara menggunakan platform',
     },
     {
       name: 'Kebijakan Privasi',
       href: '/privacy',
-      description: 'Perlindungan data Anda'
+      description: 'Perlindungan data Anda',
     },
     {
       name: 'Syarat & Ketentuan',
       href: '/terms',
-      description: 'Aturan penggunaan'
+      description: 'Aturan penggunaan',
     },
   ],
 }
 
 export function Footer() {
-
   return (
     <footer className="relative bg-slate-900 border-t border-white/10">
       {/* Gradient Overlay */}
@@ -109,12 +100,15 @@ export function Footer() {
 
             {/* Description */}
             <p className="text-white/80 leading-relaxed text-[15px] max-w-sm font-light">
-              Platform digital terdepan untuk perawatan paliatif berbasis ESAS, mendukung tenaga medis dalam memberikan perawatan berkualitas tinggi dan berkelanjutan.
+              Platform digital terdepan untuk perawatan paliatif berbasis ESAS, mendukung tenaga
+              medis dalam memberikan perawatan berkualitas tinggi dan berkelanjutan.
             </p>
 
             {/* Contact Info */}
             <div className="space-y-4 pt-2">
-              <h5 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Hubungi Kami</h5>
+              <h5 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">
+                Hubungi Kami
+              </h5>
 
               <div className="flex items-start space-x-4 group">
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-400/20 group-hover:border-blue-400/40 transition-all duration-300">
@@ -122,7 +116,10 @@ export function Footer() {
                 </div>
                 <div className="flex-1">
                   <div className="text-white font-medium text-sm mb-1">Email</div>
-                  <a href="mailto:info@peliacare.id" className="text-white/60 hover:text-blue-400 transition-colors duration-200 text-sm">
+                  <a
+                    href="mailto:info@peliacare.id"
+                    className="text-white/60 hover:text-blue-400 transition-colors duration-200 text-sm"
+                  >
                     info@peliacare.id
                   </a>
                 </div>
@@ -134,8 +131,13 @@ export function Footer() {
                 </div>
                 <div className="flex-1">
                   <div className="text-white font-medium text-sm mb-1">Instagram</div>
-                  <a href="https://instagram.com/peliacare.id" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-pink-400 transition-colors duration-200 text-sm">
-                    @peliacare.id
+                  <a
+                    href="https://instagram.com/rkipossible"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white/60 hover:text-pink-400 transition-colors duration-200 text-sm"
+                  >
+                    @rkipossible
                   </a>
                 </div>
               </div>
@@ -165,7 +167,9 @@ export function Footer() {
                 <div className="h-8 w-1 bg-gradient-to-b from-blue-400 to-purple-400 rounded-full"></div>
                 <h4 className="text-xl font-bold text-white tracking-tight">Layanan Kami</h4>
               </div>
-              <p className="text-white/60 text-sm">Solusi komprehensif untuk kebutuhan perawatan paliatif Anda</p>
+              <p className="text-white/60 text-sm">
+                Solusi komprehensif untuk kebutuhan perawatan paliatif Anda
+              </p>
             </div>
 
             <ul className="space-y-6">
@@ -214,30 +218,40 @@ export function Footer() {
                 <div className="h-8 w-1 bg-gradient-to-b from-purple-400 to-pink-400 rounded-full"></div>
                 <h4 className="text-xl font-bold text-white tracking-tight">Dampak Kami</h4>
               </div>
-              <p className="text-white/60 text-sm">Angka nyata yang mencerminkan kepercayaan dan dampak positif</p>
+              <p className="text-white/60 text-sm">
+                Angka nyata yang mencerminkan kepercayaan dan dampak positif
+              </p>
             </div>
 
             <div className="space-y-6">
               <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl p-6 border border-white/10 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">1000+</div>
+                  <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                    1000+
+                  </div>
                   <div className="h-12 w-12 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-xl flex items-center justify-center border border-blue-400/20">
                     <Users className="h-6 w-6 text-blue-400" />
                   </div>
                 </div>
                 <div className="text-white/80 font-medium">Tenaga Medis</div>
-                <div className="text-white/50 text-sm mt-1">Profesional terlatih dan bersertifikat</div>
+                <div className="text-white/50 text-sm mt-1">
+                  Profesional terlatih dan bersertifikat
+                </div>
               </div>
 
               <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-white/10 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">5000+</div>
+                  <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                    5000+
+                  </div>
                   <div className="h-12 w-12 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-xl flex items-center justify-center border border-purple-400/20">
                     <Heart className="h-6 w-6 text-purple-400" />
                   </div>
                 </div>
                 <div className="text-white/80 font-medium">Pasien Terlayani</div>
-                <div className="text-white/50 text-sm mt-1">Menerima perawatan paliatif berkualitas</div>
+                <div className="text-white/50 text-sm mt-1">
+                  Menerima perawatan paliatif berkualitas
+                </div>
               </div>
             </div>
           </motion.div>
