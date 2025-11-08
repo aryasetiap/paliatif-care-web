@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -67,14 +68,20 @@ export function Header({ user }: HeaderProps) {
           </Sheet>
 
           <Link href="/dashboard" className="flex items-center space-x-3 group">
-            <motion.img
+            <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              src="/assets/logo_poltekes.png"
-              alt="Poltekes"
-              className="h-auto w-10 transition-all duration-300"
-              style={{ height: 'auto', maxHeight: '2.5rem' }}
-            />
+            >
+              <Image
+                src="/assets/logo_poltekes.png"
+                alt="Poltekes"
+                width="180"
+                height="48"
+                priority
+                quality={95}
+                className="object-contain transition-all duration-300"
+              />
+            </motion.div>
             <div className="hidden sm:block">
               <span className="font-bold text-lg text-gradient-primary block leading-tight">
                 PelitaCare
@@ -238,10 +245,16 @@ function MobileNav({ navigation }: MobileNavProps) {
         className="flex items-center space-x-3 p-6 border-b border-gray-100 bg-gray-50/50"
       >
         <motion.img
-          src="/assets/logo_poltekes.png"
           alt="Poltekes"
-          className="h-auto w-10"
-          style={{ height: 'auto', maxHeight: '2.5rem' }}
+          loading="lazy"
+          width="150"
+          height="40"
+          decoding="async"
+          data-nimg="1"
+          className="object-contain"
+          style={{color: 'transparent', height: 'auto', maxHeight: '2.5rem'}}
+          srcSet="/_next/image?url=%2Fassets%2Flogo_poltekes.png&amp;w=48&amp;q=75 1x, /_next/image?url=%2Fassets%2Flogo_poltekes.png&amp;w=96&amp;q=75 2x"
+          src="/_next/image?url=%2Fassets%2Flogo_poltekes.png&amp;w=96&amp;q=75"
         />
         <div>
           <span className="font-bold text-lg text-gradient-primary block leading-tight">

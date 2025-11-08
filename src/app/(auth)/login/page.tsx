@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { loginSchema, type LoginFormData } from '@/lib/validations'
 import { useToast } from '@/hooks/use-toast'
 import { Loader2, Eye, EyeOff, Stethoscope } from 'lucide-react'
@@ -67,30 +66,49 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen subtle-gradient-bg flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Modern Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0 modern-gradient"></div>
+    <div className="relative overflow-hidden min-h-screen">
+      {/* Modern Animated Background - Same as Homepage */}
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900" />
+      <div className="fixed inset-0 bg-gradient-to-b from-blue-900/20 via-transparent to-transparent" />
+      <div className="fixed inset-0">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-700" />
+        <div className="absolute top-1/2 left-1/3 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
 
-      {/* Floating Elements for Modern Effect */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Animated Grid Pattern */}
+      <div
+        className="fixed inset-0 opacity-20"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px',
+          animation: 'slide 20s linear infinite'
+        }}
+      />
+
+      {/* Floating Medical Icons */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div
           animate={{
-            y: [0, -20, 0],
-            x: [0, 10, 0],
+            y: [0, -30, 0],
+            rotate: [0, 5, -5, 0]
           }}
           transition={{
             duration: 8,
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute -top-20 -left-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl"
-        />
+          className="absolute top-20 left-10 opacity-10"
+        >
+          <Stethoscope className="w-16 h-16 text-white/20" />
+        </motion.div>
         <motion.div
           animate={{
-            y: [0, 20, 0],
-            x: [0, -10, 0],
+            y: [0, 30, 0],
+            rotate: [0, -5, 5, 0]
           }}
           transition={{
             duration: 10,
@@ -98,172 +116,178 @@ export default function LoginPage() {
             ease: "easeInOut",
             delay: 2
           }}
-          className="absolute -bottom-20 -right-20 w-96 h-96 bg-primary-light/10 rounded-full blur-3xl"
-        />
+          className="absolute top-40 right-20 opacity-10"
+        >
+          <Stethoscope className="w-20 h-20 text-white/20" />
+        </motion.div>
       </div>
 
       {/* Login Form */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="w-full max-w-md relative z-10"
-      >
-        <Card className="enhanced-card p-1 micro-interaction">
-          <CardHeader className="space-y-6 text-center pb-8 pt-8">
-            {/* Professional Icon */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-              className="flex justify-center"
-            >
-              <div className="h-16 w-16 healthcare-gradient rounded-2xl flex items-center justify-center shadow-lg">
+      <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="w-full max-w-md"
+        >
+          {/* Header with Logo and Title */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            className="text-center mb-8"
+          >
+            <div className="relative mb-6">
+              <div className="relative bg-gradient-to-br from-blue-600 to-purple-600 rounded-full p-4 shadow-xl border border-white/20 mx-auto w-fit">
                 <Stethoscope className="h-8 w-8 text-white" />
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-              className="space-y-2"
-            >
-              <CardTitle className="text-3xl font-bold text-gray-900 tracking-tight">
-                Pelita
-                <span className="block text-transparent bg-clip-text healthcare-gradient">
-                  Care
-                </span>
-              </CardTitle>
-              <CardDescription className="text-gray-600 text-base">
-                Pemetaan Layanan Paliatif Berbasis ESAS
-              </CardDescription>
-            </motion.div>
-          </CardHeader>
+            <h1 className="text-3xl font-bold tracking-tight leading-tight text-white mb-2">
+              Pelita
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                Care
+              </span>
+            </h1>
+            <p className="text-white/70 text-base">
+              Pemetaan Layanan Paliatif Berbasis ESAS
+            </p>
+          </motion.div>
 
-          <motion.form
+          {/* Login Form Card */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-6"
+            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
           >
-            <CardContent className="space-y-6 px-8">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700 font-semibold">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="nama@email.com"
-                  disabled={isLoading}
-                  {...register('email')}
-                  className={`modern-input ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
-                />
-                {errors.email && (
-                  <motion.p
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="text-sm text-red-500 flex items-center gap-1"
-                  >
-                    {errors.email.message}
-                  </motion.p>
-                )}
-              </div>
+            <div className="relative">
+              {/* Glow Effect */}
+              <div className="absolute -inset-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-30"></div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700 font-semibold">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Masukkan password"
-                    disabled={isLoading}
-                    {...register('password')}
-                    className={`modern-input pr-12 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
-                  />
-                  <motion.button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-primary transition-colors"
-                    onClick={() => setShowPassword(!showPassword)}
-                    disabled={isLoading}
-                    whileTap={{ scale: 0.95 }}
-                    whileHover={{ scale: 1.1 }}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5" />
-                    ) : (
-                      <Eye className="h-5 w-5" />
-                    )}
-                  </motion.button>
-                </div>
-                {errors.password && (
-                  <motion.p
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="text-sm text-red-500 flex items-center gap-1"
-                  >
-                    {errors.password.message}
-                  </motion.p>
-                )}
-              </div>
-            </CardContent>
-
-            <CardFooter className="flex flex-col space-y-6 px-8 pb-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
-                className="w-full space-y-4"
-              >
-                <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Button
-                  type="submit"
-                  className="w-full h-12 modern-button healthcare-gradient hover:from-primary/90 hover:to-primary-light/90 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl"
-                  disabled={isLoading}
+              {/* Form Content */}
+              <div className="relative bg-white/10 border border-white/10 rounded-2xl p-6">
+                <motion.form
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="space-y-5"
                 >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Sedang login...
-                    </>
-                  ) : (
-                    <>
-                      Login
-                    </>
-                  )}
-                </Button>
-              </motion.div>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-white/90 font-semibold text-sm">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="nama@email.com"
+                        disabled={isLoading}
+                        {...register('email')}
+                        className={`bg-white/10 border border-white/20 text-white placeholder-white/50 focus:border-blue-400 focus:ring-blue-400/20 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                      />
+                      {errors.email && (
+                        <motion.p
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="text-sm text-red-400 flex items-center gap-1"
+                        >
+                          {errors.email.message}
+                        </motion.p>
+                      )}
+                    </div>
 
-                <div className="flex flex-col space-y-4 text-center">
-                  <div className="text-sm text-gray-600">
-                    Belum punya akun?{' '}
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
-                      <Link
-                        href="/register"
-                        className="text-primary hover:text-primary/80 font-semibold transition-colors text-gradient-primary"
-                      >
-                        Daftar sekarang
-                      </Link>
-                    </motion.div>
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-white/90 font-semibold text-sm">Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="Masukkan password"
+                          disabled={isLoading}
+                          {...register('password')}
+                          className={`bg-white/10 border border-white/20 text-white placeholder-white/50 pr-12 focus:border-blue-400 focus:ring-blue-400/20 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                        />
+                        <motion.button
+                          type="button"
+                          className="absolute inset-y-0 right-0 pr-4 flex items-center text-white/50 hover:text-white transition-colors"
+                          onClick={() => setShowPassword(!showPassword)}
+                          disabled={isLoading}
+                          whileTap={{ scale: 0.95 }}
+                          whileHover={{ scale: 1.1 }}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </motion.button>
+                      </div>
+                      {errors.password && (
+                        <motion.p
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="text-sm text-red-400 flex items-center gap-1"
+                        >
+                          {errors.password.message}
+                        </motion.p>
+                      )}
+                    </div>
                   </div>
 
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
-                    <Link
-                      href="/forgot-password"
-                      className="text-sm text-gray-500 hover:text-primary transition-colors"
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
+                    className="w-full space-y-4"
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      Lupa password?
-                    </Link>
+                      <Button
+                        type="submit"
+                        className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold shadow-lg hover:shadow-blue-500/25 disabled:opacity-50"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Sedang login...
+                          </>
+                        ) : (
+                          'Login'
+                        )}
+                      </Button>
+                    </motion.div>
+
+                    <div className="flex flex-col space-y-3 text-center">
+                      <div className="text-sm text-white/70">
+                        Belum punya akun?{' '}
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
+                          <Link
+                            href="/register"
+                            className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+                          >
+                            Daftar sekarang
+                          </Link>
+                        </motion.div>
+                      </div>
+
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
+                        <Link
+                          href="/forgot-password"
+                          className="text-sm text-white/60 hover:text-white transition-colors"
+                        >
+                          Lupa password?
+                        </Link>
+                      </motion.div>
+                    </div>
                   </motion.div>
-                </div>
-              </motion.div>
-            </CardFooter>
-          </motion.form>
-        </Card>
-      </motion.div>
+                </motion.form>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
     </div>
   )
 }
