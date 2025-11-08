@@ -256,6 +256,24 @@ export function Footer() {
             </div>
           </motion.div>
         </div>
+
+        {/* Copyright Section */}
+        <div className="border-t border-white/5 mt-16 pt-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <p className="text-white/60 text-sm leading-relaxed">
+              Keperawatan Paliatif 2025 - Jurusan Keperawatan KI TK3 - Poltekkes Kemenkes Tanjung Karang
+            </p>
+            <p className="text-white/40 text-xs mt-2">
+              © 2025 PelitaCare. All rights reserved.
+            </p>
+          </motion.div>
+        </div>
       </div>
     </footer>
   )
