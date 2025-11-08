@@ -10,17 +10,17 @@
 ## 1. Peta Situs (Sitemap)
 
 ```
-├── /                          # Landing page / redirect ke dashboard
+├── /                          # Landing page - redirect ke /login atau /dashboard
 ├── /login                     # Halaman login perawat
 ├── /register                  # Halaman registrasi perawat baru
-├── /dashboard                 # Dashboard utama (protected)
-├── /pasien                    # Daftar semua pasien (protected)
-├── /pasien/[id]               # Detail pasien & riwayat (protected)
-├── /screening/new             # Form screening baru (protected)
-├── /screening/[id]/result     # Hasil screening (protected)
-├── /edukasi                   # Overview 8 penyakit (protected)
-├── /edukasi/[slug]            # Detail penyakit (protected)
-└── /profile                   # Profil perawat (protected)
+├── /dashboard                 # Dashboard overview screening & pasien (protected)
+├── /pasien                    # Daftar semua pasien yang pernah di-screening (protected)
+├── /pasien/[id]               # Detail pasien & riwayat screening lengkap (protected)
+├── /screening/new             # Form screening ESAS 9 pertanyaan (protected)
+├── /screening/[id]/result     # Hasil screening dengan rekomendasi intervensi (protected)
+├── /edukasi                   # Overview 8 penyakit terminal (protected)
+├── /edukasi/[slug]            # Detail penyakit (Alzheimer, Kanker Payudara, dll) (protected)
+└── /profile                   # Profil perawat & statistik (protected)
 ```
 
 ---
@@ -153,68 +153,71 @@
 
 ---
 
-### 2.4 Screening Flow
+### 2.4 Screening Flow ESAS
 
-#### `/screening/new` - New Screening Form
-**Purpose:** Form untuk screening pasien baru atau existing
+#### `/screening/new` - Form Screening ESAS
+**Purpose:** Form screening 9 pertanyaan ESAS untuk pasien
 **Access:** Protected
-**Layout:** Form layout dengan progress indicator
+**Layout:** Single-page form dengan patient data + ESAS questions
 
 **Components:**
-- **Form Header:** Title, progress bar
-- **Patient Selection:**
+- **Form Header:** Title "Screening ESAS", step indicator
+- **Patient Data Section:**
   - Option: "Pasien Baru" vs "Pasien Existing"
-  - If existing: Search patient dropdown
-  - If new: Patient data form
-- **Screening Form:**
-  - Multi-step form dengan sections
-  - Progress indicator (Step 1/5, etc.)
-  - Validation per step
-  - Auto-save draft functionality
-- **Form Sections (placeholder):**
-  - Section 1: Demographic Data
-  - Section 2: Symptoms Assessment
-  - Section 3: Physical Examination
-  - Section 4: Psychological Assessment
-  - Section 5: Social Support
+  - If existing: Search patient dropdown dari database
+  - If new: Form (Nama, Usia, Jenis Kelamin, Fasilitas Kesehatan)
+- **Identity Questions:**
+  - Nama, Umur, Jenis Kelamin (wajib diisi)
+- **ESAS Questions (9 Pertanyaan):**
+  1. Nyeri (Skor 0-10 + deskripsi)
+  2. Lelah/Kekurangan Tenaga (Skor 0-10 + deskripsi)
+  3. Kantuk/Gangguan Tidur (Skor 0-10 + deskripsi)
+  4. Mual/Nausea (Skor 0-10 + deskripsi)
+  5. Nafsu Makan (Skor 0-10 + deskripsi)
+  6. Sesak/Pola Napas (Skor 0-10 + deskripsi)
+  7. Sedih/Keputusasaan (Skor 0-10 + deskripsi)
+  8. Cemas/Ansietas (Skor 0-10 + deskripsi)
+  9. Perasaan Keseluruhan (Skor 0-10 + deskripsi)
 - **Form Actions:**
-  - Previous/Next buttons
   - Save Draft button
-  - Submit button (final step)
+  - Submit Screening button
+  - Cancel button
 
-**Data Required:**
-- Screening questions dari client
-- Validation rules
-- Form state management
+**Validation Rules:**
+- All identity fields required
+- All 9 ESAS questions required (0-10 only)
+- Score descriptions shown for reference
 
-#### `/screening/[id]/result` - Screening Result
-**Purpose:** Hasil screening dan rekomendasi
+#### `/screening/[id]/result` - Hasil Screening & Rekomendasi
+**Purpose:** Hasil screening ESAS dengan rekomendasi intervensi
 **Access:** Protected
-**Layout:** Report layout
+**Layout:** Results dashboard dengan action buttons
 
 **Components:**
-- **Result Header:** Patient info, screening date, risk score
-- **Risk Assessment Summary:**
-  - Overall risk level (Low/Medium/High)
-  - Score visualization
-  - Key findings summary
-- **Recommendations Section:**
-  - List of interventions
-  - Priority levels
-  - Next steps
-- **Detailed Results:**
-  - Breakdown per assessment category
-  - Comparison dengan previous screenings
+- **Result Header:** Patient info, screening date, timestamp
+- **ESAS Scores Summary:**
+  - Visual representation dari 9 skor (bar chart/radar)
+  - Highlight skor tertinggi
+  - Overall risk assessment
+- **Rule Engine Results:**
+  - Diagnosa keperawatan berdasarkan skor tertinggi
+  - Prioritas jika ada skor sama
+  - Recommendation level (Low/Medium/High)
+- **Intervensi Recommendations:**
+  - Link ke intervensi spesifik dari dokumen INTERVENSI.md
+  - Step-by-step terapi instructions
+  - Referensi ilmiah untuk setiap intervensi
 - **Action Buttons:**
-  - "Export PDF"
-  - "Share Results"
-  - "New Screening"
-  - "Back to Patient"
+  - "Export PDF" (cetak hasil lengkap)
+  - "Screening Baru" (untuk pasien yang sama)
+  - "Kembali ke Pasien"
+  - "Lihat Riwayat Pasien"
 
-**Data Required:**
-- Screening result data
-- Recommendation logic
-- PDF generation functionality
+**Data Processing:**
+- Apply RULES_SKRINING.md logic
+- Map highest score to specific intervention
+- Handle ties with priority system
+- Store complete results in database
 
 ---
 
@@ -233,23 +236,37 @@
 - **Search Bar:** Search diseases
 - **Category Filter:** Filter berdasarkan kategori (jika ada)
 
-#### `/edukasi/[slug]` - Disease Detail
-**Purpose:** Detail informasi satu penyakit
+#### `/edukasi/[slug]` - Detail Penyakit Terminal
+**Purpose:** Detail informasi lengkap satu penyakit terminal dari EDUKASI_8_PENYAKIT_TERMINAL.md
 **Access:** Protected
-**Layout:** Article layout
+**Layout:** Article layout dengan medical design
+
+**Available Diseases (8):**
+- `/edukasi/alzheimer` - Alzheimer Disease
+- `/edukasi/kanker-payudara` - Kanker Payudara
+- `/edukasi/gagal-ginjal-kronik` - Gagal Ginjal Kronik (CKD)
+- `/edukasi/diabetes` - Diabetes Melitus
+- `/edukasi/gagal-jantung` - Gagal Jantung
+- `/edukasi/hiv-aids` - HIV dan AIDS
+- `/edukasi/ppok` - Penyakit Paru Obstruktif Kronik (PPOK)
+- `/edukasi/stroke` - Stroke
 
 **Components:**
-- **Disease Header:** Name, category, overview
-- **Table of Contents:** Sticky navigation
+- **Disease Header:** Name, category, brief overview
+- **Table of Contents:** Sticky navigation (desktop)
 - **Content Sections:**
-  - Definisi
-  - Gejala
-  - Stadium
-  - Penanganan Paliatif
-  - Prognosis
-  - Resources
-- **Related Diseases:** Links ke diseases lain
-- **Share/Print:** Print-friendly version
+  - Definisi (penjelasan medis)
+  - Tanda dan Gejala (detailed symptoms)
+  - Penyebab (etiology)
+  - Faktor Risiko (risk factors - internal/external)
+  - Referensi Ilmiah (scientific references)
+- **Navigation:**
+  - Previous/Next disease buttons
+  - Back to overview
+- **Print Friendly:** Clean layout untuk PDF export
+- **Search:** Quick search dalam content
+
+**Data Source:** Static content dari JSON `/src/data/edukasi-penyakit-terminal.json`
 
 ---
 

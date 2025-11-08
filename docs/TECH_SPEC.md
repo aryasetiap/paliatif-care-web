@@ -299,7 +299,7 @@ Menyimpan data master pasien yang pernah di-screening.
 
 ### Tabel: `screenings`
 
-Menyimpan setiap data hasil skrining yang di-submit oleh perawat.
+Menyimpan setiap data hasil skrining ESAS yang di-submit oleh perawat.
 
 | Kolom            | Tipe       | Constraints                            | Catatan                                |
 | ---------------- | ---------- | -------------------------------------- | -------------------------------------- |
@@ -308,10 +308,53 @@ Menyimpan setiap data hasil skrining yang di-submit oleh perawat.
 | patient_id       | uuid       | Foreign Key → patients.id              | Pasien yang diskrining (relasi)        |
 | screening_type   | varchar(20)| NOT NULL, DEFAULT 'initial'           | Tipe: 'initial', 'follow_up'           |
 | status           | varchar(20)| NOT NULL, DEFAULT 'completed'         | Status: 'draft', 'completed', 'cancelled' |
-| screening_data   | jsonb      | NOT NULL                               | Input form (pertanyaan & jawaban)      |
-| recommendation   | jsonb      | NOT NULL                               | Output Rule Engine (rekomendasi, skor) |
+| esas_data        | jsonb      | NOT NULL                               | 9 pertanyaan ESAS + jawaban (0-10)     |
+| recommendation   | jsonb      | NOT NULL                               | Rule Engine output (diagnosa, intervensi) |
+| highest_score    | integer    | NOT NULL, CHECK (highest_score >= 0)  | Skor tertinggi dari 9 pertanyaan        |
+| primary_question | integer    | NOT NULL, CHECK (primary_question BETWEEN 1 AND 9) | Nomor pertanyaan dengan skor tertinggi |
+| risk_level       | varchar(20)| NOT NULL                               | 'low', 'medium', 'high', 'critical'    |
 | created_at       | timestampz | default now()                          | Waktu skrining dilakukan               |
 | updated_at       | timestampz | default now()                          | Waktu terakhir update                  |
+
+**Struktur JSON `esas_data`:**
+```json
+{
+  "identity": {
+    "name": "Nama Pasien",
+    "age": 65,
+    "gender": "L",
+    "facility_name": "Rumah Sakit Umum"
+  },
+  "questions": {
+    "1": {"score": 7, "text": "Nyeri"},
+    "2": {"score": 5, "text": "Lelah/Kekurangan Tenaga"},
+    "3": {"score": 8, "text": "Kantuk/Gangguan Tidur"},
+    "4": {"score": 3, "text": "Mual"},
+    "5": {"score": 6, "text": "Nafsu Makan"},
+    "6": {"score": 9, "text": "Sesak"},
+    "7": {"score": 4, "text": "Sedih"},
+    "8": {"score": 2, "text": "Cemas"},
+    "9": {"score": 5, "text": "Perasaan Keseluruhan"}
+  }
+}
+```
+
+**Struktur JSON `recommendation`:**
+```json
+{
+  "diagnosis": "3. Diagnosa: Pola Napas Tidak Efektif",
+  "intervention_steps": [
+    "Pastikan ruangan bersih, tenang, dan bebas asap/debu.",
+    "Duduk setengah tegak dengan dua bantal di belakang punggung.",
+    "Mulai latihan napas dalam: tarik napas perlahan lewat hidung (4 detik), tahan (7 detik), hembuskan pelan lewat mulut (8 detik)."
+  ],
+  "references": [
+    "Kushariyadi, Ufaidah, F. S., Rondhianto, & Candra, E. Y. S. (2023). Combination Therapy Slow Deep Breathing and Acupressure to Overcome Ineffective Breathing Pattern Nursing Problems: A Case Study."
+  ],
+  "action_required": "Hubungi/Temukan fasilitas kesehatan terdekat untuk evaluasi lebih lanjut",
+  "priority": 1
+}
+```
 
 #### Kebijakan RLS (Row Level Security)
 
@@ -334,16 +377,16 @@ Harus diaktifkan untuk semua tabel.
 
 #### Konten Edukasi
 
-Materi 8 Penyakit Terminal **tidak disimpan di database**. Konten statis (.mdx/.tsx) di repositori Next.js (`/app/edukasi/...`) untuk performa SSG terbaik.
+Materi 8 Penyakit Terminal **tidak disimpan di database**. Konten statis dari JSON (`/src/data/edukasi-penyakit-terminal.json`) untuk performa terbaik dan kemudahan maintenance.
 
 ---
 
 ## 5. API & Serverless Logic (Supabase Edge Functions)
 
-Hanya satu Edge Function utama.
+### Edge Function: `process-esas-screening`
 
-- **Function:** `process-screening`
-- **Endpoint:** `/functions/v1/process-screening`
+- **Function:** `process-esas-screening`
+- **Endpoint:** `/functions/v1/process-esas-screening`
 - **Metode:** POST
 - **Auth:** Wajib (verifikasi JWT dari header Authorization)
 
@@ -356,33 +399,90 @@ Hanya satu Edge Function utama.
   "patient_gender": "L",
   "facility_name": "Rumah Sakit Umum",
   "screening_type": "initial",
-  "screening_data": {
-    "question_1": "answer_a",
-    "question_2": ["choice_b", "choice_c"],
-    "question_3": 5
+  "esas_data": {
+    "questions": {
+      "1": 7,
+      "2": 5,
+      "3": 8,
+      "4": 3,
+      "5": 6,
+      "6": 9,
+      "7": 4,
+      "8": 2,
+      "9": 5
+    }
   }
 }
 ```
 
-**Logika Internal (Rule Engine):**
+**Logika Internal (ESAS Rule Engine):**
 
-- Validasi input body (zod jika memungkinkan di Deno)
-- Ambil user_id dari JWT
-- Muat logika/aturan (rules) dari klien (hard-code TypeScript)
-- Proses `screening_data` → hasilkan `recommendation` (JSON)
-- Buat objek skrining baru
-- Simpan ke database: `supabase.from('screenings').insert(...)`
-- Tangani error dengan try...catch
+1. **Validasi Input:**
+   - Validasi semua 9 questions (nilai 0-10)
+   - Validasi patient data required fields
+
+2. **Tentukan Skor Tertinggi:**
+   - Cari nilai maksimum dari 9 pertanyaan
+   - Catat nomor pertanyaan dengan skor tertinggi
+
+3. **Handle Ties (Skor Sama):**
+   - Gunakan prioritas dari RULES_SKRINING.md:
+     - Prioritas 1: Pertanyaan 6 (Sesak)
+     - Prioritas 2: Pertanyaan 1 (Nyeri)
+     - Prioritas 3: Pertanyaan 4 (Mual)
+     - Prioritas 4: Pertanyaan 5 (Nafsu Makan)
+     - Prioritas 5: Pertanyaan 3 (Kantuk)
+     - Prioritas 6: Pertanyaan 2 (Lelah)
+     - Prioritas 7: Pertanyaan 8 (Cemas)
+     - Prioritas 8: Pertanyaan 7 (Sedih)
+     - Prioritas 9: Pertanyaan 9 (Perasaan)
+
+4. **Tentukan Risk Level:**
+   - Skor 1-3: Low
+   - Skor 4-6: Medium
+   - Skor 7-10: High
+
+5. **Map ke Intervensi:**
+   - Load data dari INTERVENSI.md
+   - Pilih intervensi berdasarkan pertanyaan utama
+   - Generate rekomendasi lengkap
+
+6. **Simpan ke Database:**
+   - Ambil user_id dari JWT
+   - Simpan complete screening data
+   - Return screening ID dan results
 
 **Output (Sukses - 200):**
 
 ```json
 {
   "new_screening_id": "uuid-baru-dari-db",
+  "highest_score": 9,
+  "primary_question": 6,
+  "risk_level": "high",
   "recommendation": {
-    "score": 85,
-    "summary": "Pasien berisiko tinggi...",
-    "interventions": ["Intervensi A...", "Intervensi B..."]
+    "diagnosis": "3. Diagnosa: Pola Napas Tidak Efektif",
+    "intervention_steps": [
+      "Pastikan ruangan bersih, tenang, dan bebas asap/debu.",
+      "Duduk setengah tegak dengan dua bantal di belakang punggung.",
+      "Mulai latihan napas dalam: tarik napas perlahan lewat hidung (4 detik), tahan (7 detik), hembuskan pelan lewat mulut (8 detik)."
+    ],
+    "references": [
+      "Kushariyadi, Ufaidah, F. S., Rondhianto, & Candra, E. Y. S. (2023). Combination Therapy Slow Deep Breathing and Acupressure to Overcome Ineffective Breathing Pattern Nursing Problems: A Case Study."
+    ],
+    "action_required": "Segera rujuk ke Fasilitas Kesehatan atau Profesional untuk Penanganan Segera",
+    "priority": 1
+  },
+  "all_scores": {
+    "1": {"score": 7, "text": "Nyeri"},
+    "2": {"score": 5, "text": "Lelah/Kekurangan Tenaga"},
+    "3": {"score": 8, "text": "Kantuk/Gangguan Tidur"},
+    "4": {"score": 3, "text": "Mual"},
+    "5": {"score": 6, "text": "Nafsu Makan"},
+    "6": {"score": 9, "text": "Sesak"},
+    "7": {"score": 4, "text": "Sedih"},
+    "8": {"score": 2, "text": "Cemas"},
+    "9": {"score": 5, "text": "Perasaan Keseluruhan"}
   }
 }
 ```
