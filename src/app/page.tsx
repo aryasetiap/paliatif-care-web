@@ -399,7 +399,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 30 }}
           animate={leftSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.8, delay: 1.5, ease: 'easeOut' }}
-          className="px-36 mt-8 lg:mt-10 mb-12 grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6"
+          className="px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 mt-8 lg:mt-10 mb-12 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
         >
           {stats.map((stat, index) => {
             const Icon = stat.icon
@@ -413,10 +413,10 @@ export default function Home() {
               >
                 <div className="group relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 to-purple-500/15 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                  <div className="relative bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all duration-300">
-                    <Icon className="h-6 w-6 mx-auto mb-2 text-blue-400 group-hover:scale-110 transition-transform duration-300" />
-                    <div className="text-xl font-bold text-white mb-1">{stat.value}</div>
-                    <div className="text-xs text-white/70">{stat.label}</div>
+                  <div className="relative bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-3 sm:p-4 hover:bg-white/10 transition-all duration-300">
+                    <Icon className="h-5 w-5 sm:h-6 sm:w-6 mx-auto mb-2 text-blue-400 group-hover:scale-110 transition-transform duration-300" />
+                    <div className="text-lg sm:text-xl font-bold text-white mb-1">{stat.value}</div>
+                    <div className="text-xs sm:text-sm text-white/70">{stat.label}</div>
                   </div>
                 </div>
               </motion.div>
