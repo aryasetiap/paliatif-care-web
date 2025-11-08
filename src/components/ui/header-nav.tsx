@@ -104,7 +104,7 @@ export default function HeaderNav() {
             </a>
 
             {/* Edukasi Link */}
-            <a
+            <Link
               href="/edukasi"
               className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/10 ${
                 isScrolled
@@ -113,7 +113,7 @@ export default function HeaderNav() {
               }`}
             >
               Edukasi
-            </a>
+            </Link>
 
             {/* Skrining Link */}
             <a
@@ -217,7 +217,7 @@ export default function HeaderNav() {
               </a>
 
               {/* Edukasi Link */}
-              <a
+              <Link
                 href="/edukasi"
                 className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
@@ -226,7 +226,7 @@ export default function HeaderNav() {
                   <BookOpen className="h-4 w-4 text-green-400" />
                 </div>
                 <span>Edukasi</span>
-              </a>
+              </Link>
 
               {/* Skrining Link */}
               <a
