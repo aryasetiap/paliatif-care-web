@@ -55,17 +55,17 @@ const footerSections = {
 
 export function Footer() {
   return (
-    <footer className="relative bg-sky-800 border-t border-white/10">
+    <footer className="relative bg-gradient-to-br from-sky-700 via-sky-800 to-blue-900 border-t border-sky-600/30">
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-sky-900/30 via-transparent to-transparent" />
 
       {/* Background Pattern */}
       <div
-        className="absolute inset-0 opacity-10"
+        className="absolute inset-0 opacity-5"
         style={{
           backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
+            linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)
           `,
           backgroundSize: '50px 50px',
         }}
@@ -184,17 +184,17 @@ export function Footer() {
                 >
                   <Link
                     href={item.href}
-                    className="block p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-blue-400/30 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-blue-500/10"
+                    className="block p-4 rounded-xl bg-white/8 border border-white/15 hover:bg-white/15 hover:border-blue-400/40 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-blue-500/20"
                   >
                     <div className="flex items-start space-x-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-400/20">
-                        <BookOpen className="h-5 w-5 text-blue-400" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/25 to-blue-600/25 border border-blue-400/30">
+                        <BookOpen className="h-5 w-5 text-blue-300" />
                       </div>
                       <div className="flex-1">
                         <div className="text-white font-semibold mb-1 group-hover:text-blue-300 transition-colors duration-200">
                           {item.name}
                         </div>
-                        <div className="text-white/50 text-sm leading-relaxed">
+                        <div className="text-white/60 text-sm leading-relaxed">
                           {item.description}
                         </div>
                       </div>
@@ -224,7 +224,7 @@ export function Footer() {
             </div>
 
             <div className="space-y-6">
-              <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl p-6 border border-white/10 backdrop-blur-sm">
+              <div className="bg-gradient-to-br from-white/10 to-white/5 rounded-2xl p-6 border border-white/20 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
                     1000+
@@ -239,7 +239,7 @@ export function Footer() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-white/10 backdrop-blur-sm">
+              <div className="bg-gradient-to-br from-white/10 to-white/5 rounded-2xl p-6 border border-white/20 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
                     5000+
@@ -258,7 +258,7 @@ export function Footer() {
         </div>
 
         {/* Copyright Section */}
-        <div className="border-t border-white/5 mt-16 pt-8">
+        <div className="border-t border-white/10 mt-16 pt-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -266,10 +266,10 @@ export function Footer() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <p className="text-white/60 text-sm leading-relaxed">
+            <p className="text-white/70 text-sm leading-relaxed">
               Keperawatan Paliatif 2025 - Jurusan Keperawatan KI TK3 - Poltekkes Kemenkes Tanjung Karang
             </p>
-            <p className="text-white/40 text-xs mt-2">
+            <p className="text-white/50 text-xs mt-2">
               © 2025 PelitaCare. All rights reserved.
             </p>
           </motion.div>
