@@ -402,7 +402,7 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
                         {symptomGroup.items.map((symptom, symptomIndex) => (
                           <div key={symptomIndex} className="flex items-start gap-3">
                             <div className="flex-shrink-0 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center mt-0.5">
-                              <div className="w-2 h-2 bg-sky-900 rounded-full"></div>
+                              <div className="w-2 h-2 bg-white rounded-full"></div>
                             </div>
                             <p className="text-sky-700 leading-relaxed">{symptom}</p>
                           </div>
@@ -476,7 +476,7 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
                     {disease.causes.map((cause, index) => (
                       <div key={index} className="flex items-start gap-3">
                         <div className="flex-shrink-0 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center mt-0.5">
-                          <div className="w-2 h-2 bg-sky-900 rounded-full"></div>
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
                         </div>
                         <p className="text-sky-700 leading-relaxed">{cause}</p>
                       </div>
@@ -564,7 +564,7 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
                           {riskGroup.items.map((factor, factorIndex) => (
                             <div key={factorIndex} className="flex items-start gap-3">
                               <div className="flex-shrink-0 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center mt-0.5">
-                                <div className="w-2 h-2 bg-sky-900 rounded-full"></div>
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
                               </div>
                               <p className="text-sky-700 leading-relaxed">{factor}</p>
                             </div>
@@ -640,7 +640,7 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
                       {disease.references.map((reference, index) => (
                         <div key={index} className="flex items-start gap-3">
                           <div className="flex-shrink-0 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mt-0.5">
-                            <div className="w-2 h-2 bg-sky-900 rounded-full"></div>
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
                           </div>
                           <p className="text-sky-700 leading-relaxed text-sm">{reference}</p>
                         </div>
