@@ -153,7 +153,7 @@ export default function Home() {
               initial={{ opacity: 0, x: -50 }}
               animate={leftSectionInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
-              className="text-gray-800 lg:text-left text-center gpu-accelerated"
+              className="text-sky-900 lg:text-left text-center gpu-accelerated"
             >
               {/* Modern Healthcare Badge */}
               <motion.div
@@ -166,7 +166,7 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
                   <div className="relative bg-white/80 backdrop-blur-md border border-blue-200 rounded-full px-6 py-3 flex items-center space-x-2 shadow-lg">
                     <Heart className="h-5 w-5 text-red-500" />
-                    <span className="text-sm font-medium text-gray-700">Healthcare Excellence</span>
+                    <span className="text-sm font-medium text-sky-800">Healthcare Excellence</span>
                   </div>
                 </div>
               </motion.div>
@@ -179,7 +179,7 @@ export default function Home() {
                   transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
                   className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight"
                 >
-                  <span className="text-gray-800">Pelita</span>
+                  <span className="text-sky-900">Pelita</span>
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                     Care
                   </span>
@@ -191,7 +191,7 @@ export default function Home() {
                   transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
                   className="space-y-4"
                 >
-                  <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg mx-auto lg:mx-0">
+                  <p className="text-lg md:text-xl text-sky-700 leading-relaxed max-w-lg mx-auto lg:mx-0">
                     Skrining ini membantu mengenali kebutuhan fisik, emosional, dan sosial Anda
                     secara menyeluruh. Dengan memahami kondisi secara lebih dalam, Anda dapat
                     melakukan perawatan yang tepat untuk menjaga kenyamanan dan kualitas hidup
@@ -224,7 +224,7 @@ export default function Home() {
 
                 <Button
                   size="lg"
-                  className="relative bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 shadow-lg hover:shadow-white/10 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group"
+                  className="relative bg-sky-800/20 backdrop-blur-md border border-sky-600/30 text-white hover:bg-sky-800/30 shadow-lg hover:shadow-sky-800/20 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group"
                   asChild
                 >
                   <Link href="/edukasi">
@@ -257,7 +257,7 @@ export default function Home() {
                   className="relative"
                 >
                   <div className="absolute -inset-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-xl opacity-20 animate-pulse"></div>
-                  <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-1.5">
+                  <div className="relative bg-sky-800/10 backdrop-blur-md border border-sky-600/20 rounded-2xl p-1.5">
                     <Image
                       src="/assets/hero-image.jpg"
                       alt="Healthcare Professional with Patient"
@@ -323,12 +323,12 @@ export default function Home() {
             </motion.div>
 
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6 tracking-tight leading-tight">
-              <span className="text-gray-800">Fitur</span>
+              <span className="text-sky-900">Fitur</span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
                 Unggulan
               </span>
             </h2>
-            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-sky-700 max-w-3xl mx-auto leading-relaxed">
               Platform terintegrasi dengan teknologi terkini untuk mendukung pengguna memberikan
               perawatan paliatif terbaik dan berstandar internasional.
             </p>
@@ -352,7 +352,7 @@ export default function Home() {
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
 
                     {/* Card Content */}
-                    <div className="relative h-full bg-white/90 backdrop-blur-lg border border-blue-200 rounded-2xl p-6 hover:bg-white hover:shadow-xl transition-all duration-500 hover:scale-105">
+                    <div className="relative h-full bg-white/95 backdrop-blur-lg border border-sky-300 rounded-2xl p-6 hover:bg-white hover:shadow-xl hover:shadow-sky-500/20 transition-all duration-500 hover:scale-105">
                       {/* Icon Container */}
                       <motion.div
                         whileHover={{ scale: 1.05, rotate: 3 }}
@@ -363,12 +363,12 @@ export default function Home() {
                       </motion.div>
 
                       {/* Title */}
-                      <h3 className="text-xl font-bold text-gray-800 mb-3 text-center group-hover:text-blue-600 transition-colors duration-300">
+                      <h3 className="text-xl font-bold text-sky-900 mb-3 text-center group-hover:text-blue-600 transition-colors duration-300">
                         {feature.title}
                       </h3>
 
                       {/* Description */}
-                      <p className="text-gray-600 leading-relaxed mb-6 text-center">
+                      <p className="text-sky-700 leading-relaxed mb-6 text-center">
                         {feature.description}
                       </p>
 
@@ -412,10 +412,10 @@ export default function Home() {
               >
                 <div className="group relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 to-purple-500/15 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                  <div className="relative bg-white/80 backdrop-blur-lg border border-blue-200 rounded-xl p-3 sm:p-4 hover:bg-white hover:shadow-lg transition-all duration-300">
+                  <div className="relative bg-white/85 backdrop-blur-lg border border-sky-300 rounded-xl p-3 sm:p-4 hover:bg-white hover:shadow-lg hover:shadow-sky-500/20 transition-all duration-300">
                     <Icon className="h-5 w-5 sm:h-6 sm:w-6 mx-auto mb-2 text-blue-600 group-hover:scale-110 transition-transform duration-300" />
-                    <div className="text-lg sm:text-xl font-bold text-gray-800 mb-1">{stat.value}</div>
-                    <div className="text-xs sm:text-sm text-gray-600">{stat.label}</div>
+                    <div className="text-lg sm:text-xl font-bold text-sky-900 mb-1">{stat.value}</div>
+                    <div className="text-xs sm:text-sm text-sky-700">{stat.label}</div>
                   </div>
                 </div>
               </motion.div>
@@ -443,12 +443,12 @@ export default function Home() {
             {/* Section Header */}
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-6">
-                <span className="text-gray-800">Tentang</span>
+                <span className="text-sky-900">Tentang</span>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
                   Pelita Care
                 </span>
               </h2>
-              <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg md:text-xl text-sky-700 max-w-3xl mx-auto leading-relaxed">
                 Platform inovatif yang mengubah cara perawatan paliatif disampaikan di Indonesia,
                 menggabungkan teknologi modern dengan sentuhan kemanusiaan.
               </p>
@@ -469,7 +469,7 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl blur-xl opacity-20"></div>
 
                   {/* Card Content */}
-                  <div className="relative bg-white/90 backdrop-blur-md border border-blue-200 rounded-2xl p-6 md:p-8 text-center shadow-lg">
+                  <div className="relative bg-white/95 backdrop-blur-md border border-sky-300 rounded-2xl p-6 md:p-8 text-center shadow-lg">
                     {/* Icon with Animation */}
                     <motion.div
                       animate={{
@@ -490,21 +490,21 @@ export default function Home() {
                     </motion.div>
 
                     {/* Card Title */}
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">Transformasi Digital</h3>
+                    <h3 className="text-xl font-bold text-sky-900 mb-4">Transformasi Digital</h3>
 
                     {/* Key Stats */}
                     <div className="space-y-3 mb-6">
-                      <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                        <span className="text-gray-600 text-sm">Pasien Terlayani</span>
-                        <span className="text-gray-800 font-semibold">5000+</span>
+                      <div className="flex justify-between items-center py-2 border-b border-sky-200">
+                        <span className="text-sky-600 text-sm">Pasien Terlayani</span>
+                        <span className="text-sky-900 font-semibold">5000+</span>
                       </div>
-                      <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                        <span className="text-gray-600 text-sm">Terapi Pilihan</span>
-                        <span className="text-gray-800 font-semibold">20+</span>
+                      <div className="flex justify-between items-center py-2 border-b border-sky-200">
+                        <span className="text-sky-600 text-sm">Terapi Pilihan</span>
+                        <span className="text-sky-900 font-semibold">20+</span>
                       </div>
                       <div className="flex justify-between items-center py-2">
-                        <span className="text-gray-600 text-sm">Penyakit Terminal</span>
-                        <span className="text-gray-800 font-semibold">8</span>
+                        <span className="text-sky-600 text-sm">Penyakit Terminal</span>
+                        <span className="text-sky-900 font-semibold">8</span>
                       </div>
                     </div>
 
@@ -533,10 +533,10 @@ export default function Home() {
                 <div className="space-y-6">
                   {/* Main Description */}
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-800 mb-4">
+                    <h3 className="text-2xl font-bold text-sky-900 mb-4">
                       Revolusi Perawatan Paliatif Indonesia
                     </h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-sky-700 leading-relaxed">
                       Skrining ini membantu mengenali kebutuhan fisik, emosional, dan sosial Anda
                       secara menyeluruh. Dengan memahami kondisi secara lebih dalam, Anda dapat
                       melakukan perawatan yang tepat untuk menjaga kenyamanan dan kualitas hidup
@@ -545,9 +545,9 @@ export default function Home() {
                   </div>
 
                   {/* Mission Statement */}
-                  <div className="bg-blue-100 border border-blue-200 rounded-xl p-4">
-                    <h4 className="text-blue-800 font-semibold mb-2">Misi Kami</h4>
-                    <p className="text-blue-700 text-sm leading-relaxed">
+                  <div className="bg-sky-100 border border-sky-200 rounded-xl p-4">
+                    <h4 className="text-sky-800 font-semibold mb-2">Misi Kami</h4>
+                    <p className="text-sky-700 text-sm leading-relaxed">
                       Memberikan akses perawatan paliatif berkualitas tinggi kepada semua pasien
                       yang membutuhkan, dengan dukungan teknologi yang memudahkan pengguna
                       memberikan perawatan terbaik dan berkesinambungan.

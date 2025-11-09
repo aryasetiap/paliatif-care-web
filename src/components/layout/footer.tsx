@@ -55,7 +55,7 @@ const footerSections = {
 
 export function Footer() {
   return (
-    <footer className="relative bg-gradient-to-br from-sky-700 via-sky-800 to-blue-900 border-t border-sky-600/30">
+    <footer className="relative bg-gradient-to-br from-sky-800 via-sky-900 to-blue-950 border-t border-sky-700/40">
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-sky-900/30 via-transparent to-transparent" />
 
@@ -111,14 +111,14 @@ export function Footer() {
               </h5>
 
               <div className="flex items-start space-x-4 group">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-400/20 group-hover:border-blue-400/40 transition-all duration-300">
-                  <Mail className="h-5 w-5 text-blue-400" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400/20 to-sky-500/20 border border-sky-400/20 group-hover:border-sky-400/40 transition-all duration-300">
+                  <Mail className="h-5 w-5 text-sky-300" />
                 </div>
                 <div className="flex-1">
                   <div className="text-white font-medium text-sm mb-1">Email</div>
                   <a
                     href="mailto:info@peliacare.id"
-                    className="text-white/60 hover:text-blue-400 transition-colors duration-200 text-sm"
+                    className="text-white/60 hover:text-sky-300 transition-colors duration-200 text-sm"
                   >
                     info@peliacare.id
                   </a>
@@ -143,8 +143,8 @@ export function Footer() {
               </div>
 
               <div className="flex items-start space-x-4 group">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-400/20 group-hover:border-purple-400/40 transition-all duration-300">
-                  <MapPin className="h-5 w-5 text-purple-400" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400/20 to-sky-500/20 border border-sky-400/20 group-hover:border-sky-400/40 transition-all duration-300">
+                  <MapPin className="h-5 w-5 text-sky-300" />
                 </div>
                 <div className="flex-1">
                   <div className="text-white font-medium text-sm mb-1">Lokasi</div>
@@ -187,11 +187,11 @@ export function Footer() {
                     className="block p-4 rounded-xl bg-white/8 border border-white/15 hover:bg-white/15 hover:border-blue-400/40 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-blue-500/20"
                   >
                     <div className="flex items-start space-x-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/25 to-blue-600/25 border border-blue-400/30">
-                        <BookOpen className="h-5 w-5 text-blue-300" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500/25 to-sky-600/25 border border-sky-400/30">
+                        <BookOpen className="h-5 w-5 text-sky-300" />
                       </div>
                       <div className="flex-1">
-                        <div className="text-white font-semibold mb-1 group-hover:text-blue-300 transition-colors duration-200">
+                        <div className="text-white font-semibold mb-1 group-hover:text-sky-300 transition-colors duration-200">
                           {item.name}
                         </div>
                         <div className="text-white/60 text-sm leading-relaxed">
@@ -229,8 +229,8 @@ export function Footer() {
                   <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
                     1000+
                   </div>
-                  <div className="h-12 w-12 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-xl flex items-center justify-center border border-blue-400/20">
-                    <Users className="h-6 w-6 text-blue-400" />
+                  <div className="h-12 w-12 bg-gradient-to-br from-sky-500/20 to-sky-600/20 rounded-xl flex items-center justify-center border border-sky-400/20">
+                    <Users className="h-6 w-6 text-sky-300" />
                   </div>
                 </div>
                 <div className="text-white/80 font-medium">Pengguna</div>
@@ -244,8 +244,8 @@ export function Footer() {
                   <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
                     5000+
                   </div>
-                  <div className="h-12 w-12 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-xl flex items-center justify-center border border-purple-400/20">
-                    <Heart className="h-6 w-6 text-purple-400" />
+                  <div className="h-12 w-12 bg-gradient-to-br from-sky-500/20 to-sky-600/20 rounded-xl flex items-center justify-center border border-sky-400/20">
+                    <Heart className="h-6 w-6 text-sky-300" />
                   </div>
                 </div>
                 <div className="text-white/80 font-medium">Pasien Terlayani</div>
