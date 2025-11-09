@@ -77,30 +77,16 @@ export default function HeaderNav() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-2 ml-auto">
-            {/* Fitur Link */}
+            {/* Skrining Link */}
             <a
-              href="#features"
-              onClick={(e) => handleAnchorLinkClick(e, '#features')}
+              href="/screening/new"
               className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/10 ${
                 isScrolled
                   ? 'text-white/80 hover:text-white hover:bg-white/10'
                   : 'text-white/90 hover:text-white hover:bg-white/10'
               }`}
             >
-              Fitur
-            </a>
-
-            {/* Tentang Link */}
-            <a
-              href="#about"
-              onClick={(e) => handleAnchorLinkClick(e, '#about')}
-              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/10 ${
-                isScrolled
-                  ? 'text-white/80 hover:text-white hover:bg-white/10'
-                  : 'text-white/90 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              Tentang
+              Skrining
             </a>
 
             {/* Edukasi Link */}
@@ -115,16 +101,30 @@ export default function HeaderNav() {
               Edukasi
             </Link>
 
-            {/* Skrining Link */}
+            {/* Fitur Link */}
             <a
-              href="/screening/new"
+              href="#features"
+              onClick={(e) => handleAnchorLinkClick(e, '#features')}
               className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/10 ${
                 isScrolled
                   ? 'text-white/80 hover:text-white hover:bg-white/10'
                   : 'text-white/90 hover:text-white hover:bg-white/10'
               }`}
             >
-              Skrining
+              Fitur Layanan
+            </a>
+
+            {/* Tentang Link */}
+            <a
+              href="#about"
+              onClick={(e) => handleAnchorLinkClick(e, '#about')}
+              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/10 ${
+                isScrolled
+                  ? 'text-white/80 hover:text-white hover:bg-white/10'
+                  : 'text-white/90 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Tentang
             </a>
 
             {/* Login Button */}
@@ -155,11 +155,7 @@ export default function HeaderNav() {
               className="md:hidden transition-all duration-300 rounded-xl group text-white hover:bg-white/20 backdrop-blur-md"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              {isMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
           </motion.div>
         </div>
@@ -173,20 +169,43 @@ export default function HeaderNav() {
           transition={{ duration: 0.3, ease: 'easeOut' }}
           className="md:hidden overflow-hidden"
         >
-          <div className={`mt-3 rounded-xl border border-white/10 transition-all duration-300 ${
-            isScrolled
-              ? 'bg-slate-900/95 backdrop-blur-md'
-              : 'bg-slate-900/95 backdrop-blur-md'
-          }`}
-          style={{
-            backgroundImage: `
+          <div
+            className={`mt-3 rounded-xl border border-white/10 transition-all duration-300 ${
+              isScrolled ? 'bg-slate-900/95 backdrop-blur-md' : 'bg-slate-900/95 backdrop-blur-md'
+            }`}
+            style={{
+              backgroundImage: `
               linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
               linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
             `,
-            backgroundSize: '50px 50px',
-          }}
+              backgroundSize: '50px 50px',
+            }}
           >
             <nav className="p-4 space-y-2">
+              {/* Skrining Link */}
+              <a
+                href="/screening/new"
+                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-amber-500/20 border border-amber-400/30">
+                  <FileText className="h-4 w-4 text-amber-400" />
+                </div>
+                <span>Skrining</span>
+              </a>
+
+              {/* Edukasi Link */}
+              <Link
+                href="/edukasi"
+                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-green-500/20 border border-green-400/30">
+                  <BookOpen className="h-4 w-4 text-green-400" />
+                </div>
+                <span>Edukasi</span>
+              </Link>
+
               <a
                 href="#features"
                 className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
@@ -214,30 +233,6 @@ export default function HeaderNav() {
                   <Users className="h-4 w-4 text-purple-400" />
                 </div>
                 <span>Tentang Kami</span>
-              </a>
-
-              {/* Edukasi Link */}
-              <Link
-                href="/edukasi"
-                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-green-500/20 border border-green-400/30">
-                  <BookOpen className="h-4 w-4 text-green-400" />
-                </div>
-                <span>Edukasi</span>
-              </Link>
-
-              {/* Skrining Link */}
-              <a
-                href="/screening/new"
-                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-amber-500/20 border border-amber-400/30">
-                  <FileText className="h-4 w-4 text-amber-400" />
-                </div>
-                <span>Skrining</span>
               </a>
 
               <div className="pt-2 mt-2 border-t border-white/10 space-y-2">
