@@ -5,13 +5,13 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import {
   Activity,
-  Users,
   FileText,
   BookOpen,
   ArrowRight,
   Stethoscope,
   Heart,
   ShieldCheck,
+  Sparkles,
 } from 'lucide-react'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
@@ -26,14 +26,6 @@ export default function Home() {
   const rightSectionInView = useInView(rightSectionRef, { once: true, amount: 0.3 })
 
   const features = [
-    {
-      icon: BookOpen,
-      title: 'Edukasi',
-      description: 'Materi edukasi 8 penyakit terminal untuk pengetahuan perawat.',
-      href: '/edukasi',
-      color: 'text-primary',
-      bgColor: 'bg-primary-cream/60',
-    },
     {
       icon: FileText,
       title: 'Skrining',
@@ -52,17 +44,24 @@ export default function Home() {
       bgColor: 'bg-primary-cream/60',
     },
     {
-      icon: Users,
-      title: 'Pasien',
-      description: 'Manajemen data pasien dan riwayat skrining.',
-      href: '/pasien',
+      icon: Sparkles,
+      title: 'Terapi',
+      description: 'Pilihan terapi komplementer untuk meningkatkan kualitas hidup pasien.',
+      href: '/terapi',
+      color: 'text-primary',
+      bgColor: 'bg-primary-cream/60',
+    },
+    {
+      icon: BookOpen,
+      title: 'Edukasi',
+      description: 'Materi edukasi 8 penyakit terminal untuk pengetahuan perawat.',
+      href: '/edukasi',
       color: 'text-primary',
       bgColor: 'bg-primary-cream/60',
     },
   ]
 
   const stats = [
-    { label: 'Tenaga Medis', value: '1000+', icon: Users },
     { label: 'Pasien Terlayani', value: '5000+', icon: Heart },
     { label: 'Terapi Pilihan', value: '20+', icon: Activity },
     { label: 'Penyakit Terminal', value: '8', icon: Stethoscope },
@@ -495,10 +494,6 @@ export default function Home() {
 
                     {/* Key Stats */}
                     <div className="space-y-3 mb-6">
-                      <div className="flex justify-between items-center py-2 border-b border-white/10">
-                        <span className="text-white/70 text-sm">Tenaga Medis</span>
-                        <span className="text-white font-semibold">1000+</span>
-                      </div>
                       <div className="flex justify-between items-center py-2 border-b border-white/10">
                         <span className="text-white/70 text-sm">Pasien Terlayani</span>
                         <span className="text-white font-semibold">5000+</span>

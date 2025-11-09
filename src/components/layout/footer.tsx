@@ -7,14 +7,14 @@ import { motion } from 'framer-motion'
 const footerSections = {
   layanan: [
     {
-      name: 'Edukasi Paliatif',
-      href: '/edukasi',
-      description: 'Panduan lengkap perawatan paliatif',
-    },
-    {
       name: 'Skrining ESAS',
       href: '/screening/new',
       description: 'Asesmen symptom pasien',
+    },
+    {
+      name: 'Edukasi Paliatif',
+      href: '/edukasi',
+      description: 'Panduan lengkap perawatan paliatif',
     },
     {
       name: 'Dashboard Medis',

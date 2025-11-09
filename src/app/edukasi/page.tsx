@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import {
   Activity,
-  Users,
   BookOpen,
   ArrowRight,
   Stethoscope,
@@ -27,7 +26,6 @@ export default function EducationPage() {
   const diseases = data.edukasi_penyakit_terminal.diseases
 
   const stats = [
-    { label: 'Tenaga Medis', value: '1000+', icon: Users },
     { label: 'Penyakit', value: diseases.length, icon: Stethoscope },
     { label: 'Kategori', value: new Set(diseases.map(d => d.category)).size, icon: Activity },
     { label: 'Materi', value: '24/7', icon: BookOpen },
