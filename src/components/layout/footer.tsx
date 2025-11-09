@@ -234,9 +234,7 @@ export function Footer() {
                   </div>
                 </div>
                 <div className="text-white/80 font-medium">Pengguna</div>
-                <div className="text-white/50 text-sm mt-1">
-                  Profesional terlatih dan bersertifikat
-                </div>
+                <div className="text-white/50 text-sm mt-1">Profesional Perawat dan Umum</div>
               </div>
 
               <div className="bg-gradient-to-br from-white/10 to-white/5 rounded-2xl p-6 border border-white/20 backdrop-blur-sm">
@@ -267,11 +265,10 @@ export function Footer() {
             className="text-center"
           >
             <p className="text-white/70 text-sm leading-relaxed">
-              Keperawatan Paliatif 2025 - Jurusan Keperawatan KI TK3 - Poltekkes Kemenkes Tanjung Karang
+              Keperawatan Paliatif 2025 - Jurusan Keperawatan KI TK3 - Poltekkes Kemenkes Tanjung
+              Karang
             </p>
-            <p className="text-white/50 text-xs mt-2">
-              © 2025 PelitaCare. All rights reserved.
-            </p>
+            <p className="text-white/50 text-xs mt-2">© 2025 PelitaCare. All rights reserved.</p>
           </motion.div>
         </div>
       </div>

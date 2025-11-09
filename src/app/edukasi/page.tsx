@@ -121,9 +121,9 @@ export default function EducationPage() {
             >
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
-                <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 flex items-center space-x-2">
+                <div className="relative bg-white/80 backdrop-blur-md border border-sky-300 rounded-full px-6 py-3 flex items-center space-x-2">
                   <BookOpen className="h-5 w-5 text-blue-400" />
-                  <span className="text-sm font-medium text-white/90">Edukasi Kesehatan</span>
+                  <span className="text-sm font-medium text-sky-900">Edukasi Kesehatan</span>
                 </div>
               </div>
             </motion.div>
@@ -136,12 +136,12 @@ export default function EducationPage() {
               className="space-y-6 mb-10"
             >
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
-                <span className="text-white">Edukasi</span>
+                <span className="text-sky-900">Edukasi</span>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                   Penyakit Terminal
                 </span>
               </h1>
-              <p className="text-lg md:text-xl text-white/70 leading-relaxed max-w-3xl mx-auto">
+              <p className="text-lg md:text-xl text-sky-700 leading-relaxed max-w-3xl mx-auto">
                 Pelajari tentang 8 penyakit terminal dan cara perawatan paliatif yang tepat.
                 Dapatkan informasi lengkap mengenai gejala, penyebab, faktor risiko, dan penanganannya.
               </p>
@@ -198,10 +198,10 @@ export default function EducationPage() {
                 >
                   <div className="group relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 to-purple-500/15 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                    <div className="relative bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all duration-300">
+                    <div className="relative bg-white/85 backdrop-blur-lg border border-sky-300 rounded-xl p-4 hover:bg-white hover:shadow-lg hover:shadow-sky-500/20 transition-all duration-300">
                       <Icon className="h-6 w-6 mx-auto mb-2 text-blue-400 group-hover:scale-110 transition-transform duration-300" />
-                      <div className="text-xl font-bold text-white mb-1">{stat.value}</div>
-                      <div className="text-xs text-white/70">{stat.label}</div>
+                      <div className="text-xl font-bold text-sky-900 mb-1">{stat.value}</div>
+                      <div className="text-xs text-sky-700">{stat.label}</div>
                     </div>
                   </div>
                 </motion.div>
@@ -237,19 +237,19 @@ export default function EducationPage() {
             >
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
-                <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-3">
+                <div className="relative bg-white/80 backdrop-blur-md border border-sky-300 rounded-full p-3">
                   <BookOpen className="h-8 w-8 text-blue-400" />
                 </div>
               </div>
             </motion.div>
 
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6 tracking-tight leading-tight">
-              <span className="text-white">Materi</span>
+              <span className="text-sky-900">Materi</span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                 Edukasi
               </span>
             </h2>
-            <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-sky-700 max-w-3xl mx-auto leading-relaxed">
               Pelajari tentang berbagai penyakit terminal dan pemahaman mendalam mengenai gejala,
               penyebab, serta cara perawatan paliatif yang tepat.
             </p>
@@ -272,14 +272,14 @@ export default function EducationPage() {
 
                   {/* Card Content */}
                   <Link href={`/edukasi/${disease.slug}`}>
-                    <div className="relative h-full bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-500 hover:scale-105 cursor-pointer">
+                    <div className="relative h-full bg-white/95 backdrop-blur-lg border border-sky-300 rounded-2xl p-6 hover:bg-white hover:shadow-xl hover:shadow-sky-500/20 transition-all duration-500 hover:scale-105 cursor-pointer">
                       {/* Disease Name */}
-                      <h3 className="text-xl font-bold text-white mb-3 text-center group-hover:text-blue-300 transition-colors duration-300">
+                      <h3 className="text-xl font-bold text-sky-900 mb-3 text-center group-hover:text-blue-600 transition-colors duration-300">
                         {disease.name}
                       </h3>
 
                       {/* Description */}
-                      <p className="text-white/70 leading-relaxed mb-4 text-sm line-clamp-3">
+                      <p className="text-sky-700 leading-relaxed mb-4 text-sm line-clamp-3">
                         {typeof disease.definition === 'string'
                           ? disease.definition
                           : disease.definition.hiv
@@ -287,7 +287,7 @@ export default function EducationPage() {
                       </p>
 
                       {/* Symptoms Count */}
-                      <div className="flex items-center justify-center text-xs text-white/60 mb-4">
+                      <div className="flex items-center justify-center text-xs text-sky-600 mb-4">
                         <span>
                           {Array.isArray(disease.symptoms)
                             ? `${disease.symptoms.length} gejala`
@@ -334,12 +334,12 @@ export default function EducationPage() {
             {/* Section Header */}
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-6">
-                <span className="text-white">Tentang</span>
+                <span className="text-sky-900">Tentang</span>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                   Edukasi Kami
                 </span>
               </h2>
-              <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg md:text-xl text-sky-700 max-w-3xl mx-auto leading-relaxed">
                 Materi edukasi komprehensif untuk mendukung pengguna dalam memberikan
                 perawatan paliatif terbaik kepada pasien penyakit terminal.
               </p>
@@ -356,10 +356,10 @@ export default function EducationPage() {
                 className="space-y-6"
               >
                 <div>
-                  <h3 className="text-2xl font-bold text-white mb-4">
+                  <h3 className="text-2xl font-bold text-sky-900 mb-4">
                     Pahami Penyakit Terminal
                   </h3>
-                  <p className="text-white/70 leading-relaxed mb-6">
+                  <p className="text-sky-700 leading-relaxed mb-6">
                     Pengetahuan yang tepat merupakan kunci dalam memberikan perawatan terbaik
                     bagi pasien dengan penyakit terminal. Materi edukasi kami dirancang untuk
                     memberikan pemahaman mendalam mengenai berbagai aspek penyakit.
@@ -372,8 +372,8 @@ export default function EducationPage() {
                       <div className="w-2 h-2 bg-white rounded-full"></div>
                     </div>
                     <div>
-                      <h4 className="text-white font-semibold mb-1">Gejala & Tanda</h4>
-                      <p className="text-white/70 text-sm">Pahami gejala awal hingga lanjutan untuk deteksi dini</p>
+                      <h4 className="text-sky-900 font-semibold mb-1">Gejala & Tanda</h4>
+                      <p className="text-sky-700 text-sm">Pahami gejala awal hingga lanjutan untuk deteksi dini</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
@@ -381,8 +381,8 @@ export default function EducationPage() {
                       <div className="w-2 h-2 bg-white rounded-full"></div>
                     </div>
                     <div>
-                      <h4 className="text-white font-semibold mb-1">Penyebab & Risiko</h4>
-                      <p className="text-white/70 text-sm">Identifikasi faktor penyebab dan risiko yang dapat dikendalikan</p>
+                      <h4 className="text-sky-900 font-semibold mb-1">Penyebab & Risiko</h4>
+                      <p className="text-sky-700 text-sm">Identifikasi faktor penyebab dan risiko yang dapat dikendalikan</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
@@ -390,8 +390,8 @@ export default function EducationPage() {
                       <div className="w-2 h-2 bg-white rounded-full"></div>
                     </div>
                     <div>
-                      <h4 className="text-white font-semibold mb-1">Perawatan Paliatif</h4>
-                      <p className="text-white/70 text-sm">Pelajari pendekatan holistik untuk kualitas hidup lebih baik</p>
+                      <h4 className="text-sky-900 font-semibold mb-1">Perawatan Paliatif</h4>
+                      <p className="text-sky-700 text-sm">Pelajari pendekatan holistik untuk kualitas hidup lebih baik</p>
                     </div>
                   </div>
                 </div>
@@ -410,7 +410,7 @@ export default function EducationPage() {
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl blur-xl opacity-20"></div>
 
                   {/* Card Content */}
-                  <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 md:p-8 text-center">
+                  <div className="relative bg-white/95 backdrop-blur-md border border-sky-300 rounded-2xl p-6 md:p-8 text-center">
                     {/* Icon with Animation */}
                     <motion.div
                       animate={{
@@ -431,21 +431,21 @@ export default function EducationPage() {
                     </motion.div>
 
                     {/* Card Title */}
-                    <h3 className="text-xl font-bold text-white mb-4">Materi Terpercaya</h3>
+                    <h3 className="text-xl font-bold text-sky-900 mb-4">Materi Terpercaya</h3>
 
                     {/* Key Stats */}
                     <div className="space-y-3 mb-6">
-                      <div className="flex justify-between items-center py-2 border-b border-white/10">
-                        <span className="text-white/70 text-sm">Penyakit</span>
-                        <span className="text-white font-semibold">{diseases.length}</span>
+                      <div className="flex justify-between items-center py-2 border-b border-sky-200">
+                        <span className="text-sky-600 text-sm">Penyakit</span>
+                        <span className="text-sky-900 font-semibold">{diseases.length}</span>
                       </div>
-                      <div className="flex justify-between items-center py-2 border-b border-white/10">
-                        <span className="text-white/70 text-sm">Kategori</span>
-                        <span className="text-white font-semibold">{new Set(diseases.map(d => d.category)).size}</span>
+                      <div className="flex justify-between items-center py-2 border-b border-sky-200">
+                        <span className="text-sky-600 text-sm">Kategori</span>
+                        <span className="text-sky-900 font-semibold">{new Set(diseases.map(d => d.category)).size}</span>
                       </div>
                       <div className="flex justify-between items-center py-2">
-                        <span className="text-white/70 text-sm">Akses</span>
-                        <span className="text-white font-semibold">24/7</span>
+                        <span className="text-sky-600 text-sm">Akses</span>
+                        <span className="text-sky-900 font-semibold">24/7</span>
                       </div>
                     </div>
 
