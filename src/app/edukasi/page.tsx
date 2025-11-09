@@ -34,8 +34,8 @@ export default function EducationPage() {
   return (
     <div className="relative overflow-hidden">
       {/* Modern Animated Background with Multiple Layers */}
-      <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900" />
-      <div className="fixed inset-0 bg-gradient-to-b from-blue-900/20 via-transparent to-transparent" />
+      <div className="fixed inset-0 bg-gradient-to-br from-sky-200 via-sky-300 to-sky-400" />
+      <div className="fixed inset-0 bg-gradient-to-b from-white/30 via-transparent to-transparent" />
       <div className="fixed inset-0">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-700" />

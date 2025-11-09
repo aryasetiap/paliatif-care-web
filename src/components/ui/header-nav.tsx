@@ -36,7 +36,7 @@ export default function HeaderNav() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-out ${
         isScrolled
-          ? 'bg-slate-900/95 backdrop-blur-md shadow-lg border-b border-white/10'
+          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-blue-200'
           : 'bg-transparent'
       }`}
     >
@@ -80,9 +80,9 @@ export default function HeaderNav() {
             {/* Skrining Link */}
             <a
               href="/screening/new"
-              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/10 ${
+              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-blue-50 ${
                 isScrolled
-                  ? 'text-white/80 hover:text-white hover:bg-white/10'
+                  ? 'text-gray-800 hover:text-gray-900 hover:bg-blue-50'
                   : 'text-white/90 hover:text-white hover:bg-white/10'
               }`}
             >

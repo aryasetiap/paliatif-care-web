@@ -55,7 +55,7 @@ const footerSections = {
 
 export function Footer() {
   return (
-    <footer className="relative bg-slate-900 border-t border-white/10">
+    <footer className="relative bg-sky-800 border-t border-white/10">
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 via-transparent to-transparent" />
 
