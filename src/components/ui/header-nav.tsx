@@ -92,9 +92,9 @@ export default function HeaderNav() {
             {/* Edukasi Link */}
             <Link
               href="/edukasi"
-              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/10 ${
+              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-blue-50 ${
                 isScrolled
-                  ? 'text-white/80 hover:text-white hover:bg-white/10'
+                  ? 'text-gray-800 hover:text-gray-900 hover:bg-blue-50'
                   : 'text-white/90 hover:text-white hover:bg-white/10'
               }`}
             >
@@ -105,9 +105,9 @@ export default function HeaderNav() {
             <a
               href="#features"
               onClick={(e) => handleAnchorLinkClick(e, '#features')}
-              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/10 ${
+              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-blue-50 ${
                 isScrolled
-                  ? 'text-white/80 hover:text-white hover:bg-white/10'
+                  ? 'text-gray-800 hover:text-gray-900 hover:bg-blue-50'
                   : 'text-white/90 hover:text-white hover:bg-white/10'
               }`}
             >
@@ -118,9 +118,9 @@ export default function HeaderNav() {
             <a
               href="#about"
               onClick={(e) => handleAnchorLinkClick(e, '#about')}
-              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-white/10 ${
+              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-blue-50 ${
                 isScrolled
-                  ? 'text-white/80 hover:text-white hover:bg-white/10'
+                  ? 'text-gray-800 hover:text-gray-900 hover:bg-blue-50'
                   : 'text-white/90 hover:text-white hover:bg-white/10'
               }`}
             >
@@ -131,7 +131,11 @@ export default function HeaderNav() {
             <Button
               variant="ghost"
               size="sm"
-              className="px-6 py-2 text-sm font-medium transition-all duration-300 rounded-full hover:scale-105 border border-white/20 backdrop-blur-sm text-white/90 hover:text-white hover:bg-white/15 hover:border-white/30"
+              className={`px-6 py-2 text-sm font-medium transition-all duration-300 rounded-full hover:scale-105 border backdrop-blur-sm ${
+                isScrolled
+                  ? 'border-gray-300 text-gray-700 hover:text-gray-900 hover:bg-gray-100 hover:border-gray-400'
+                  : 'border-white/20 text-white/90 hover:text-white hover:bg-white/15 hover:border-white/30'
+              }`}
               asChild
             >
               <Link href="/login">Masuk</Link>
@@ -170,22 +174,15 @@ export default function HeaderNav() {
           className="md:hidden overflow-hidden"
         >
           <div
-            className={`mt-3 rounded-xl border border-white/10 transition-all duration-300 ${
-              isScrolled ? 'bg-slate-900/95 backdrop-blur-md' : 'bg-slate-900/95 backdrop-blur-md'
+            className={`mt-3 rounded-xl border transition-all duration-300 ${
+              isScrolled ? 'bg-white/95 backdrop-blur-md border-gray-200 shadow-lg' : 'bg-white/95 backdrop-blur-md border-blue-200 shadow-lg'
             }`}
-            style={{
-              backgroundImage: `
-              linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
-            `,
-              backgroundSize: '50px 50px',
-            }}
           >
             <nav className="p-4 space-y-2">
               {/* Skrining Link */}
               <a
                 href="/screening/new"
-                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-blue-50 rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-amber-500/20 border border-amber-400/30">
@@ -197,7 +194,7 @@ export default function HeaderNav() {
               {/* Edukasi Link */}
               <Link
                 href="/edukasi"
-                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-blue-50 rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-green-500/20 border border-green-400/30">
@@ -208,7 +205,7 @@ export default function HeaderNav() {
 
               <a
                 href="#features"
-                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-blue-50 rounded-lg transition-colors"
                 onClick={(e) => {
                   handleAnchorLinkClick(e, '#features')
                   setIsMenuOpen(false)
@@ -223,7 +220,7 @@ export default function HeaderNav() {
               {/* Tentang Kami Link */}
               <a
                 href="#about"
-                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-blue-50 rounded-lg transition-colors"
                 onClick={(e) => {
                   handleAnchorLinkClick(e, '#about')
                   setIsMenuOpen(false)
@@ -235,10 +232,10 @@ export default function HeaderNav() {
                 <span>Tentang Kami</span>
               </a>
 
-              <div className="pt-2 mt-2 border-t border-white/10 space-y-2">
+              <div className="pt-2 mt-2 border-t border-gray-200 space-y-2">
                 <Link
                   href="/login"
-                  className="flex items-center justify-center px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors border border-white/20 backdrop-blur-sm"
+                  className="flex items-center justify-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors border border-gray-300"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Masuk
