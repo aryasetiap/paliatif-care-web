@@ -100,8 +100,8 @@ export function Footer() {
 
             {/* Description */}
             <p className="text-white/80 leading-relaxed text-[15px] max-w-sm font-light">
-              Platform digital terdepan untuk perawatan paliatif berbasis ESAS, mendukung tenaga
-              medis dalam memberikan perawatan berkualitas tinggi dan berkelanjutan.
+              Platform digital terdepan untuk perawatan paliatif berbasis ESAS, mendukung pengguna
+              dalam memberikan perawatan berkualitas tinggi dan berkelanjutan.
             </p>
 
             {/* Contact Info */}
@@ -233,7 +233,7 @@ export function Footer() {
                     <Users className="h-6 w-6 text-blue-400" />
                   </div>
                 </div>
-                <div className="text-white/80 font-medium">Tenaga Medis</div>
+                <div className="text-white/80 font-medium">Pengguna</div>
                 <div className="text-white/50 text-sm mt-1">
                   Profesional terlatih dan bersertifikat
                 </div>

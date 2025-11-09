@@ -330,7 +330,7 @@ export default function Home() {
               </span>
             </h2>
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
-              Platform terintegrasi dengan teknologi terkini untuk mendukung tenaga medis memberikan
+              Platform terintegrasi dengan teknologi terkini untuk mendukung pengguna memberikan
               perawatan paliatif terbaik dan berstandar internasional.
             </p>
           </motion.div>
@@ -554,7 +554,7 @@ export default function Home() {
                     <h4 className="text-blue-200 font-semibold mb-2">Misi Kami</h4>
                     <p className="text-blue-100/80 text-sm leading-relaxed">
                       Memberikan akses perawatan paliatif berkualitas tinggi kepada semua pasien
-                      yang membutuhkan, dengan dukungan teknologi yang memudahkan tenaga medis
+                      yang membutuhkan, dengan dukungan teknologi yang memudahkan pengguna
                       memberikan perawatan terbaik dan berkesinambungan.
                     </p>
                   </div>

@@ -102,7 +102,7 @@ export function AuthLayout({
             </div>
             <h1 className="text-3xl font-bold mb-4">PelitaCare</h1>
             <p className="text-lg opacity-90">
-              Platform edukasi dan skrining paliatif berbasis keperawatan
+              Meningkatkan Kualitas Hidup Melalui Perawatan Paliatif yang Tepat
             </p>
           </div>
 

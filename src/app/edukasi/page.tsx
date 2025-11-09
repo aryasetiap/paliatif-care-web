@@ -342,7 +342,7 @@ export default function EducationPage() {
                 </span>
               </h2>
               <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
-                Materi edukasi komprehensif untuk mendukung tenaga medis dalam memberikan
+                Materi edukasi komprehensif untuk mendukung pengguna dalam memberikan
                 perawatan paliatif terbaik kepada pasien penyakit terminal.
               </p>
             </div>
