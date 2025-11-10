@@ -142,31 +142,56 @@
 
 #### Programmer A Tasks:
 - [ ] **ESAS Screening Form UI (Day 5-6 - 10 hours)**
-  - [ ] Create single-page ESAS form dengan 9 questions
-  - [ ] Build patient data section (new vs existing patient)
-  - [ ] Implement ESAS question components dengan score descriptions
-  - [ ] Create form validation untuk 0-10 scores
-  - [ ] Add visual feedback untuk score ranges
+  - [ ] Create single-page ESAS form dengan 9 questions sesuai PERTANYAAN_SKRINING_ESAS.md
+  - [ ] Build patient data section (new vs existing patient) dengan identitas (Nama, Umur, Jenis Kelamin)
+  - [ ] Implement ESAS question components dengan score descriptions lengkap:
+    - Q1: Nyeri (0-10 dengan deskripsi nyeri ringan/sedang/berat)
+    - Q2: Lelah/Kekurangan Tenaga (0-10 dengan deskripsi kelelahan)
+    - Q3: Kantuk/Gangguan Tidur (0-10 dengan deskripsi gangguan tidur)
+    - Q4: Mual/Nausea (0-10 dengan deskripsi mual)
+    - Q5: Nafsu Makan (0-10 dengan deskripsi defisit nutrisi)
+    - Q6: Sesak/Pola Napas (0-10 dengan deskripsi pola napas tidak efektif)
+    - Q7: Sedih/Keputusasaan (0-10 dengan deskripsi depresi)
+    - Q8: Cemas/Ansietas (0-10 dengan deskripsi ansietas)
+    - Q9: Perasaan Keseluruhan (0-10 dengan deskripsi koping keluarga)
+  - [ ] Create form validation untuk 0-10 scores wajib diisi
+  - [ ] Add visual feedback untuk score ranges (ringan:1-3, sedang:4-6, berat:7-10)
   - [ ] Implement save draft functionality
   - [ ] Create responsive form layout
 
 - [ ] **Screening Results Page (Day 7 - 6 hours)**
-  - [ ] Create ESAS results summary layout
-  - [ ] Build 9-score visualization (bar/radar chart)
-  - [ ] Implement rule engine results display
-  - [ ] Create intervention recommendations component
+  - [ ] Create ESAS results summary layout dengan 9 skor visual
+  - [ ] Build 9-score visualization (bar/radar chart) highlight skor tertinggi
+  - [ ] Implement rule engine results display sesuai RULES_SKRINING.md:
+    - Mapping skor tertinggi ke 9 diagnosa intervensi
+    - Priority system untuk skor sama (Q6>Q1>Q4>Q5>Q3>Q2>Q8>Q7>Q9)
+    - Action required recommendations
+  - [ ] Create intervention recommendations component dari INTERVENSI.md:
+    - 1. Nyeri Kronis → Akupresur
+    - 2. Gangguan Pola Tidur → Aromaterapi Lavender
+    - 3. Pola Napas Tidak Efektif → Latihan Napas Dalam
+    - 4. Ansietas → Terapi Murottal
+    - 5. Nausea → Aromaterapi (Mawar, Jahe, Peppermint)
+    - 6. Intoleransi Aktivitas → Slow Deep Breathing (SDB)
+    - 7. Resiko Defisit Nutrisi → Pijat Ringan/Sentuhan Terapeutik
+    - 8. Keputusasaan → Terapi HOPE
+    - 9. Peningkatan Koping Keluarga → Family Empowerment Session
   - [ ] Add action buttons (PDF export, new screening, back to patient)
-  - [ ] Link ke INTERVENSI.md content
+  - [ ] Link ke INTERVENSI.md content dengan referensi ilmiah lengkap
 
 #### Programmer B Tasks:
 - [ ] **ESAS Rule Engine (Day 5-6 - 10 hours)**
-  - [ ] Create ESAS form validation schema (9 questions 0-10)
-  - [ ] Implement RULES_SKRINING.md logic in Edge Function
-  - [ ] Build highest score mapping to interventions
-  - [ ] Handle tie scenarios with priority system
-  - [ ] Create screening submission logic
-  - [ ] Implement screening result calculation
-  - [ ] Create patient-screening relationships
+  - [ ] Create ESAS form validation schema (9 questions 0-10) sesuai PERTANYAAN_SKRINING_ESAS.md
+  - [ ] Implement RULES_SKRINING.md logic in Edge Function:
+    - Cari skor tertinggi dari 9 pertanyaan
+    - Mapping 9 pertanyaan ke 9 diagnosa keperawatan spesifik
+    - Priority system untuk tie scenarios (Q6>Q1>Q4>Q5>Q3>Q2>Q8>Q7>Q9)
+    - Generate action recommendations berdasarkan range skor
+  - [ ] Build highest score mapping ke INTERVENSI.md therapies
+  - [ ] Handle tie scenarios dengan priority system yang sudah ditentukan
+  - [ ] Create screening submission logic dengan patient data
+  - [ ] Implement screening result calculation dengan recommendation engine
+  - [ ] Create patient-screening relationships di database
 
 - [ ] **Intervention System & PDF Generation (Day 7 - 6 hours)**
   - [ ] Parse INTERVENSI.md content into structured data
@@ -183,13 +208,16 @@
 
 #### Programmer A Tasks:
 - [ ] **Education Pages (Day 8 - 6 hours)**
-  - [ ] Create education overview page (`/edukasi`) - 8 diseases grid
-  - [ ] Build disease cards dengan hover effects (from JSON data)
-  - [ ] Create disease detail page layout (`/edukasi/[slug]`)
+  - [ ] Create education overview page (`/edukasi`) - 8 diseases grid:
+    - Alzheimer, Kanker Payudara, Gagal Ginjal Kronik, Diabetes
+    - Gagal Jantung, HIV & AIDS, PPOK, Stroke
+  - [ ] Build disease cards dengan hover effects (from EDUKASI_8_PENYAKIT_TERMINAL.md)
+  - [ ] Create disease detail page layout (`/edukasi/[slug]`) dengan:
+    - Definisi, Tanda & Gejala, Penyebab, Faktor Risiko, Referensi
   - [ ] Implement table of contents navigation (sticky)
   - [ ] Add search functionality untuk diseases
   - [ ] Create print-friendly versions
-  - [ ] Use EDUKASI_8_PENYAKIT_TERMINAL.md JSON data structure
+  - [ ] Use EDUKASI_8_PENYAKIT_TERMINAL.md content lengkap dengan referensi ilmiah
 
 - [ ] **Patient Detail Page (Day 9 - 6 hours)**
   - [ ] Create patient profile header

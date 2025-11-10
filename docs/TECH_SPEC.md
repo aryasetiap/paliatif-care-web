@@ -316,7 +316,7 @@ Menyimpan setiap data hasil skrining ESAS yang di-submit oleh perawat.
 | created_at       | timestampz | default now()                          | Waktu skrining dilakukan               |
 | updated_at       | timestampz | default now()                          | Waktu terakhir update                  |
 
-**Struktur JSON `esas_data`:**
+**Struktur JSON `esas_data` (sesuai PERTANYAAN_SKRINING_ESAS.md):**
 ```json
 {
   "identity": {
@@ -326,33 +326,39 @@ Menyimpan setiap data hasil skrining ESAS yang di-submit oleh perawat.
     "facility_name": "Rumah Sakit Umum"
   },
   "questions": {
-    "1": {"score": 7, "text": "Nyeri"},
-    "2": {"score": 5, "text": "Lelah/Kekurangan Tenaga"},
-    "3": {"score": 8, "text": "Kantuk/Gangguan Tidur"},
-    "4": {"score": 3, "text": "Mual"},
-    "5": {"score": 6, "text": "Nafsu Makan"},
-    "6": {"score": 9, "text": "Sesak"},
-    "7": {"score": 4, "text": "Sedih"},
-    "8": {"score": 2, "text": "Cemas"},
-    "9": {"score": 5, "text": "Perasaan Keseluruhan"}
+    "1": {"score": 7, "text": "Nyeri", "description": "Nyeri ringan-sedang-berat"},
+    "2": {"score": 5, "text": "Lelah/Kekurangan Tenaga", "description": "Kelelahan/Intoleransi Aktivitas"},
+    "3": {"score": 8, "text": "Kantuk/Gangguan Tidur", "description": "Gangguan Pola Tidur"},
+    "4": {"score": 3, "text": "Mual/Nausea", "description": "Nausea"},
+    "5": {"score": 6, "text": "Nafsu Makan", "description": "Resiko Defisit Nutrisi"},
+    "6": {"score": 9, "text": "Sesak/Pola Napas", "description": "Pola Napas Tidak Efektif"},
+    "7": {"score": 4, "text": "Sedih/Keputusasaan", "description": "Keputusasaan/Depresi"},
+    "8": {"score": 2, "text": "Cemas/Ansietas", "description": "Ansietas"},
+    "9": {"score": 5, "text": "Perasaan Keseluruhan", "description": "Koping Keluarga"}
   }
 }
 ```
 
-**Struktur JSON `recommendation`:**
+**Struktur JSON `recommendation` (sesuai INTERVENSI.md):**
 ```json
 {
   "diagnosis": "3. Diagnosa: Pola Napas Tidak Efektif",
   "intervention_steps": [
     "Pastikan ruangan bersih, tenang, dan bebas asap/debu.",
     "Duduk setengah tegak dengan dua bantal di belakang punggung.",
-    "Mulai latihan napas dalam: tarik napas perlahan lewat hidung (4 detik), tahan (7 detik), hembuskan pelan lewat mulut (8 detik)."
+    "Pejamkan mata sejenak, rilekskan bahu, dan rasakan posisi nyaman.",
+    "Mulai latihan napas dalam: tarik napas perlahan lewat hidung (4 detik), tahan (7 detik), hembuskan pelan lewat mulut (8 detik). Ulangi 3-5 kali.",
+    "Lanjutkan dengan pijatan lembut menggunakan ujung jari pada bahu dan punggung atas selama 2 detik, ulangi 5 kali di tiap sisi dengan tekanan ringan.",
+    "Perhatikan reaksi tubuh; hentikan jika pusing, batuk, atau sesak.",
+    "Setelah selesai, duduk santai selama satu menit dan minum air putih hangat bila diizinkan. Lakukan dua kali sehari atau saat sesak."
   ],
   "references": [
-    "Kushariyadi, Ufaidah, F. S., Rondhianto, & Candra, E. Y. S. (2023). Combination Therapy Slow Deep Breathing and Acupressure to Overcome Ineffective Breathing Pattern Nursing Problems: A Case Study."
+    "Kushariyadi, Ufaidah, F. S., Rondhianto, & Candra, E. Y. S. (2023). Combination Therapy Slow Deep Breathing and Acupressure to Overcome Ineffective Breathing Pattern Nursing Problems: A Case Study. Nursing and Health Sciences Journal, 3(3), 229–236. https://doi.org/10.53713/nhsj.v3i3.289"
   ],
-  "action_required": "Hubungi/Temukan fasilitas kesehatan terdekat untuk evaluasi lebih lanjut",
-  "priority": 1
+  "action_required": "Segera rujuk ke Fasilitas Kesehatan atau Profesional untuk Penanganan Segera",
+  "priority": 1,
+  "therapy_type": "Latihan Napas Dalam dan Pijatan Lembut",
+  "frequency": "Dua kali sehari atau saat sesak"
 }
 ```
 
@@ -377,7 +383,17 @@ Harus diaktifkan untuk semua tabel.
 
 #### Konten Edukasi
 
-Materi 8 Penyakit Terminal **tidak disimpan di database**. Konten statis dari JSON (`/src/data/edukasi-penyakit-terminal.json`) untuk performa terbaik dan kemudahan maintenance.
+Materi 8 Penyakit Terminal **tidak disimpan di database**. Konten statis dari EDUKASI_8_PENYAKIT_TERMINAL.md:
+- **Alzheimer Disease**: Definisi, gejala, penyebab, faktor risiko, referensi ilmiah
+- **Kanker Payudara**: Definisi, gejala, penyebab, faktor risiko internal/eksternal, referensi
+- **Gagal Ginjal Kronik (CKD)**: Definisi, gejala, penyebab, faktor risiko, referensi
+- **Diabetes**: Definisi, gejala, penyebab, faktor risiko, referensi
+- **Gagal Jantung**: Definisi, gejala (sisi kiri/kanan), penyebab, faktor risiko, referensi
+- **HIV dan AIDS**: Definisi, gejala tahapan, penularan, faktor risiko, referensi
+- **PPOK**: Definisi, gejala, penyebab, faktor risiko, referensi
+- **Stroke**: Definisi, gejala, penyebab, faktor risiko, referensi
+
+Konten akan di-convert ke JSON structure (`/src/data/edukasi-penyakit-terminal.json`) untuk performa terbaik dan kemudahan maintenance.
 
 ---
 
@@ -415,42 +431,66 @@ Materi 8 Penyakit Terminal **tidak disimpan di database**. Konten statis dari JS
 }
 ```
 
-**Logika Internal (ESAS Rule Engine):**
+**Logika Internal (ESAS Rule Engine sesuai RULES_SKRINING.md & PERTANYAAN_SKRINING_ESAS.md):**
 
 1. **Validasi Input:**
-   - Validasi semua 9 questions (nilai 0-10)
-   - Validasi patient data required fields
+   - Validasi semua 9 questions (nilai 0-10) sesuai PERTANYAAN_SKRINING_ESAS.md
+   - Validasi patient data required fields (Nama, Umur, Jenis Kelamin)
+   - Validasi score descriptions untuk setiap range (1-3: ringan, 4-6: sedang, 7-10: berat)
 
 2. **Tentukan Skor Tertinggi:**
-   - Cari nilai maksimum dari 9 pertanyaan
+   - Cari nilai maksimum dari 9 pertanyaan ESAS
    - Catat nomor pertanyaan dengan skor tertinggi
+   - Map pertanyaan ke diagnosa keperawatan:
+     - Q1 → Nyeri Kronis
+     - Q2 → Intoleransi Aktivitas
+     - Q3 → Gangguan Pola Tidur
+     - Q4 → Nausea
+     - Q5 → Resiko Defisit Nutrisi
+     - Q6 → Pola Napas Tidak Efektif
+     - Q7 → Keputusasaan
+     - Q8 → Ansietas
+     - Q9 → Peningkatan Koping Keluarga
 
 3. **Handle Ties (Skor Sama):**
    - Gunakan prioritas dari RULES_SKRINING.md:
-     - Prioritas 1: Pertanyaan 6 (Sesak)
-     - Prioritas 2: Pertanyaan 1 (Nyeri)
-     - Prioritas 3: Pertanyaan 4 (Mual)
-     - Prioritas 4: Pertanyaan 5 (Nafsu Makan)
-     - Prioritas 5: Pertanyaan 3 (Kantuk)
-     - Prioritas 6: Pertanyaan 2 (Lelah)
-     - Prioritas 7: Pertanyaan 8 (Cemas)
-     - Prioritas 8: Pertanyaan 7 (Sedih)
-     - Prioritas 9: Pertanyaan 9 (Perasaan)
+     - Prioritas 1: Q6 (Pola Napas Tidak Efektif)
+     - Prioritas 2: Q1 (Nyeri Kronis)
+     - Prioritas 3: Q4 (Nausea)
+     - Prioritas 4: Q5 (Resiko Defisit Nutrisi)
+     - Prioritas 5: Q3 (Gangguan Pola Tidur)
+     - Prioritas 6: Q2 (Intoleransi Aktivitas)
+     - Prioritas 7: Q8 (Ansietas)
+     - Prioritas 8: Q7 (Keputusasaan)
+     - Prioritas 9: Q9 (Koping Keluarga)
 
-4. **Tentukan Risk Level:**
-   - Skor 1-3: Low
-   - Skor 4-6: Medium
-   - Skor 7-10: High
+4. **Tentukan Risk Level & Action Required:**
+   - Skor 1-3: Low (observasi rutin)
+   - Skor 4-6: Medium (dukungan nonfarmakologis)
+   - Skor 7-10: High (tindakan segera)
+   - Generate action recommendations:
+     - Q4-Q6 skor tinggi: "Hubungi/Temukan fasilitas kesehatan terdekat"
+     - Q7-Q10 skor tinggi: "Segera rujuk ke Fasilitas Kesehatan"
 
-5. **Map ke Intervensi:**
-   - Load data dari INTERVENSI.md
-   - Pilih intervensi berdasarkan pertanyaan utama
-   - Generate rekomendasi lengkap
+5. **Map ke Intervensi (INTERVENSI.md):**
+   - Load data dari INTERVENSI.md sesuai diagnosa
+   - Pilih terapi komplementer spesifik:
+     - Nyeri Kronis → Akupresur
+     - Gangguan Pola Tidur → Aromaterapi Lavender
+     - Pola Napas Tidak Efektif → Latihan Napas Dalam
+     - Ansietas → Terapi Murottal
+     - Nausea → Aromaterapi (Mawar, Jahe, Peppermint)
+     - Intoleransi Aktivitas → Slow Deep Breathing (SDB)
+     - Resiko Defisit Nutrisi → Pijat Ringan/Sentuhan Terapeutik
+     - Keputusasaan → Terapi HOPE
+     - Koping Keluarga → Family Empowerment Session
+   - Generate rekomendasi lengkap dengan langkah-langkah terapi
+   - Include referensi ilmiah untuk setiap intervensi
 
 6. **Simpan ke Database:**
    - Ambil user_id dari JWT
-   - Simpan complete screening data
-   - Return screening ID dan results
+   - Simpan complete screening data dengan JSONB structure
+   - Return screening ID dan results dengan recommendation lengkap
 
 **Output (Sukses - 200):**
 

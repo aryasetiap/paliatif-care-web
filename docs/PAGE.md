@@ -168,16 +168,16 @@
   - If new: Form (Nama, Usia, Jenis Kelamin, Fasilitas Kesehatan)
 - **Identity Questions:**
   - Nama, Umur, Jenis Kelamin (wajib diisi)
-- **ESAS Questions (9 Pertanyaan):**
-  1. Nyeri (Skor 0-10 + deskripsi)
-  2. Lelah/Kekurangan Tenaga (Skor 0-10 + deskripsi)
-  3. Kantuk/Gangguan Tidur (Skor 0-10 + deskripsi)
-  4. Mual/Nausea (Skor 0-10 + deskripsi)
-  5. Nafsu Makan (Skor 0-10 + deskripsi)
-  6. Sesak/Pola Napas (Skor 0-10 + deskripsi)
-  7. Sedih/Keputusasaan (Skor 0-10 + deskripsi)
-  8. Cemas/Ansietas (Skor 0-10 + deskripsi)
-  9. Perasaan Keseluruhan (Skor 0-10 + deskripsi)
+- **ESAS Questions (9 Pertanyaan sesuai PERTANYAAN_SKRINING_ESAS.md):**
+  1. Nyeri (Skor 0-10 + deskripsi lengkap sesuai dokumen)
+  2. Lelah/Kekurangan Tenaga (Skor 0-10 + deskripsi lengkap sesuai dokumen)
+  3. Kantuk/Gangguan Tidur (Skor 0-10 + deskripsi lengkap sesuai dokumen)
+  4. Mual/Nausea (Skor 0-10 + deskripsi lengkap sesuai dokumen)
+  5. Nafsu Makan (Skor 0-10 + deskripsi lengkap sesuai dokumen)
+  6. Sesak/Pola Napas (Skor 0-10 + deskripsi lengkap sesuai dokumen)
+  7. Sedih/Keputusasaan (Skor 0-10 + deskripsi lengkap sesuai dokumen)
+  8. Cemas/Ansietas (Skor 0-10 + deskripsi lengkap sesuai dokumen)
+  9. Perasaan Keseluruhan (Skor 0-10 + deskripsi lengkap sesuai dokumen)
 - **Form Actions:**
   - Save Draft button
   - Submit Screening button
@@ -200,12 +200,15 @@
   - Highlight skor tertinggi
   - Overall risk assessment
 - **Rule Engine Results:**
-  - Diagnosa keperawatan berdasarkan skor tertinggi
-  - Prioritas jika ada skor sama
+  - Diagnosa keperawatan berdasarkan skor tertinggi sesuai RULES_SKRINING.md
+  - Prioritas jika ada skor sama (Prioritas 1: Q6, Prioritas 2: Q1, dst)
   - Recommendation level (Low/Medium/High)
+  - Action required based on score range:
+    - Q4-Q6 skor tinggi: "Hubungi/Temukan fasilitas kesehatan terdekat"
+    - Q7-Q10 skor tinggi: "Segera rujuk ke Fasilitas Kesehatan"
 - **Intervensi Recommendations:**
-  - Link ke intervensi spesifik dari dokumen INTERVENSI.md
-  - Step-by-step terapi instructions
+  - Link ke intervensi spesifik dari dokumen INTERVENSI.md (9 diagnosa lengkap)
+  - Step-by-step terapi instructions detail
   - Referensi ilmiah untuk setiap intervensi
 - **Action Buttons:**
   - "Export PDF" (cetak hasil lengkap)
@@ -214,10 +217,11 @@
   - "Lihat Riwayat Pasien"
 
 **Data Processing:**
-- Apply RULES_SKRINING.md logic
-- Map highest score to specific intervention
-- Handle ties with priority system
+- Apply RULES_SKRINING.md logic (pemetaan 9 pertanyaan ke 9 diagnosa intervensi)
+- Map highest score to specific intervention sesuai INTERVENSI.md
+- Handle ties dengan priority system (Q6 > Q1 > Q4 > Q5 > Q3 > Q2 > Q8 > Q7 > Q9)
 - Store complete results in database
+- Generate action recommendations berdasarkan skor dan pertanyaan
 
 ---
 
