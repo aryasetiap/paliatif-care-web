@@ -5,13 +5,27 @@ import React, { useState, useRef, useCallback } from 'react'
 import { useReactToPrint } from 'react-to-print'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 // Checkbox component not available, using simple implementation
-import { Loader2, Download, FileText, Settings, Printer, CheckCircle, AlertCircle } from 'lucide-react'
+import {
+  Loader2,
+  Download,
+  FileText,
+  Settings,
+  Printer,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react'
 import ESASReportToPrint from './ESASReportToPrint'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import PDFGenerator, { PDFGenerationOptions, PDF_TEMPLATES, ESASReportData } from '../lib/pdf-generator'
+import PDFGenerator, { PDF_TEMPLATES, ESASReportData } from '@/lib/pdf-generator'
 
 interface ESASPDFDownloadButtonProps {
   data: ESASReportData
@@ -28,14 +42,16 @@ export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
   size = 'default',
   disabled = false,
   onPDFGenerated,
-  onError
+  onError,
 }) => {
   const [isGenerating, setIsGenerating] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState('standard')
   const [includeWatermark, setIncludeWatermark] = useState(true)
   const [includePatientCopy, setIncludePatientCopy] = useState(false)
-  const [generationStatus, setGenerationStatus] = useState<'idle' | 'generating' | 'success' | 'error'>('idle')
+  const [generationStatus, setGenerationStatus] = useState<
+    'idle' | 'generating' | 'success' | 'error'
+  >('idle')
   const [errorMessage, setErrorMessage] = useState('')
 
   const reportRef = useRef<HTMLDivElement>(null)
@@ -46,16 +62,19 @@ export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
     setErrorMessage('')
   }, [])
 
-  const handleError = useCallback((error: Error) => {
-    // eslint-disable-next-line no-console
-    console.error('PDF generation error:', error)
-    setGenerationStatus('error')
-    setErrorMessage(error.message)
-    setIsGenerating(false)
-    if (onError) {
-      onError(error)
-    }
-  }, [onError])
+  const handleError = useCallback(
+    (error: Error) => {
+      // eslint-disable-next-line no-console
+      console.error('PDF generation error:', error)
+      setGenerationStatus('error')
+      setErrorMessage(error.message)
+      setIsGenerating(false)
+      if (onError) {
+        onError(error)
+      }
+    },
+    [onError]
+  )
 
   const generatePDF = useCallback(async () => {
     if (!reportRef.current) {
@@ -78,7 +97,6 @@ export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
         onPDFGenerated(true)
       }
       setTimeout(resetStatus, 3000)
-
     } catch (error) {
       handleError(error as Error)
     }
@@ -106,8 +124,8 @@ export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
           screening: {
             ...data.screening,
             diagnosis: data.screening.diagnosis.replace('Diagnosa:', 'Kondisi:'),
-            therapyType: data.screening.therapyType
-          }
+            therapyType: data.screening.therapyType,
+          },
         }
         reports.push(patientCopyData)
       }
@@ -122,7 +140,6 @@ export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
         onPDFGenerated(true)
       }
       setTimeout(resetStatus, 3000)
-
     } catch (error) {
       handleError(error as Error)
     }
@@ -186,9 +203,7 @@ export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
               <Settings className="w-5 h-5" />
               Pengaturan PDF
             </CardTitle>
-            <CardDescription>
-              Kustomisasi laporan PDF yang akan dihasilkan
-            </CardDescription>
+            <CardDescription>Kustomisasi laporan PDF yang akan dihasilkan</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -198,7 +213,7 @@ export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
                   <SelectValue placeholder="Pilih template" />
                 </SelectTrigger>
                 <SelectContent>
-                  {PDF_TEMPLATES.map((template) => (
+                  {PDF_TEMPLATES.map((template: any) => (
                     <SelectItem key={template.id} value={template.id}>
                       <div>
                         <div className="font-medium">{template.name}</div>
@@ -235,11 +250,7 @@ export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
             </div>
 
             <div className="pt-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowSettings(false)}
-              >
+              <Button variant="outline" size="sm" onClick={() => setShowSettings(false)}>
                 Tutup Pengaturan
               </Button>
             </div>
@@ -302,7 +313,7 @@ export const ESASPDFTestComponent: React.FC = () => {
   const reportRef = useRef<HTMLDivElement>(null)
 
   const addTestResult = (message: string, isSuccess: boolean = true) => {
-    setTestResults(prev => [...prev, `${isSuccess ? '✅' : '❌'} ${message}`])
+    setTestResults((prev) => [...prev, `${isSuccess ? '✅' : '❌'} ${message}`])
   }
 
   const runTests = async () => {
@@ -313,7 +324,10 @@ export const ESASPDFTestComponent: React.FC = () => {
       // Test 1: Data validation
       const testData = PDFGenerator.createMockReportData()
       const validation = PDFGenerator.validateReportData(testData)
-      addTestResult(`Validasi data: ${validation.isValid ? 'Berhasil' : 'Gagal'}`, validation.isValid)
+      addTestResult(
+        `Validasi data: ${validation.isValid ? 'Berhasil' : 'Gagal'}`,
+        validation.isValid
+      )
 
       if (!validation.isValid) {
         addTestResult(`Error: ${validation.errors.join(', ')}`, false)
@@ -345,10 +359,9 @@ export const ESASPDFTestComponent: React.FC = () => {
 
       // Test 4: Template availability
       addTestResult(`Template tersedia: ${PDF_TEMPLATES.length} template`)
-      PDF_TEMPLATES.forEach(template => {
+      PDF_TEMPLATES.forEach((template: any) => {
         addTestResult(`  - ${template.name}: ${template.description}`)
       })
-
     } catch (error) {
       addTestResult(`Test gagal: ${(error as Error).message}`, false)
     }
@@ -365,9 +378,7 @@ export const ESASPDFTestComponent: React.FC = () => {
           <FileText className="w-5 h-5" />
           PDF Generation Test
         </CardTitle>
-        <CardDescription>
-          Test kemampuan PDF generation untuk ESAS Reports
-        </CardDescription>
+        <CardDescription>Test kemampuan PDF generation untuk ESAS Reports</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Hidden test component */}
@@ -408,7 +419,9 @@ export const ESASPDFTestComponent: React.FC = () => {
               const info = PDFGenerator.getPDFGenerationInfo()
               return (
                 <>
-                  <p>• Support: {info.supported ? '✅' : '❌'} {info.method}</p>
+                  <p>
+                    • Support: {info.supported ? '✅' : '❌'} {info.method}
+                  </p>
                   <p>• Limitations: {info.limitations.length} item</p>
                   <p>• Recommendations: {info.recommendations.length} item</p>
                 </>
