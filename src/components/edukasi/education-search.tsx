@@ -28,137 +28,166 @@ export default function EducationSearch({ onResultSelect, className = '' }: Educ
 
   const data = educationData as EducationData
 
-  const searchDiseases = useCallback((searchQuery: string): SearchResult[] => {
-    if (!searchQuery.trim()) return []
+  const searchDiseases = useCallback(
+    (searchQuery: string): SearchResult[] => {
+      if (!searchQuery.trim()) return []
 
-    const queryLower = searchQuery.toLowerCase()
-    const searchResults: SearchResult[] = []
+      const queryLower = searchQuery.toLowerCase()
+      const searchResults: SearchResult[] = []
 
-    data.edukasi_penyakit_terminal.diseases.forEach(disease => {
-      const matchedFields: string[] = []
-      let score = 0
+      data.edukasi_penyakit_terminal.diseases.forEach((disease) => {
+        const matchedFields: string[] = []
+        let score = 0
 
-      // Search in disease name
-      if (disease.name.toLowerCase().includes(queryLower)) {
-        matchedFields.push('Nama')
-        score += 10
-      }
-
-      // Search in category
-      if (disease.category.toLowerCase().includes(queryLower)) {
-        matchedFields.push('Kategori')
-        score += 5
-      }
-
-      // Search in definition
-      if (typeof disease.definition === 'string') {
-        if (disease.definition.toLowerCase().includes(queryLower)) {
-          matchedFields.push('Definisi')
-          score += 8
+        // Search in disease name
+        if (disease.name.toLowerCase().includes(queryLower)) {
+          matchedFields.push('Nama')
+          score += 10
         }
-      } else {
-        // For HIV/AIDS with object definition
-        Object.values(disease.definition).forEach(def => {
-          if (def.toLowerCase().includes(queryLower)) {
+
+        // Search in category
+        if (disease.category.toLowerCase().includes(queryLower)) {
+          matchedFields.push('Kategori')
+          score += 5
+        }
+
+        // Search in definition
+        if (typeof disease.definition === 'string') {
+          if (disease.definition.toLowerCase().includes(queryLower)) {
             matchedFields.push('Definisi')
             score += 8
           }
-        })
-      }
-
-      // Search in symptoms
-      const searchInSymptoms = (symptoms: any) => {
-        if (Array.isArray(symptoms)) {
-          symptoms.forEach(symptom => {
-            if (symptom.toLowerCase().includes(queryLower)) {
-              matchedFields.push('Gejala')
-              score += 6
+        } else if (disease.definition && typeof disease.definition === 'object') {
+          // For HIV/AIDS with object definition
+          Object.values(disease.definition).forEach((def) => {
+            if (typeof def === 'string' && def.toLowerCase().includes(queryLower)) {
+              matchedFields.push('Definisi')
+              score += 8
             }
           })
-        } else if (typeof symptoms === 'object') {
-          Object.values(symptoms).forEach((symptomList: any) => {
-            if (Array.isArray(symptomList)) {
-              symptomList.forEach((symptom: string) => {
-                if (symptom.toLowerCase().includes(queryLower)) {
+        }
+
+        // Search in symptoms - PERBAIKAN UTAMA
+        const searchInSymptoms = (symptoms: any) => {
+          if (Array.isArray(symptoms)) {
+            symptoms.forEach((symptom) => {
+              // Pastikan symptom adalah string
+              if (typeof symptom === 'string' && symptom.toLowerCase().includes(queryLower)) {
+                matchedFields.push('Gejala')
+                score += 6
+              }
+            })
+          } else if (typeof symptoms === 'object' && symptoms !== null) {
+            // Handle symptoms dengan format tahapan
+            if ('tahapan' in symptoms && Array.isArray(symptoms.tahapan)) {
+              symptoms.tahapan.forEach((tahapItem: any) => {
+                if (
+                  tahapItem &&
+                  typeof tahapItem.gejala === 'string' &&
+                  tahapItem.gejala.toLowerCase().includes(queryLower)
+                ) {
+                  matchedFields.push('Gejala')
+                  score += 6
+                }
+                if (
+                  tahapItem &&
+                  typeof tahapItem.tahap === 'string' &&
+                  tahapItem.tahap.toLowerCase().includes(queryLower)
+                ) {
                   matchedFields.push('Gejala')
                   score += 6
                 }
               })
-            } else if (typeof symptomList === 'object' && 'tahap' in symptomList) {
-              if (symptomList.gejala.toLowerCase().includes(queryLower)) {
-                matchedFields.push('Gejala')
-                score += 6
-              }
+            } else {
+              // Handle symptoms dengan format utama/sisi_kiri/sisi_kanan
+              Object.values(symptoms).forEach((symptomList: any) => {
+                if (Array.isArray(symptomList)) {
+                  symptomList.forEach((symptom: any) => {
+                    if (typeof symptom === 'string' && symptom.toLowerCase().includes(queryLower)) {
+                      matchedFields.push('Gejala')
+                      score += 6
+                    }
+                  })
+                }
+              })
+            }
+          }
+        }
+
+        searchInSymptoms(disease.symptoms)
+
+        // Search in causes
+        if (Array.isArray(disease.causes)) {
+          disease.causes.forEach((cause) => {
+            if (typeof cause === 'string' && cause.toLowerCase().includes(queryLower)) {
+              matchedFields.push('Penyebab')
+              score += 7
             }
           })
         }
-      }
 
-      searchInSymptoms(disease.symptoms)
-
-      // Search in causes
-      disease.causes.forEach(cause => {
-        if (cause.toLowerCase().includes(queryLower)) {
-          matchedFields.push('Penyebab')
-          score += 7
-        }
-      })
-
-      // Search in risk factors
-      const searchInRiskFactors = (riskFactors: any) => {
-        if (Array.isArray(riskFactors)) {
-          riskFactors.forEach(factor => {
-            if (typeof factor === 'string') {
-              if (factor.toLowerCase().includes(queryLower)) {
-                matchedFields.push('Faktor Risiko')
-                score += 5
-              }
-            } else if (typeof factor === 'object' && 'faktor' in factor) {
-              if (factor.faktor.toLowerCase().includes(queryLower)) {
-                matchedFields.push('Faktor Risiko')
-                score += 5
-              }
-            }
-          })
-        } else if (typeof riskFactors === 'object') {
-          Object.values(riskFactors).forEach((factorList: any) => {
-            if (Array.isArray(factorList)) {
-              factorList.forEach((factor: string) => {
+        // Search in risk factors
+        const searchInRiskFactors = (riskFactors: any) => {
+          if (Array.isArray(riskFactors)) {
+            riskFactors.forEach((factor) => {
+              if (typeof factor === 'string') {
                 if (factor.toLowerCase().includes(queryLower)) {
                   matchedFields.push('Faktor Risiko')
                   score += 5
                 }
-              })
+              } else if (typeof factor === 'object' && factor !== null && 'faktor' in factor) {
+                if (
+                  typeof factor.faktor === 'string' &&
+                  factor.faktor.toLowerCase().includes(queryLower)
+                ) {
+                  matchedFields.push('Faktor Risiko')
+                  score += 5
+                }
+              }
+            })
+          } else if (typeof riskFactors === 'object' && riskFactors !== null) {
+            Object.values(riskFactors).forEach((factorList: any) => {
+              if (Array.isArray(factorList)) {
+                factorList.forEach((factor: any) => {
+                  if (typeof factor === 'string' && factor.toLowerCase().includes(queryLower)) {
+                    matchedFields.push('Faktor Risiko')
+                    score += 5
+                  }
+                })
+              }
+            })
+          }
+        }
+
+        if (disease.risk_factors) {
+          searchInRiskFactors(disease.risk_factors)
+        }
+
+        // Search in references
+        if (Array.isArray(disease.references)) {
+          disease.references.forEach((reference) => {
+            if (typeof reference === 'string' && reference.toLowerCase().includes(queryLower)) {
+              matchedFields.push('Referensi')
+              score += 3
             }
           })
         }
-      }
 
-      if (disease.risk_factors) {
-        searchInRiskFactors(disease.risk_factors)
-      }
-
-      // Search in references
-      disease.references.forEach(reference => {
-        if (reference.toLowerCase().includes(queryLower)) {
-          matchedFields.push('Referensi')
-          score += 3
+        // Add to results if there are matches
+        if (matchedFields.length > 0) {
+          searchResults.push({
+            disease,
+            matchedFields: [...new Set(matchedFields)], // Remove duplicates
+            score,
+          })
         }
       })
 
-      // Add to results if there are matches
-      if (matchedFields.length > 0) {
-        searchResults.push({
-          disease,
-          matchedFields: [...new Set(matchedFields)], // Remove duplicates
-          score
-        })
-      }
-    })
-
-    // Sort by score (descending)
-    return searchResults.sort((a, b) => b.score - a.score)
-  }, [data])
+      // Sort by score (descending)
+      return searchResults.sort((a, b) => b.score - a.score)
+    },
+    [data]
+  )
 
   useEffect(() => {
     if (query.trim()) {
@@ -234,9 +263,7 @@ export default function EducationSearch({ onResultSelect, className = '' }: Educ
               >
                 <CardContent className="p-3">
                   <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-semibold text-sky-900 text-sm">
-                      {result.disease.name}
-                    </h4>
+                    <h4 className="font-semibold text-sky-900 text-sm">{result.disease.name}</h4>
                     <Badge variant="secondary" className="text-xs">
                       {result.disease.category}
                     </Badge>
@@ -259,8 +286,7 @@ export default function EducationSearch({ onResultSelect, className = '' }: Educ
                   <p className="text-xs text-sky-600 line-clamp-2">
                     {typeof result.disease.definition === 'string'
                       ? result.disease.definition
-                      : result.disease.definition.hiv
-                    }
+                      : result.disease.definition.hiv}
                   </p>
                 </CardContent>
               </Card>

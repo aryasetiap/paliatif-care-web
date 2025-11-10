@@ -3,14 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import {
-  Activity,
-  BookOpen,
-  ArrowRight,
-  Stethoscope,
-  Heart,
-  ShieldCheck,
-} from 'lucide-react'
+import { Activity, BookOpen, ArrowRight, Stethoscope, Heart, ShieldCheck } from 'lucide-react'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
 import { motion, useInView } from 'framer-motion'
@@ -35,7 +28,7 @@ export default function EducationPage() {
 
   const stats = [
     { label: 'Penyakit', value: diseases.length, icon: Stethoscope },
-    { label: 'Kategori', value: new Set(diseases.map(d => d.category)).size, icon: Activity },
+    { label: 'Kategori', value: new Set(diseases.map((d) => d.category)).size, icon: Activity },
     { label: 'Materi', value: '24/7', icon: BookOpen },
   ]
 
@@ -151,7 +144,8 @@ export default function EducationPage() {
               </h1>
               <p className="text-lg md:text-xl text-sky-700 leading-relaxed max-w-3xl mx-auto">
                 Pelajari tentang 8 penyakit terminal dan cara perawatan paliatif yang tepat.
-                Dapatkan informasi lengkap mengenai gejala, penyebab, faktor risiko, dan penanganannya.
+                Dapatkan informasi lengkap mengenai gejala, penyebab, faktor risiko, dan
+                penanganannya.
               </p>
             </motion.div>
 
@@ -205,10 +199,7 @@ export default function EducationPage() {
             </div>
 
             {/* Search Component */}
-            <EducationSearch
-              onResultSelect={handleSearchResultSelect}
-              className="w-full"
-            />
+            <EducationSearch onResultSelect={handleSearchResultSelect} className="w-full" />
           </motion.div>
         </div>
       </section>
@@ -218,13 +209,13 @@ export default function EducationPage() {
         {/* Background Blur */}
         <div className="absolute inset-0 bg-white/5 backdrop-blur-xl"></div>
 
-        <div className="relative z-10 container mx-auto px-4">
+        <div className="relative container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
             viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6 max-w-4xl mx-auto"
+            className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6 max-w-4xl mx-auto"
           >
             {stats.map((stat, index) => {
               const Icon = stat.icon
@@ -232,7 +223,9 @@ export default function EducationPage() {
                 <motion.div
                   key={stat.label}
                   initial={{ opacity: 0, scale: 0.8 }}
-                  animate={leftSectionInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+                  animate={
+                    leftSectionInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }
+                  }
                   transition={{ duration: 0.6, delay: 0.8 + index * 0.1, ease: 'easeOut' }}
                   className="text-center"
                 >
@@ -322,8 +315,7 @@ export default function EducationPage() {
                       <p className="text-sky-700 leading-relaxed mb-4 text-sm line-clamp-3">
                         {typeof disease.definition === 'string'
                           ? disease.definition
-                          : disease.definition.hiv
-                        }
+                          : disease.definition.hiv}
                       </p>
 
                       {/* Symptoms Count */}
@@ -331,8 +323,7 @@ export default function EducationPage() {
                         <span>
                           {Array.isArray(disease.symptoms)
                             ? `${disease.symptoms.length} gejala`
-                            : 'Berbagai gejala'
-                          }
+                            : 'Berbagai gejala'}
                         </span>
                       </div>
 
@@ -380,8 +371,8 @@ export default function EducationPage() {
                 </span>
               </h2>
               <p className="text-lg md:text-xl text-sky-700 max-w-3xl mx-auto leading-relaxed">
-                Materi edukasi komprehensif untuk mendukung pengguna dalam memberikan
-                perawatan paliatif terbaik kepada pasien penyakit terminal.
+                Materi edukasi komprehensif untuk mendukung pengguna dalam memberikan perawatan
+                paliatif terbaik kepada pasien penyakit terminal.
               </p>
             </div>
 
@@ -396,13 +387,11 @@ export default function EducationPage() {
                 className="space-y-6"
               >
                 <div>
-                  <h3 className="text-2xl font-bold text-sky-900 mb-4">
-                    Pahami Penyakit Terminal
-                  </h3>
+                  <h3 className="text-2xl font-bold text-sky-900 mb-4">Pahami Penyakit Terminal</h3>
                   <p className="text-sky-700 leading-relaxed mb-6">
-                    Pengetahuan yang tepat merupakan kunci dalam memberikan perawatan terbaik
-                    bagi pasien dengan penyakit terminal. Materi edukasi kami dirancang untuk
-                    memberikan pemahaman mendalam mengenai berbagai aspek penyakit.
+                    Pengetahuan yang tepat merupakan kunci dalam memberikan perawatan terbaik bagi
+                    pasien dengan penyakit terminal. Materi edukasi kami dirancang untuk memberikan
+                    pemahaman mendalam mengenai berbagai aspek penyakit.
                   </p>
                 </div>
 
@@ -413,7 +402,9 @@ export default function EducationPage() {
                     </div>
                     <div>
                       <h4 className="text-sky-900 font-semibold mb-1">Gejala & Tanda</h4>
-                      <p className="text-sky-700 text-sm">Pahami gejala awal hingga lanjutan untuk deteksi dini</p>
+                      <p className="text-sky-700 text-sm">
+                        Pahami gejala awal hingga lanjutan untuk deteksi dini
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
@@ -422,7 +413,9 @@ export default function EducationPage() {
                     </div>
                     <div>
                       <h4 className="text-sky-900 font-semibold mb-1">Penyebab & Risiko</h4>
-                      <p className="text-sky-700 text-sm">Identifikasi faktor penyebab dan risiko yang dapat dikendalikan</p>
+                      <p className="text-sky-700 text-sm">
+                        Identifikasi faktor penyebab dan risiko yang dapat dikendalikan
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
@@ -431,7 +424,9 @@ export default function EducationPage() {
                     </div>
                     <div>
                       <h4 className="text-sky-900 font-semibold mb-1">Perawatan Paliatif</h4>
-                      <p className="text-sky-700 text-sm">Pelajari pendekatan holistik untuk kualitas hidup lebih baik</p>
+                      <p className="text-sky-700 text-sm">
+                        Pelajari pendekatan holistik untuk kualitas hidup lebih baik
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -481,7 +476,9 @@ export default function EducationPage() {
                       </div>
                       <div className="flex justify-between items-center py-2 border-b border-sky-200">
                         <span className="text-sky-600 text-sm">Kategori</span>
-                        <span className="text-sky-900 font-semibold">{new Set(diseases.map(d => d.category)).size}</span>
+                        <span className="text-sky-900 font-semibold">
+                          {new Set(diseases.map((d) => d.category)).size}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center py-2">
                         <span className="text-sky-600 text-sm">Akses</span>
