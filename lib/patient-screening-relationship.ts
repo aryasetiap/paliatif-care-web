@@ -621,17 +621,31 @@ function generateRecommendations(
   let priorityLevel: 'low' | 'medium' | 'high' = 'low'
   let followUpNeeded = false
 
-  // Based on risk level
-  if (latestScreening.risk_level === 'high' || latestScreening.risk_level === 'critical') {
-    recommendedActions.push('Segera rujuk ke Fasilitas Kesehatan')
-    recommendedActions.push('Monitor harian kondisi pasien')
+  // Based on risk level and score ranges (sesuai RULES_SKRINING.md)
+  if (latestScreening.highest_score >= 7 && latestScreening.highest_score <= 10) {
+    recommendedActions.push('Segera rujuk ke Fasilitas Kesehatan atau Profesional untuk Penanganan Segera')
+    recommendedActions.push('Monitor ketat kondisi pasien')
+    recommendedActions.push('Implementasi intervensi keperawatan segera')
     priorityLevel = 'high'
     followUpNeeded = true
-  } else if (latestScreening.risk_level === 'medium') {
-    recommendedActions.push('Jadwalkan follow-up dalam 1-2 minggu')
-    recommendedActions.push('Implementasi intervensi non-farmakologis')
+  } else if (latestScreening.highest_score >= 4 && latestScreening.highest_score <= 6) {
+    recommendedActions.push('Hubungi/Temukan fasilitas kesehatan terdekat untuk evaluasi lebih lanjut')
+    recommendedActions.push('Jadwalkan follow-up dalam 1 minggu')
+    recommendedActions.push('Implementasi intervensi terapi komplementer')
     priorityLevel = 'medium'
     followUpNeeded = true
+  } else if (latestScreening.highest_score >= 1 && latestScreening.highest_score <= 3) {
+    recommendedActions.push('Lanjutkan intervensi terapi komplementer sesuai diagnosa')
+    recommendedActions.push('Monitor perkembangan pasien')
+    recommendedActions.push('Jadwalkan evaluasi rutin')
+    priorityLevel = 'low'
+    followUpNeeded = false
+  } else {
+    // Score 0
+    recommendedActions.push('Lanjutkan monitoring rutin')
+    recommendedActions.push('Edukasi pasien dan keluarga')
+    priorityLevel = 'low'
+    followUpNeeded = false
   }
 
   // Based on trend
@@ -642,16 +656,25 @@ function generateRecommendations(
     followUpNeeded = true
   }
 
-  // Based on time since last screening
+  // Based on time since last screening and score range
   const nextRecommendedDate = new Date()
   if (daysSinceLastScreening > 30) {
     recommendedActions.push('Jadwalkan ulang screening sesegera mungkin')
     followUpNeeded = true
-  } else if (latestScreening.risk_level === 'high') {
-    nextRecommendedDate.setDate(nextRecommendedDate.getDate() + 7)
-  } else if (latestScreening.risk_level === 'medium') {
-    nextRecommendedDate.setDate(nextRecommendedDate.getDate() + 14)
+  } else if (latestScreening.highest_score >= 7) {
+    // Score 7-10: screening dalam 3-7 hari
+    nextRecommendedDate.setDate(nextRecommendedDate.getDate() + 5)
+    recommendedActions.push('Perlu screening ulang dalam 5 hari')
+  } else if (latestScreening.highest_score >= 4) {
+    // Score 4-6: screening dalam 1-2 minggu
+    nextRecommendedDate.setDate(nextRecommendedDate.getDate() + 10)
+    recommendedActions.push('Perlu screening ulang dalam 10 hari')
+  } else if (latestScreening.highest_score >= 1) {
+    // Score 1-3: screening dalam 2-4 minggu
+    nextRecommendedDate.setDate(nextRecommendedDate.getDate() + 21)
+    recommendedActions.push('Perlu screening ulang dalam 3 minggu')
   } else {
+    // Score 0: screening bulanan
     nextRecommendedDate.setDate(nextRecommendedDate.getDate() + 30)
   }
 

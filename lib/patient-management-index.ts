@@ -19,6 +19,14 @@ export {
   PatientError,
 } from './patient-management'
 
+// ESAS Rule Engine (NEW - implements RULES_SKRINING.md)
+export {
+  ESASRuleEngine,
+  type ESASQuestions,
+  type ESASQuestionsData,
+  type ESASResult,
+} from './esas-rule-engine'
+
 // Patient-screening relationship functions
 export {
   linkPatientToScreening,

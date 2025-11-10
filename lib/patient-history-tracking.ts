@@ -389,6 +389,104 @@ export const getSymptomProgression = async (
 }
 
 /**
+ * Generate recommendations based on screening history
+ */
+export const generateRecommendationsFromHistory = (
+  screenings: Database['public']['Tables']['screenings']['Row'][]
+): {
+  recommendations: string[]
+  priorityLevel: 'low' | 'medium' | 'high'
+  followUpNeeded: boolean
+  nextRecommendedDate: string
+  actionRequired: string
+} => {
+  if (!screenings || screenings.length === 0) {
+    return {
+      recommendations: ['Lakukan screening ESAS awal untuk mengetahui kondisi dasar pasien'],
+      priorityLevel: 'low',
+      followUpNeeded: true,
+      nextRecommendedDate: new Date().toISOString().split('T')[0],
+      actionRequired: 'Screening ESAS awal diperlukan'
+    }
+  }
+
+  const latestScreening = screenings[0]
+  const highestScore = latestScreening.highest_score
+  const recommendations: string[] = []
+  let priorityLevel: 'low' | 'medium' | 'high' = 'low'
+  let followUpNeeded = false
+  let actionRequired = ''
+  const nextRecommendedDate = new Date()
+
+  // Generate recommendations based on score range (sesuai RULES_SKRINING.md)
+  if (highestScore >= 7 && highestScore <= 10) {
+    actionRequired = 'Segera rujuk ke Fasilitas Kesehatan atau Profesional untuk Penanganan Segera'
+    recommendations.push(actionRequired)
+    recommendations.push('Monitor ketat kondisi pasien setiap hari')
+    recommendations.push('Implementasi intervensi keperawatan sesuai diagnosa')
+    recommendations.push('Koordinasi dengan tim multidisiplin jika diperlukan')
+    priorityLevel = 'high'
+    followUpNeeded = true
+    // 5 hari untuk score 7-10
+  } else if (highestScore >= 4 && highestScore <= 6) {
+    actionRequired = 'Hubungi/Temukan fasilitas kesehatan terdekat untuk evaluasi lebih lanjut'
+    recommendations.push(actionRequired)
+    recommendations.push('Jadwalkan konsultasi dengan tenaga kesehatan')
+    recommendations.push('Implementasi terapi komplementer yang direkomendasikan')
+    recommendations.push('Monitor perkembangan gejala secara berkala')
+    priorityLevel = 'medium'
+    followUpNeeded = true
+    // 10 hari untuk score 4-6
+  } else if (highestScore >= 1 && highestScore <= 3) {
+    actionRequired = 'Lanjutkan intervensi terapi komplementer sesuai diagnosa keperawatan'
+    recommendations.push(actionRequired)
+    recommendations.push('Monitor perkembangan pasien secara berkala')
+    recommendations.push('Edukasi pasien dan keluarga tentang teknik self-care')
+    recommendations.push('Jadwalkan evaluasi rutin dengan tenaga kesehatan')
+    priorityLevel = 'low'
+    followUpNeeded = false
+    // 21 hari untuk score 1-3
+  } else {
+    // Score 0
+    actionRequired = 'Lanjutkan monitoring rutin dan observasi'
+    recommendations.push(actionRequired)
+    recommendations.push('Berikan edukasi preventif kepada pasien dan keluarga')
+    recommendations.push('Jadwalkan screening ESAS berkala (bulanan)')
+    recommendations.push('Pertahankan gaya hidup sehat dan aktivitas fisik ringan')
+    priorityLevel = 'low'
+    followUpNeeded = false
+    // 30 hari untuk score 0
+  }
+
+  // Add trend-based recommendations
+  if (screenings.length >= 2) {
+    const previousScore = screenings[1].highest_score
+    const scoreDifference = previousScore - highestScore
+
+    if (scoreDifference < -2) {
+      // Significant worsening
+      recommendations.push('⚠️ Perhatikan: Kondisi pasien menunjukkan penurunan yang signifikan')
+      recommendations.push('Segera evaluasi ulang rencana perawatan')
+      if (priorityLevel === 'low') priorityLevel = 'medium'
+      followUpNeeded = true
+    } else if (scoreDifference > 2) {
+      // Significant improvement
+      recommendations.push('✅ Bagus: Terjadi peningkatan kondisi pasien yang signifikan')
+      recommendations.push('Lanjutkan intervensi yang efektif')
+      recommendations.push('Pertimbangkan penyesuaian frekuensi intervensi')
+    }
+  }
+
+  return {
+    recommendations,
+    priorityLevel,
+    followUpNeeded,
+    nextRecommendedDate: nextRecommendedDate.toISOString().split('T')[0],
+    actionRequired
+  }
+}
+
+/**
  * Add milestone or note to patient history
  */
 export const addHistoryNote = async (

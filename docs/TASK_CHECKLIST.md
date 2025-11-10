@@ -194,18 +194,21 @@
   - [ ] Link ke INTERVENSI.md content dengan referensi ilmiah lengkap
 
 #### Programmer B Tasks:
-- [ ] **ESAS Rule Engine (Day 5-6 - 10 hours)**
-  - [ ] Create ESAS form validation schema (9 questions 0-10) sesuai PERTANYAAN_SKRINING_ESAS.md
-  - [ ] Implement RULES_SKRINING.md logic in Edge Function:
-    - Cari skor tertinggi dari 9 pertanyaan
-    - Mapping 9 pertanyaan ke 9 diagnosa keperawatan spesifik
-    - Priority system untuk tie scenarios (Q6>Q1>Q4>Q5>Q3>Q2>Q8>Q7>Q9)
-    - Generate action recommendations berdasarkan range skor
-  - [ ] Build highest score mapping ke INTERVENSI.md therapies
-  - [ ] Handle tie scenarios dengan priority system yang sudah ditentukan
-  - [ ] Create screening submission logic dengan patient data
-  - [ ] Implement screening result calculation dengan recommendation engine
-  - [ ] Create patient-screening relationships di database
+- [ ] **ESAS Rule Engine (Hari 5-6 - 10 jam)**
+  - [ ] Membuat skema validasi form ESAS (9 pertanyaan, skor 0-10) sesuai PERTANYAAN_SKRINING_ESAS.md
+  - [ ] Implementasi logika RULES_SKRINING.md di Edge Function:
+    - Menentukan skor tertinggi dari 9 pertanyaan ESAS
+    - Melakukan pemetaan skor tertinggi ke 9 diagnosa keperawatan spesifik sesuai urutan pertanyaan
+    - Menangani kasus skor tertinggi sama dengan sistem prioritas: Q6 > Q1 > Q4 > Q5 > Q3 > Q2 > Q8 > Q7 > Q9
+    - Menampilkan rekomendasi aksi berdasarkan rentang skor:
+      - Skor 1-3: tampilkan intervensi sesuai mapping
+      - Skor 4-6: tampilkan "Hubungi/Temukan fasilitas kesehatan terdekat untuk evaluasi lebih lanjut"
+      - Skor 7-10: tampilkan "Segera rujuk ke Fasilitas Kesehatan atau Profesional untuk Penanganan Segera"
+  - [ ] Membangun mapping skor tertinggi ke terapi dari INTERVENSI.md
+  - [ ] Menangani tie scenarios dengan sistem prioritas yang sudah ditentukan
+  - [ ] Membuat logika submit skrining beserta data pasien
+  - [ ] Implementasi perhitungan hasil skrining dan recommendation engine
+  - [ ] Membuat relasi pasien-skrining di database
 
 - [ ] **Intervention System & PDF Generation (Day 7 - 6 hours)**
   - [ ] Parse INTERVENSI.md content into structured data

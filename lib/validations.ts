@@ -84,26 +84,101 @@ export const screeningPatientInfoSchema = z.object({
   }),
 })
 
-// Screening questionnaire schema (placeholder for client questions)
-export const screeningQuestionnaireSchema = z.object({
-  // This will be updated when client provides the actual screening questions
-  // For now, we'll create a flexible structure that can accommodate various question types
-  questions: z.record(z.any()),
-  symptoms: z.array(z.string()).optional(),
-  pain_level: z.number().min(0).max(10).optional(),
-  mobility: z.string().optional(),
-  appetite: z.string().optional(),
-  sleep: z.string().optional(),
-  emotional_state: z.string().optional(),
-  social_support: z.string().optional(),
-  // Add more fields as needed when client provides actual questions
+// ESAS Question validation schema sesuai PERTANYAAN_SKRINING_ESAS.md
+export const esasQuestionsSchema = z.object({
+  "1": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+  "2": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+  "3": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+  "4": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+  "5": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+  "6": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+  "7": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+  "8": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+  "9": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+}, {
+  required_error: 'Semua pertanyaan ESAS harus diisi',
+  invalid_type_error: 'Format skor tidak valid'
 })
 
-// Complete screening form schema
-export const screeningFormSchema = z.object({
-  patient_info: screeningPatientInfoSchema,
-  questionnaire: screeningQuestionnaireSchema,
+// ESAS Question data structure with text descriptions
+export const esasQuestionsDataSchema = z.object({
+  "1": z.object({
+    score: z.number().min(0).max(10),
+    text: z.literal('Nyeri'),
+    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+  }),
+  "2": z.object({
+    score: z.number().min(0).max(10),
+    text: z.literal('Lelah/Kekurangan Tenaga'),
+    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+  }),
+  "3": z.object({
+    score: z.number().min(0).max(10),
+    text: z.literal('Kantuk/Gangguan Tidur'),
+    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+  }),
+  "4": z.object({
+    score: z.number().min(0).max(10),
+    text: z.literal('Mual/Nausea'),
+    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+  }),
+  "5": z.object({
+    score: z.number().min(0).max(10),
+    text: z.literal('Nafsu Makan'),
+    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+  }),
+  "6": z.object({
+    score: z.number().min(0).max(10),
+    text: z.literal('Sesak/Pola Napas'),
+    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+  }),
+  "7": z.object({
+    score: z.number().min(0).max(10),
+    text: z.literal('Sedih/Keputusasaan'),
+    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+  }),
+  "8": z.object({
+    score: z.number().min(0).max(10),
+    text: z.literal('Cemas/Ansietas'),
+    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+  }),
+  "9": z.object({
+    score: z.number().min(0).max(10),
+    text: z.literal('Perasaan Keseluruhan'),
+    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+  })
 })
+
+// Complete ESAS Screening form validation schema
+export const esasScreeningFormSchema = z.object({
+  patient_info: screeningPatientInfoSchema,
+  questions: esasQuestionsSchema,
+  esas_data: z.object({
+    identity: z.object({
+      name: z.string().min(1, 'Nama pasien harus diisi'),
+      age: z.number().min(0, 'Usia tidak valid').max(150, 'Usia maksimal 150 tahun'),
+      gender: z.enum(['L', 'P']),
+      facility_name: z.string().optional()
+    }),
+    questions: esasQuestionsDataSchema
+  }).optional()
+})
+
+// Legacy schema for backward compatibility
+export const screeningQuestionnaireSchema = z.object({
+  questions: esasQuestionsSchema,
+  // Additional optional fields for flexibility
+  symptoms: z.array(z.string()).optional(),
+  notes: z.string().optional(),
+})
+
+// Complete screening form schema (updated to use ESAS schema)
+export const screeningFormSchema = esasScreeningFormSchema
+
+// Export new types for ESAS
+export type ESASQuestions = z.infer<typeof esasQuestionsSchema>
+export type ESASQuestionsData = z.infer<typeof esasQuestionsDataSchema>
+export type ESAScreeningFormData = z.infer<typeof esasScreeningFormSchema>
 
 // Profile update schema
 export const profileUpdateSchema = z.object({
@@ -131,8 +206,8 @@ export type LoginFormData = z.infer<typeof loginSchema>
 export type RegisterFormData = z.infer<typeof registerSchema>
 export type PatientFormData = z.infer<typeof patientSchema>
 export type ScreeningPatientInfoFormData = z.infer<typeof screeningPatientInfoSchema>
-export type ScreeningQuestionnaireFormData = z.infer<typeof screeningQuestionnaireSchema>
 export type ScreeningFormData = z.infer<typeof screeningFormSchema>
+export type ScreeningQuestionnaireFormData = z.infer<typeof screeningQuestionnaireSchema>
 export type ProfileUpdateFormData = z.infer<typeof profileUpdateSchema>
 export type PatientSearchFormData = z.infer<typeof patientSearchSchema>
 
