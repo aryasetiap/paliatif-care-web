@@ -29,8 +29,7 @@ export default function Home() {
     {
       icon: FileText,
       title: 'Skrining',
-      description:
-        'Kenali kebutuhan fisik, emosional, dan sosial Anda secara holistik. Dapatkan perawatan tepat untuk kualitas hidup terbaik.',
+      description: 'Kenali kebutuhan fisik, emosional, dan sosial Anda secara holistik.',
       href: '/screening/new',
       color: 'text-primary',
       bgColor: 'bg-primary-cream/60',
@@ -38,7 +37,7 @@ export default function Home() {
     {
       icon: Heart,
       title: 'Hasil',
-      description: 'Analisis hasil skrining dengan rekomendasi intervensi.',
+      description: 'Analisis hasil skrining dengan rekomendasi intervensi yang terpercaya.',
       href: '/dashboard',
       color: 'text-primary',
       bgColor: 'bg-primary-cream/60',
@@ -317,7 +316,7 @@ export default function Home() {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
                 <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-3">
-                  <ShieldCheck className="h-8 w-8 text-blue-400" />
+                  <ShieldCheck className="h-8 w-8 text-white" />
                 </div>
               </div>
             </motion.div>
@@ -357,9 +356,9 @@ export default function Home() {
                       <motion.div
                         whileHover={{ scale: 1.05, rotate: 3 }}
                         transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className="inline-flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 mb-6 mx-auto shadow-lg border border-white/20"
+                        className="inline-flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 mb-6 mx-auto shadow-lg border-2 border-white"
                       >
-                        <Icon className="h-8 w-8 text-blue-600" />
+                        <Icon className="h-8 w-8 text-white" />
                       </motion.div>
 
                       {/* Title */}
@@ -398,7 +397,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 30 }}
           animate={leftSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.8, delay: 1.5, ease: 'easeOut' }}
-          className="px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 mt-8 lg:mt-10 mb-12 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
+          className="px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 mt-8 lg:mt-10 mb-12 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 lg:gap-6"
         >
           {stats.map((stat, index) => {
             const Icon = stat.icon
@@ -414,7 +413,9 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 to-purple-500/15 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
                   <div className="relative bg-white/85 backdrop-blur-lg border border-sky-300 rounded-xl p-3 sm:p-4 hover:bg-white hover:shadow-lg hover:shadow-sky-500/20 transition-all duration-300">
                     <Icon className="h-5 w-5 sm:h-6 sm:w-6 mx-auto mb-2 text-blue-600 group-hover:scale-110 transition-transform duration-300" />
-                    <div className="text-lg sm:text-xl font-bold text-sky-900 mb-1">{stat.value}</div>
+                    <div className="text-lg sm:text-xl font-bold text-sky-900 mb-1">
+                      {stat.value}
+                    </div>
                     <div className="text-xs sm:text-sm text-sky-700">{stat.label}</div>
                   </div>
                 </div>

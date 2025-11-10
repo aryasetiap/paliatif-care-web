@@ -83,7 +83,7 @@ export default function HeaderNav() {
               className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-blue-50 ${
                 isScrolled
                   ? 'text-gray-800 hover:text-gray-900 hover:bg-blue-50'
-                  : 'text-white/90 hover:text-white hover:bg-white/10'
+                  : 'text-gray-800 hover:text-gray-900 hover:bg-white/10'
               }`}
             >
               Skrining
@@ -95,7 +95,7 @@ export default function HeaderNav() {
               className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-blue-50 ${
                 isScrolled
                   ? 'text-gray-800 hover:text-gray-900 hover:bg-blue-50'
-                  : 'text-white/90 hover:text-white hover:bg-white/10'
+                  : 'text-gray-800 hover:text-gray-900 hover:bg-white/10'
               }`}
             >
               Edukasi
@@ -108,7 +108,7 @@ export default function HeaderNav() {
               className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-blue-50 ${
                 isScrolled
                   ? 'text-gray-800 hover:text-gray-900 hover:bg-blue-50'
-                  : 'text-white/90 hover:text-white hover:bg-white/10'
+                  : 'text-gray-800 hover:text-gray-900 hover:bg-white/10'
               }`}
             >
               Fitur Layanan
@@ -121,7 +121,7 @@ export default function HeaderNav() {
               className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-blue-50 ${
                 isScrolled
                   ? 'text-gray-800 hover:text-gray-900 hover:bg-blue-50'
-                  : 'text-white/90 hover:text-white hover:bg-white/10'
+                  : 'text-gray-800 hover:text-gray-900 hover:bg-white/10'
               }`}
             >
               Tentang
@@ -134,7 +134,7 @@ export default function HeaderNav() {
               className={`px-6 py-2 text-sm font-medium transition-all duration-300 rounded-full hover:scale-105 border backdrop-blur-sm ${
                 isScrolled
                   ? 'border-gray-300 text-gray-700 hover:text-gray-900 hover:bg-gray-100 hover:border-gray-400'
-                  : 'border-white/20 text-white/90 hover:text-white hover:bg-white/15 hover:border-white/30'
+                  : 'border-gray-700 text-gray-700 hover:text-gray-900 hover:bg-white/15 hover:border-white/30'
               }`}
               asChild
             >
@@ -175,7 +175,9 @@ export default function HeaderNav() {
         >
           <div
             className={`mt-3 rounded-xl border transition-all duration-300 ${
-              isScrolled ? 'bg-white/95 backdrop-blur-md border-gray-200 shadow-lg' : 'bg-white/95 backdrop-blur-md border-blue-200 shadow-lg'
+              isScrolled
+                ? 'bg-white/95 backdrop-blur-md border-gray-200 shadow-lg'
+                : 'bg-white/95 backdrop-blur-md border-blue-200 shadow-lg'
             }`}
           >
             <nav className="p-4 space-y-2">
