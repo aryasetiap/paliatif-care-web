@@ -106,20 +106,22 @@
   - [x] Add recent activity timeline ✅
   - [ ] Integrasi chart components (Recharts) - PENDING
 
-- [ ] **Patient Management Pages (Day 3-4 - 10 hours)** 🔄
-  - [ ] Create patient list page (`/pasien`) dengan pagination
-  - [ ] Implement search dan filter functionality
-  - [ ] Build patient detail page (`/pasien/[id]`) dengan history
-  - [ ] Create patient card components untuk mobile view
-  - [ ] Add patient creation/edit functionality
-  - [ ] Build screening history timeline
+- [x] **Patient Management Pages (Day 3-4 - 10 hours)** ✅
+  - [x] Create patient list page (`/pasien`) dengan pagination ✅
+  - [x] Implement search dan filter functionality ✅
+  - [x] Build patient detail page (`/pasien/[id]`) dengan history ✅
+  - [x] Create patient card components untuk mobile view ✅
+  - [x] Add patient creation/edit functionality ✅
+  - [x] Build screening history timeline ✅
 
-- [ ] **Education Content Pages (Day 4 - 6 hours)** 🔄 *BEING WORKED ON BY PARTNER*
+- [x] **Education Content Pages (Day 4 - 6 hours)** 🔄 PARTIALLY COMPLETED
   - [x] Create education JSON data structure ✅
-  - [ ] Create education overview page (`/edukasi`) - *PARTNER WORKING*
-  - [ ] Build disease detail pages (`/edukasi/[slug]`) - *PARTNER WORKING*
-  - [ ] Implement table of contents navigation - *PARTNER WORKING*
-  - [ ] Add search functionality untuk diseases - *PARTNER WORKING*
+  - [x] Create education overview page (`/edukasi`) ✅
+  - [x] Build disease detail pages (`/edukasi/[slug]`) ✅
+  - [x] Add search functionality untuk diseases ✅
+  - [x] Add print functionality untuk education content ✅
+  - [ ] ⏳ Implement table of contents navigation - COMPONENTS CREATED, NOT INTEGRATED
+  - [ ] ⏳ Add advanced features (enhanced search, print options) - ON HOLD DUE TO COMPLEXITY
 
 #### Programmer B Tasks:
 - [x] **API & Data Layer (Day 3 - 4 hours)** ✅
@@ -334,10 +336,10 @@
 - [x] ✅ Database structure synchronized with client requirements
 - [x] ✅ Documentation synchronized with client resources
 - [x] ✅ Technical specifications updated
-- [ ] ⏳ Patient management system (list & detail pages)
+- [x] ✅ Patient management system (list & detail pages)
 - [x] ✅ ESAS screening system backend (rule engine & validation)
 - [ ] ⏳ ESAS screening system frontend (form & results UI)
-- [ ] 🔄 Education content pages (partner working on /edukasi)
+- [x] 🔄 Education content pages (/edukasi) - BASIC VERSION COMPLETE, TOC & ADVANCED FEATURES PENDING
 - [x] ✅ PDF export functionality untuk screening results
 - [ ] ⏳ Real authentication integration (Supabase)
 - [ ] ⏳ Testing & deployment preparation

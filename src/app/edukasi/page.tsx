@@ -11,6 +11,7 @@ import { useRef } from 'react'
 import educationData from '@/data/edukasi-penyakit-terminal.json'
 import { EducationData, Disease } from '@/types/edukasi'
 import EducationSearch from '@/components/edukasi/education-search'
+
 import '@/styles/modern-patterns.css'
 
 export default function EducationPage() {
@@ -93,14 +94,13 @@ export default function EducationPage() {
 
       {/* Animated Grid Pattern */}
       <div
-        className="fixed inset-0 opacity-20"
+        className="fixed inset-0 opacity-20 animate-slide"
         style={{
           backgroundImage: `
             linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
             linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
           `,
           backgroundSize: '50px 50px',
-          animation: 'slide 20s linear infinite',
         }}
       />
 
@@ -327,11 +327,11 @@ export default function EducationPage() {
                         </span>
                       </div>
 
-                      {/* Button */}
-                      <div className="flex justify-center">
+                      {/* Buttons */}
+                      <div className="flex gap-2 justify-center">
                         <Button
                           size="sm"
-                          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-md hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 px-5 py-2.5 font-medium border-0 w-full"
+                          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-md hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 px-4 py-2.5 font-medium border-0 flex-1"
                         >
                           Pelajari
                           <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />

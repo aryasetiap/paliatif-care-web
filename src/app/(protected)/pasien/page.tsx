@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Search, Plus, Calendar, User, AlertTriangle, TrendingUp, Filter, Eye } from 'lucide-react'
+import { Search, Plus, Calendar, User, AlertTriangle, TrendingUp, Filter, Eye, Grid, List } from 'lucide-react'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
@@ -23,7 +23,11 @@ import {
   type Patient,
   type PatientSearch,
   getDashboardStats,
+  getPatientsWithLatestScreening,
 } from '@/lib/patient-management-index'
+import { PatientCardList, PatientCardCompact } from '@/components/pasien/patient-cards'
+import { PatientFormDialog, QuickAddPatient } from '@/components/pasien/patient-form'
+import { toast } from '@/components/ui/use-toast'
 import '@/styles/modern-patterns.css'
 
 export default function PatientsPage() {
@@ -44,6 +48,11 @@ export default function PatientsPage() {
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
 
+  // View state
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table')
+  const [showAddDialog, setShowAddDialog] = useState(false)
+  const [patientsWithScreening, setPatientsWithScreening] = useState<any[]>([])
+
   const loadPatients = useCallback(async () => {
     try {
       setLoading(true)
@@ -56,8 +65,12 @@ export default function PatientsPage() {
       setPatients(result.patients)
       setTotal(result.total)
       setTotalPages(result.totalPages)
-    } catch {
-      // console.error('Error loading patients:', error)
+
+      // Load patients with latest screening for card view
+      const patientsWithLatest = await getPatientsWithLatestScreening(params)
+      setPatientsWithScreening(patientsWithLatest.patients)
+    } catch (error) {
+      console.error('Error loading patients:', error)
     } finally {
       setLoading(false)
     }
@@ -179,6 +192,14 @@ export default function PatientsPage() {
             </div>
             <div className="flex gap-3 mt-4 md:mt-0">
               <Button
+                onClick={() => setShowAddDialog(true)}
+                variant="outline"
+                className="border-sky-300 text-sky-700 hover:bg-sky-50"
+              >
+                <User className="mr-2 h-4 w-4" />
+                Tambah Pasien
+              </Button>
+              <Button
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white"
                 asChild
               >
@@ -258,7 +279,7 @@ export default function PatientsPage() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="bg-white/80 backdrop-blur-md border border-sky-200 rounded-xl p-6 mb-8"
         >
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sky-500" />
               <Input
@@ -294,10 +315,28 @@ export default function PatientsPage() {
               <Filter className="mr-2 h-4 w-4" />
               Reset
             </Button>
+            <div className="flex gap-2">
+              <Button
+                variant={viewMode === 'table' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('table')}
+                className={viewMode === 'table' ? 'bg-sky-600 text-white' : 'border-sky-300 text-sky-700 hover:bg-sky-50'}
+              >
+                <List className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'cards' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('cards')}
+                className={viewMode === 'cards' ? 'bg-sky-600 text-white' : 'border-sky-300 text-sky-700 hover:bg-sky-50'}
+              >
+                <Grid className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </motion.div>
 
-        {/* Patients Table */}
+        {/* Patients Display */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -306,7 +345,14 @@ export default function PatientsPage() {
         >
           <Card className="border-0 shadow-none">
             <CardHeader className="pb-4">
-              <CardTitle className="text-xl text-sky-900">Daftar Pasien ({total} pasien)</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl text-sky-900">
+                  Daftar Pasien ({total} pasien)
+                </CardTitle>
+                <div className="text-sm text-sky-600">
+                  Tampilan: {viewMode === 'table' ? 'Tabel' : 'Kartu'}
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               {loading ? (
@@ -316,22 +362,9 @@ export default function PatientsPage() {
                 </div>
               ) : patients.length === 0 ? (
                 <div className="text-center py-12">
-                  <User className="h-12 w-12 mx-auto mb-4 text-sky-400" />
-                  <h3 className="text-lg font-semibold text-sky-900 mb-2">Belum Ada Data Pasien</h3>
-                  <p className="text-sky-600 mb-4">
-                    Mulai dengan melakukan screening untuk pasien pertama
-                  </p>
-                  <Button
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white"
-                    asChild
-                  >
-                    <Link href="/screening/new">
-                      <Plus className="mr-2 h-4 w-4" />
-                      Screening Pertama
-                    </Link>
-                  </Button>
+                  <QuickAddPatient onPatientCreated={() => loadPatients()} />
                 </div>
-              ) : (
+              ) : viewMode === 'table' ? (
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
@@ -429,6 +462,10 @@ export default function PatientsPage() {
                     </TableBody>
                   </Table>
                 </div>
+              ) : (
+                // Card View
+                <PatientCardList patients={patientsWithScreening} loading={loading} />
+              )
               )}
 
               {/* Pagination */}
@@ -468,6 +505,16 @@ export default function PatientsPage() {
       </div>
 
       <Footer />
+
+      {/* Patient Add Dialog */}
+      <PatientFormDialog
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
+        onSuccess={() => {
+          loadPatients()
+          loadStats()
+        }}
+      />
     </div>
   )
 }

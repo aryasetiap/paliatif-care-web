@@ -31,6 +31,7 @@ import {
   type PatientHistory,
 } from '@/lib/patient-management-index'
 import { PatientManagementPDF } from '@/lib/patient-management-pdf'
+import { ScreeningTimeline } from '@/components/pasien/screening-timeline'
 import '@/styles/modern-patterns.css'
 import { useToast } from '@/components/ui/use-toast'
 
@@ -498,40 +499,7 @@ export default function PatientDetailPage() {
             </TabsContent>
 
             <TabsContent value="timeline" className="mt-6">
-              <Card className="bg-white/80 backdrop-blur-md border-sky-200">
-                <CardHeader>
-                  <CardTitle className="text-xl text-sky-900">Timeline Aktivitas</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {history && history.timeline.length > 0 ? (
-                    <div className="space-y-4">
-                      {history.timeline.map((entry: any) => (
-                        <div key={entry.id} className="flex items-start gap-4">
-                          <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <Activity className="h-5 w-5 text-blue-600" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h4 className="font-semibold text-sky-900">{entry.title}</h4>
-                              <Badge variant="outline" className="text-xs">
-                                {entry.type}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-sky-600 mb-1">
-                              {new Date(entry.date).toLocaleString('id-ID')}
-                            </p>
-                            <p className="text-sm text-sky-700">{entry.description}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sky-600 text-center py-8">
-                      Timeline aktivitas tidak tersedia
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
+              <ScreeningTimeline patient={patient} />
             </TabsContent>
 
             <TabsContent value="export" className="mt-6">
