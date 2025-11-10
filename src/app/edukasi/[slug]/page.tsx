@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   BookOpen,
@@ -17,11 +18,18 @@ import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import educationData from '@/data/edukasi-penyakit-terminal.json'
 import { EducationData, Disease, SymptomDisplay } from '@/types/edukasi'
+import EducationSearch from '@/components/edukasi/education-search'
 import '@/styles/modern-patterns.css'
 
 export default function EducationDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const router = useRouter()
   const [disease, setDisease] = useState<Disease | null>(null)
   const [loading, setLoading] = useState(true)
+
+  const handleSearchResultSelect = (selectedDisease: Disease) => {
+    // Navigate to the selected disease detail page
+    router.push(`/edukasi/${selectedDisease.slug}`)
+  }
 
   useEffect(() => {
     const loadData = async () => {
@@ -179,6 +187,28 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
         }}
       />
       <HeaderNav />
+
+      {/* Quick Search Section */}
+      <section className="relative py-8">
+        <div className="relative z-10 container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            viewport={{ once: true }}
+            className="max-w-2xl mx-auto"
+          >
+            <div className="text-center mb-4">
+              <h3 className="text-lg font-semibold text-sky-900">Cari Penyakit Lain</h3>
+              <p className="text-sm text-sky-700">Jelajahi informasi kesehatan lainnya</p>
+            </div>
+            <EducationSearch
+              onResultSelect={handleSearchResultSelect}
+              className="w-full"
+            />
+          </motion.div>
+        </div>
+      </section>
 
       {/* Overview Section */}
       <section id="overview" className="relative pt-20 pb-16">

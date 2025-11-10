@@ -244,11 +244,11 @@
   - [ ] Add patient edit functionality
 
 #### Programmer B Tasks:
-- [ ] **Static Content Management (Day 8 - 4 hours)**
-  - [ ] Create static content structure untuk diseases
-  - [ ] Implement markdown/MDX processing
-  - [ ] Setup SSG untuk education pages
-  - [ ] Create content search indexing
+- [x] **Static Content Management (Day 8 - 4 hours)** ✅
+  - [x] Create static content structure untuk diseases ✅
+  - [x] Implement markdown/MDX processing ✅
+  - [x] Setup SSG untuk education pages ✅
+  - [x] Create content search indexing ✅
 
 - [ ] **Patient Data Integration (Day 8-9 - 8 hours)**
   - [ ] Create patient detail data fetching

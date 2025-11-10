@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   Activity,
@@ -15,12 +16,19 @@ import { Footer } from '@/components/layout/footer'
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import educationData from '@/data/edukasi-penyakit-terminal.json'
-import { EducationData } from '@/types/edukasi'
+import { EducationData, Disease } from '@/types/edukasi'
+import EducationSearch from '@/components/edukasi/education-search'
 import '@/styles/modern-patterns.css'
 
 export default function EducationPage() {
+  const router = useRouter()
   const leftSectionRef = useRef(null)
   const leftSectionInView = useInView(leftSectionRef, { once: true, amount: 0.3 })
+
+  const handleSearchResultSelect = (disease: Disease) => {
+    // Navigate to the disease detail page
+    router.push(`/edukasi/${disease.slug}`)
+  }
 
   const data = educationData as EducationData
   const diseases = data.edukasi_penyakit_terminal.diseases
@@ -170,6 +178,38 @@ export default function EducationPage() {
               </Button>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Search Section */}
+      <section className="relative py-16">
+        {/* Background Blur */}
+        <div className="absolute inset-0 bg-white/5 backdrop-blur-xl"></div>
+
+        <div className="relative z-10 container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            viewport={{ once: true }}
+            className="max-w-2xl mx-auto"
+          >
+            {/* Section Header */}
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold text-sky-900 mb-4">
+                Cari Informasi Kesehatan
+              </h2>
+              <p className="text-sky-700">
+                Temukan informasi tentang penyakit, gejala, dan faktor risiko
+              </p>
+            </div>
+
+            {/* Search Component */}
+            <EducationSearch
+              onResultSelect={handleSearchResultSelect}
+              className="w-full"
+            />
+          </motion.div>
         </div>
       </section>
 
