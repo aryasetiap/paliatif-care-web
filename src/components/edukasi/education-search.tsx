@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Search, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -28,7 +28,7 @@ export default function EducationSearch({ onResultSelect, className = '' }: Educ
 
   const data = educationData as EducationData
 
-  const searchDiseases = (searchQuery: string): SearchResult[] => {
+  const searchDiseases = useCallback((searchQuery: string): SearchResult[] => {
     if (!searchQuery.trim()) return []
 
     const queryLower = searchQuery.toLowerCase()
@@ -158,7 +158,7 @@ export default function EducationSearch({ onResultSelect, className = '' }: Educ
 
     // Sort by score (descending)
     return searchResults.sort((a, b) => b.score - a.score)
-  }
+  }, [data])
 
   useEffect(() => {
     if (query.trim()) {
@@ -171,7 +171,7 @@ export default function EducationSearch({ onResultSelect, className = '' }: Educ
       setResults([])
       setShowResults(false)
     }
-  }, [query])
+  }, [query, searchDiseases])
 
   const handleResultClick = (result: SearchResult) => {
     onResultSelect?.(result.disease)
@@ -274,7 +274,7 @@ export default function EducationSearch({ onResultSelect, className = '' }: Educ
         <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-md border border-sky-200 rounded-lg shadow-lg p-4">
           <div className="text-center text-sky-600">
             <Search className="h-8 w-8 mx-auto mb-2 text-sky-400" />
-            <p className="text-sm">Tidak ada hasil untuk "{query}"</p>
+            <p className="text-sm">Tidak ada hasil untuk &ldquo;{query}&rdquo;</p>
             <p className="text-xs mt-1">Coba kata kunci lain seperti: nyeri, diabetes, jantung</p>
           </div>
         </div>
