@@ -269,6 +269,7 @@ export class ESASRuleEngine {
     return {
       highestScore,
       primaryQuestion: parseInt(primaryQuestion),
+      allScores: questions,
       riskLevel,
       actionRequired,
       diagnosis,
