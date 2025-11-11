@@ -465,7 +465,6 @@ export default function PatientsPage() {
               ) : (
                 // Card View
                 <PatientCardList patients={patientsWithScreening} loading={loading} />
-              )
               )}
 
               {/* Pagination */}

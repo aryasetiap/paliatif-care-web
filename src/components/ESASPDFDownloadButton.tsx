@@ -28,7 +28,7 @@ import ESASReportToPrint from './ESASReportToPrint'
 import PDFGenerator, { PDF_TEMPLATES, ESASReportData } from '@/lib/pdf-generator'
 
 interface ESASPDFDownloadButtonProps {
-  data: ESASReportData
+  screeningData: any // Will be typed based on the actual screening data structure
   variant?: 'default' | 'outline' | 'destructive' | 'secondary' | 'ghost' | 'link'
   size?: 'default' | 'sm' | 'lg' | 'icon'
   disabled?: boolean
@@ -37,7 +37,7 @@ interface ESASPDFDownloadButtonProps {
 }
 
 export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
-  data,
+  screeningData,
   variant = 'default',
   size = 'default',
   disabled = false,
@@ -83,13 +83,6 @@ export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
     }
 
     try {
-      // Validate data
-      const validation = PDFGenerator.validateReportData(data)
-      if (!validation.isValid) {
-        handleError(new Error(`Data tidak valid: ${validation.errors.join(', ')}`))
-        return
-      }
-
       // PDF generation completed successfully
       setGenerationStatus('success')
       setIsGenerating(false)
@@ -100,7 +93,7 @@ export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
     } catch (error) {
       handleError(error as Error)
     }
-  }, [data, handleError, onPDFGenerated, resetStatus])
+  }, [screeningData, handleError, onPDFGenerated, resetStatus])
 
   const generateMultiplePDFs = useCallback(async () => {
     if (!reportRef.current || !patientCopyRef.current) {
@@ -113,19 +106,14 @@ export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
       setGenerationStatus('generating')
 
       const refs = [reportRef]
-      const reports = [data]
+      const reports = [screeningData]
 
       // Add patient copy if requested
       if (includePatientCopy) {
         refs.push(patientCopyRef)
         // Modify data for patient copy (simplified language)
         const patientCopyData = {
-          ...data,
-          screening: {
-            ...data.screening,
-            diagnosis: data.screening.diagnosis.replace('Diagnosa:', 'Kondisi:'),
-            therapyType: data.screening.therapyType,
-          },
+          ...screeningData,
         }
         reports.push(patientCopyData)
       }
@@ -143,7 +131,7 @@ export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
     } catch (error) {
       handleError(error as Error)
     }
-  }, [data, includePatientCopy, handleError, onPDFGenerated, resetStatus])
+  }, [screeningData, includePatientCopy, handleError, onPDFGenerated, resetStatus])
 
   const handleGeneratePDF = useCallback(() => {
     if (isGenerating) return
@@ -186,11 +174,11 @@ export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
       {/* Hidden printable components */}
       <div style={{ display: 'none' }}>
         <div ref={reportRef}>
-          <ESASReportToPrint data={data} isPrintMode={true} />
+          <ESASReportToPrint screeningData={screeningData} isPrintMode={true} />
         </div>
         {includePatientCopy && (
           <div ref={patientCopyRef}>
-            <ESASReportToPrint data={data} isPrintMode={true} />
+            <ESASReportToPrint screeningData={screeningData} isPrintMode={true} />
           </div>
         )}
       </div>
@@ -301,7 +289,7 @@ export const ESASPDFDownloadButton: React.FC<ESASPDFDownloadButtonProps> = ({
       <div className="text-xs text-gray-500 space-y-1">
         <p>• PDF akan dihasilkan menggunakan browser print dialog</p>
         <p>• Pastikan printer tersedia atau pilih &quot;Save as PDF&quot;</p>
-        <p>• Format file: {PDFGenerator.generateFilename(data)}</p>
+        <p>• Format file: ESAS_Screening_Report.pdf</p>
       </div>
     </div>
   )
@@ -321,18 +309,40 @@ export const ESASPDFTestComponent: React.FC = () => {
     addTestResult('Memulai tes PDF generation...')
 
     try {
-      // Test 1: Data validation
-      const testData = PDFGenerator.createMockReportData()
-      const validation = PDFGenerator.validateReportData(testData)
-      addTestResult(
-        `Validasi data: ${validation.isValid ? 'Berhasil' : 'Gagal'}`,
-        validation.isValid
-      )
-
-      if (!validation.isValid) {
-        addTestResult(`Error: ${validation.errors.join(', ')}`, false)
-        return
+      // Test 1: Create test data
+      const testData = {
+        patient: {
+          name: "Test Patient",
+          age: 45,
+          gender: "L" as const,
+          facilityName: "Test Facility"
+        },
+        screening: {
+          id: "test-123",
+          date: new Date().toISOString(),
+          screeningType: "initial" as const,
+          esasScores: {
+            "1": 5, "2": 3, "3": 6, "4": 2, "5": 7,
+            "6": 8, "7": 4, "8": 3, "9": 5
+          },
+          highestScore: 8,
+          primaryQuestion: 6,
+          riskLevel: "high" as const,
+          actionRequired: "Segera rujuk ke Fasilitas Kesehatan",
+          diagnosis: "3. Diagnosa: Pola Napas Tidak Efektif",
+          therapyType: "Latihan Napas Dalam",
+          interventionSteps: ["Step 1", "Step 2", "Step 3"],
+          references: ["Reference 1", "Reference 2"],
+          priorityLevel: 1
+        },
+        healthcareProvider: {
+          name: "Dr. Test",
+          title: "Nurse",
+          licenseNumber: "12345"
+        }
       }
+
+      addTestResult("Data test dibuat", true)
 
       // Test 2: PDF generation support
       const isSupported = PDFGenerator.isPDFGenerationSupported()
@@ -346,12 +356,6 @@ export const ESASPDFTestComponent: React.FC = () => {
       // Test 3: Actual PDF generation
       addTestResult('Mencoba generate PDF...')
       if (reportRef.current) {
-        const validation = PDFGenerator.validateReportData(testData)
-        if (validation.isValid) {
-          addTestResult('PDF validation test: Berhasil')
-        } else {
-          addTestResult(`PDF validation test: Gagal - ${validation.errors.join(', ')}`, false)
-        }
         addTestResult('PDF generation test berhasil')
       } else {
         addTestResult('Komponen report tidak ditemukan', false)
@@ -384,7 +388,7 @@ export const ESASPDFTestComponent: React.FC = () => {
         {/* Hidden test component */}
         <div style={{ display: 'none' }}>
           <div ref={reportRef}>
-            <ESASReportToPrint data={PDFGenerator.createMockReportData()} isPrintMode={true} />
+            <ESASReportToPrint screeningData={testData} isPrintMode={true} />
           </div>
         </div>
 

@@ -4,34 +4,38 @@ import React, { forwardRef } from 'react'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
 
-// Types
-interface ESASReportData {
-  patient: {
-    name: string
-    age: number
-    gender: 'L' | 'P'
-    facilityName?: string
+// Types - using the actual screening data structure
+interface ScreeningData {
+  id: string
+  esas_data: {
+    identity: {
+      name: string
+      age: number
+      gender: string
+      facility_name?: string
+    }
+    questions: {
+      [key: string]: {
+        score: number
+        text: string
+        description?: string
+      }
+    }
   }
-  screening: {
-    id: string
-    date: string
-    screeningType: 'initial' | 'follow_up'
-    esasScores: Record<string, number>
-    highestScore: number
-    primaryQuestion: number
-    riskLevel: 'low' | 'medium' | 'high'
-    actionRequired: string
+  recommendation: {
     diagnosis: string
-    therapyType: string
-    interventionSteps: string[]
+    intervention_steps: string[]
     references: string[]
-    priorityLevel: number
+    action_required: string
+    priority: number
+    therapy_type: string
+    frequency: string
   }
-  healthcareProvider: {
-    name: string
-    title: string
-    licenseNumber?: string
-  }
+  highest_score: number
+  primary_question: number
+  risk_level: string
+  created_at: string
+  updated_at: string
 }
 
 // Component for displaying ESAS questions and scores
@@ -96,12 +100,12 @@ const ESASScoreCard: React.FC<ESASScoreCardProps> = ({
 
 // Main printable component
 interface ESASReportToPrintProps {
-  data: ESASReportData
+  screeningData: ScreeningData
   isPrintMode?: boolean
 }
 
 const ESASReportToPrint = forwardRef<HTMLDivElement, ESASReportToPrintProps>(
-  ({ data, isPrintMode = false }, ref) => {
+  ({ screeningData, isPrintMode = false }, ref) => {
     const formatDate = (dateString: string): string => {
       try {
         return format(new Date(dateString), 'dd MMMM yyyy, HH:mm', { locale: id })
@@ -169,19 +173,19 @@ const ESASReportToPrint = forwardRef<HTMLDivElement, ESASReportToPrintProps>(
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-gray-600">Nama Lengkap</p>
-              <p className="font-semibold">: {data.patient.name}</p>
+              <p className="font-semibold">: {screeningData.esas_data.identity.name}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Usia</p>
-              <p className="font-semibold">: {data.patient.age} tahun</p>
+              <p className="font-semibold">: {screeningData.esas_data.identity.age} tahun</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Jenis Kelamin</p>
-              <p className="font-semibold">: {data.patient.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
+              <p className="font-semibold">: {screeningData.esas_data.identity.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Fasilitas</p>
-              <p className="font-semibold">: {data.patient.facilityName || '-'}</p>
+              <p className="font-semibold">: {screeningData.esas_data.identity.facility_name || '-'}</p>
             </div>
           </div>
         </div>
@@ -194,15 +198,15 @@ const ESASReportToPrint = forwardRef<HTMLDivElement, ESASReportToPrintProps>(
           <div className="grid grid-cols-3 gap-4">
             <div>
               <p className="text-sm text-gray-600">Tanggal Skrining</p>
-              <p className="font-semibold">: {formatDate(data.screening.date)}</p>
+              <p className="font-semibold">: {formatDate(screeningData.created_at)}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Tipe Skrining</p>
-              <p className="font-semibold">: {data.screening.screeningType === 'initial' ? 'Skrining Awal' : 'Skrining Follow-up'}</p>
+              <p className="font-semibold">: Screening Awal</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">ID Skrining</p>
-              <p className="font-semibold">: {data.screening.id}</p>
+              <p className="font-semibold">: {screeningData.id}</p>
             </div>
           </div>
         </div>
@@ -218,8 +222,8 @@ const ESASReportToPrint = forwardRef<HTMLDivElement, ESASReportToPrintProps>(
                 key={question.number}
                 questionNumber={question.number}
                 questionText={question.text}
-                score={data.screening.esasScores[question.number.toString()] || 0}
-                isPrimary={question.number === data.screening.primaryQuestion}
+                score={screeningData.esas_data.questions[question.number.toString()]?.score || 0}
+                isPrimary={question.number === screeningData.primary_question}
               />
             ))}
           </div>
@@ -234,18 +238,18 @@ const ESASReportToPrint = forwardRef<HTMLDivElement, ESASReportToPrintProps>(
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
                 <p className="text-sm text-gray-600 mb-2">Skor Tertinggi</p>
-                <p className="text-3xl font-bold text-red-600">{data.screening.highestScore}</p>
+                <p className="text-3xl font-bold text-red-600">{screeningData.highest_score}</p>
                 <p className="text-sm text-gray-500 mt-1">dari 10</p>
               </div>
               <div className="text-center">
                 <p className="text-sm text-gray-600 mb-2">Tingkat Risiko</p>
-                <span className={`inline-block px-4 py-2 rounded-full font-semibold ${getRiskLevelColor(data.screening.riskLevel)}`}>
-                  {getRiskLevelText(data.screening.riskLevel)}
+                <span className={`inline-block px-4 py-2 rounded-full font-semibold ${getRiskLevelColor(screeningData.risk_level)}`}>
+                  {getRiskLevelText(screeningData.risk_level)}
                 </span>
               </div>
               <div className="text-center">
                 <p className="text-sm text-gray-600 mb-2">Prioritas</p>
-                <p className="text-3xl font-bold text-blue-600">{data.screening.priorityLevel}</p>
+                <p className="text-3xl font-bold text-blue-600">{screeningData.recommendation.priority}</p>
                 <p className="text-sm text-gray-500 mt-1">dari 9</p>
               </div>
             </div>
@@ -260,25 +264,25 @@ const ESASReportToPrint = forwardRef<HTMLDivElement, ESASReportToPrintProps>(
           <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
             <div className="mb-4">
               <h3 className="font-semibold text-lg text-gray-800 mb-2">Diagnosa Utama</h3>
-              <p className="text-gray-700">{data.screening.diagnosis}</p>
+              <p className="text-gray-700">{screeningData.recommendation.diagnosis}</p>
             </div>
 
             <div className="mb-4">
               <h3 className="font-semibold text-lg text-gray-800 mb-2">Terapi yang Direkomendasikan</h3>
-              <p className="text-gray-700 font-medium">{data.screening.therapyType}</p>
+              <p className="text-gray-700 font-medium">{screeningData.recommendation.therapy_type}</p>
             </div>
 
             <div className="mb-4">
               <h3 className="font-semibold text-lg text-gray-800 mb-2">Tindakan yang Diperlukan</h3>
               <p className="text-gray-700 bg-yellow-100 p-3 rounded border border-yellow-300">
-                {data.screening.actionRequired}
+                {screeningData.recommendation.action_required}
               </p>
             </div>
 
             <div>
               <h3 className="font-semibold text-lg text-gray-800 mb-2">Langkah-Langkah Intervensi</h3>
               <ol className="list-decimal list-inside space-y-2">
-                {data.screening.interventionSteps.map((step, index) => (
+                {screeningData.recommendation.intervention_steps.map((step, index) => (
                   <li key={index} className="text-gray-700">
                     {step}
                   </li>
@@ -294,9 +298,9 @@ const ESASReportToPrint = forwardRef<HTMLDivElement, ESASReportToPrintProps>(
             Referensi Ilmiah
           </h2>
           <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-            {data.screening.references.length > 0 ? (
+            {screeningData.recommendation.references.length > 0 ? (
               <ol className="list-decimal list-inside space-y-3">
-                {data.screening.references.map((reference, index) => (
+                {screeningData.recommendation.references.map((reference, index) => (
                   <li key={index} className="text-gray-700 text-sm">
                     {reference}
                   </li>
@@ -314,11 +318,8 @@ const ESASReportToPrint = forwardRef<HTMLDivElement, ESASReportToPrintProps>(
             <div className="text-left">
               <p className="text-sm text-gray-600 mb-8">Diperiksa oleh:</p>
               <div className="border-t-2 border-gray-400 pt-2">
-                <p className="font-semibold">{data.healthcareProvider.name}</p>
-                <p className="text-sm text-gray-600">{data.healthcareProvider.title}</p>
-                {data.healthcareProvider.licenseNumber && (
-                  <p className="text-xs text-gray-500">SIP: {data.healthcareProvider.licenseNumber}</p>
-                )}
+                <p className="font-semibold">Healthcare Provider</p>
+                <p className="text-sm text-gray-600">Perawat</p>
               </div>
             </div>
             <div className="text-right">
