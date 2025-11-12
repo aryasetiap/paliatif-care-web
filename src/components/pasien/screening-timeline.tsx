@@ -13,15 +13,10 @@ import {
   TrendingDown,
   Minus,
   FileText,
-  Download,
-  AlertTriangle,
-  CheckCircle,
   Timer,
   Heart,
   Brain,
-  Lung,
-  Stomach,
-  Eye,
+  Apple,
   Frown,
   Meh,
   Smile
@@ -50,10 +45,10 @@ export function ScreeningTimeline({ patient, compact = false }: ScreeningTimelin
 
   // Process screenings into timeline entries
   const timelineEntries: TimelineEntry[] = patient.screenings
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .sort((a, b) => new Date(b.created_at || new Date()).getTime() - new Date(a.created_at || new Date()).getTime())
     .map((screening) => ({
       id: screening.id,
-      date: screening.created_at,
+      date: typeof screening.created_at === 'string' ? screening.created_at : (screening.created_at || new Date()).toISOString(),
       type: screening.screening_type === 'initial' ? 'screening' : 'follow-up' as const,
       title: screening.screening_type === 'initial' ? 'Screening Awal' : 'Follow-up Screening',
       description: `Skor tertinggi: ${screening.highest_score}/10 • Risiko: ${screening.risk_level}`,
@@ -96,9 +91,9 @@ export function ScreeningTimeline({ patient, compact = false }: ScreeningTimelin
       1: <Heart className="h-4 w-4" />, // Nyeri
       2: <Activity className="h-4 w-4" />, // Lelah
       3: <Brain className="h-4 w-4" />, // Tidur
-      4: <Stomach className="h-4 w-4" />, // Mual
-      5: <Stomach className="h-4 w-4" />, // Nafsu Makan
-      6: <Lung className="h-4 w-4" />, // Sesak
+      4: <Apple className="h-4 w-4" />, // Mual
+      5: <Apple className="h-4 w-4" />, // Nafsu Makan
+      6: <Activity className="h-4 w-4" />, // Sesak
       7: <Frown className="h-4 w-4" />, // Sedih
       8: <Meh className="h-4 w-4" />, // Cemas
       9: <Smile className="h-4 w-4" />, // Perasaan

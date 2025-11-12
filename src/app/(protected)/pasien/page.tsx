@@ -25,9 +25,8 @@ import {
   getDashboardStats,
   getPatientsWithLatestScreening,
 } from '@/lib/patient-management-index'
-import { PatientCardList, PatientCardCompact } from '@/components/pasien/patient-cards'
+import { PatientCardList } from '@/components/pasien/patient-cards'
 import { PatientFormDialog, QuickAddPatient } from '@/components/pasien/patient-form'
-import { toast } from '@/components/ui/use-toast'
 import '@/styles/modern-patterns.css'
 
 export default function PatientsPage() {
@@ -67,10 +66,11 @@ export default function PatientsPage() {
       setTotalPages(result.totalPages)
 
       // Load patients with latest screening for card view
-      const patientsWithLatest = await getPatientsWithLatestScreening(params)
-      setPatientsWithScreening(patientsWithLatest.patients)
-    } catch (error) {
-      console.error('Error loading patients:', error)
+      const patientsWithLatest = await getPatientsWithLatestScreening(searchParams.limit || 10)
+      setPatientsWithScreening(patientsWithLatest)
+    } catch {
+      // Error handling - silently handle the error for production
+      // Consider adding error logging service or user notification in the future
     } finally {
       setLoading(false)
     }
@@ -97,9 +97,9 @@ export default function PatientsPage() {
     try {
       const dashboardStats = await getDashboardStats()
       setStats(dashboardStats)
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error loading stats:', error)
+    } catch {
+      // Error handling - silently handle the error for production
+      // Consider adding error logging service or user notification in the future
     }
   }
 

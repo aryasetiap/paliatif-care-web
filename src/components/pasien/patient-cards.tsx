@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   User,
-  Calendar,
   Activity,
   AlertTriangle,
   Eye,
@@ -158,7 +157,7 @@ export function PatientCard({ patient, compact = false }: PatientCardProps) {
               <div className="p-2 bg-purple-50/50 rounded-lg border border-purple-200">
                 <p className="text-xs text-purple-600">Terdaftar</p>
                 <p className="text-lg font-semibold text-purple-900">
-                  {new Date(patient.created_at).toLocaleDateString('id-ID', {
+                  {new Date(patient.created_at || new Date()).toLocaleDateString('id-ID', {
                     day: 'numeric',
                     month: 'short'
                   })}

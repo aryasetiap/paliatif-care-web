@@ -1,13 +1,12 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
@@ -97,16 +96,7 @@ export default function ScreeningResultPage() {
   const [error, setError] = useState<string | null>(null)
   const printRef = React.useRef<HTMLDivElement>(null)
 
-  const handlePrint = useReactToPrint({
-    content: () => printRef.current,
-    documentTitle: `Laporan Screening ESAS - ${screeningData?.esas_data.identity.name}`,
-  })
-
-  useEffect(() => {
-    fetchScreeningData()
-  }, [params.id])
-
-  const fetchScreeningData = async () => {
+  const fetchScreeningData = useCallback(async () => {
     try {
       const supabase = createClient()
       const { data, error } = await supabase
@@ -115,7 +105,10 @@ export default function ScreeningResultPage() {
         .eq('id', params.id)
         .single()
 
-      if (error) throw error
+      if (error) {
+        setError(error.message)
+        return
+      }
 
       if (!data) {
         setError('Data screening tidak ditemukan')
@@ -124,17 +117,21 @@ export default function ScreeningResultPage() {
 
       setScreeningData(data)
     } catch (error: any) {
-      console.error('Error fetching screening data:', error)
       setError(error.message || 'Gagal mengambil data screening')
-      toast({
-        title: "Error",
-        description: "Gagal mengambil data screening",
-        variant: "destructive"
-      })
+      toast.error("Gagal mengambil data screening")
     } finally {
       setLoading(false)
     }
-  }
+  }, [params.id])
+
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current,
+    documentTitle: `Laporan Screening ESAS - ${screeningData?.esas_data.identity.name}`,
+  })
+
+  useEffect(() => {
+    fetchScreeningData()
+  }, [fetchScreeningData])
 
   if (loading) {
     return (

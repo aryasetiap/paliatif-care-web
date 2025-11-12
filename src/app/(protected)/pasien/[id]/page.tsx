@@ -24,11 +24,9 @@ import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
 import {
   getPatientById,
-  getPatientHistory,
   getSymptomProgression,
   exportPatientHistory,
   type PatientWithScreenings,
-  type PatientHistory,
 } from '@/lib/patient-management-index'
 import { PatientManagementPDF } from '@/lib/patient-management-pdf'
 import { ScreeningTimeline } from '@/components/pasien/screening-timeline'
@@ -40,7 +38,6 @@ export default function PatientDetailPage() {
   const patientId = params.id as string
 
   const [patient, setPatient] = useState<PatientWithScreenings | null>(null)
-  const [history, setHistory] = useState<PatientHistory | null>(null)
   const [symptomProgression, setSymptomProgression] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -57,10 +54,7 @@ export default function PatientDetailPage() {
       const patientData = await getPatientById(patientId)
       setPatient(patientData)
 
-      // Load complete history
-      const historyData = await getPatientHistory(patientId)
-      setHistory(historyData)
-
+      
       // Load symptom progression
       const progressionData = await getSymptomProgression(patientId)
       setSymptomProgression(progressionData)

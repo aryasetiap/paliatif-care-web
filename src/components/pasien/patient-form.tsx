@@ -30,10 +30,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
-import { toast } from '@/components/ui/use-toast'
-import { Loader2, Save, User, MapPin, Calendar } from 'lucide-react'
-import { createPatient, updatePatient, type Patient, type PatientInsert } from '@/lib/patient-management-index'
+import { useToast } from '@/components/ui/use-toast'
+import { Loader2, Save, User, MapPin } from 'lucide-react'
+import { createPatient, updatePatient, type Patient, type PatientInsert, type PatientUpdate } from '@/lib/patient-management-index'
+import { createClient } from '@/lib/supabase'
 
 const patientFormSchema = z.object({
   name: z
@@ -76,13 +76,14 @@ export function PatientFormDialog({
 }: PatientFormDialogProps) {
   const [loading, setLoading] = useState(false)
   const isEdit = !!patient
+  const { toast } = useToast()
 
   const form = useForm<PatientFormValues>({
     resolver: zodResolver(patientFormSchema),
     defaultValues: {
       name: patient?.name || '',
       age: patient?.age || 0,
-      gender: patient?.gender || undefined,
+      gender: (patient?.gender as 'L' | 'P' | undefined) || undefined,
       facility_name: patient?.facility_name || '',
       notes: '',
     },
@@ -111,7 +112,20 @@ export function PatientFormDialog({
         })
       } else {
         // Create new patient
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) {
+          toast({
+            title: 'Error',
+            description: 'User tidak ditemukan',
+            variant: 'destructive',
+          })
+          return
+        }
+
         const patientData: PatientInsert = {
+          user_id: user.id,
           name: values.name,
           age: values.age,
           gender: values.gender,

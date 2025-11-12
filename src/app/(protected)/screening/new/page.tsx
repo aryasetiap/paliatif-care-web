@@ -1,17 +1,15 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { useForm, useFieldArray, useWatch } from 'react-hook-form'
+import { useState, useCallback, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -221,10 +219,10 @@ export default function ESASScreeningPage() {
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSavingDraft, setIsSavingDraft] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
   const [existingPatients, setExistingPatients] = useState<any[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [showExistingPatients, setShowExistingPatients] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const form = useForm<ESAScreeningFormData>({
     resolver: zodResolver(esasScreeningFormSchema),
@@ -251,10 +249,7 @@ export default function ESASScreeningPage() {
     mode: "onChange"
   })
 
-  const watchedValues = useWatch({
-    control: form.control
-  })
-
+  
   // Search existing patients
   const searchPatients = useCallback(async (query: string) => {
     if (!query.trim()) {
@@ -273,8 +268,7 @@ export default function ESASScreeningPage() {
 
       if (error) throw error
       setExistingPatients(data || [])
-    } catch (error) {
-      console.error('Error searching patients:', error)
+    } catch {
       toast({
         title: "Error",
         description: "Gagal mencari pasien",
@@ -293,7 +287,7 @@ export default function ESASScreeningPage() {
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [searchPatients])
+  }, [searchPatients, setSearchQuery])
 
   // Select existing patient
   const selectPatient = useCallback((patient: any) => {
@@ -372,8 +366,7 @@ export default function ESASScreeningPage() {
       // Redirect to result page
       router.push(`/screening/${screening.id}/result`)
 
-    } catch (error) {
-      console.error('Error submitting screening:', error)
+    } catch {
       toast({
         title: "Error",
         description: "Gagal menyimpan screening. Silakan coba lagi.",
@@ -402,8 +395,7 @@ export default function ESASScreeningPage() {
         title: "Draft Disimpan",
         description: "Draft screening berhasil disimpan secara lokal",
       })
-    } catch (error) {
-      console.error('Error saving draft:', error)
+    } catch {
       toast({
         title: "Error",
         description: "Gagal menyimpan draft",
@@ -415,7 +407,7 @@ export default function ESASScreeningPage() {
   }
 
   // Load draft on mount
-  useState(() => {
+  useEffect(() => {
     const savedDraft = localStorage.getItem('esas_screening_draft')
     if (savedDraft) {
       try {
@@ -435,8 +427,8 @@ export default function ESASScreeningPage() {
           title: "Draft Ditemukan",
           description: "Draft screening sebelumnya telah dimuat. Anda dapat melanjutkan atau memulai baru.",
         })
-      } catch (error) {
-        console.error('Error loading draft:', error)
+      } catch {
+        // Silently handle draft loading error
       }
     }
   })
@@ -490,7 +482,7 @@ export default function ESASScreeningPage() {
                       <FormMessage />
 
                       {/* Show existing patients dropdown */}
-                      {showExistingPatients && existingPatients.length > 0 && (
+                      {showExistingPatients && searchQuery.trim() && existingPatients.length > 0 && (
                         <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-40 overflow-y-auto">
                           {existingPatients.map((patient) => (
                             <button
@@ -628,7 +620,9 @@ export default function ESASScreeningPage() {
                           question={question}
                           value={field.value || 0}
                           onChange={field.onChange}
-                          error={form.formState.errors.questions?.[question.number]?.message}
+                          error={
+                        (form.formState.errors.questions?.[question.number as keyof typeof form.formState.errors.questions] as any)?.message
+                      }
                         />
                       </FormItem>
                     )}
