@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
-import { Loader2, Mail, ArrowLeft, Stethoscope } from 'lucide-react'
+import { Loader2, Mail, ArrowLeft, Stethoscope, Heart } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const forgotPasswordSchema = z.object({
@@ -63,29 +63,16 @@ export default function ForgotPasswordPage() {
   if (isSubmitted) {
     return (
       <div className="relative overflow-hidden min-h-screen">
-        {/* Modern Animated Background - Same as Login/Register */}
-        <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900" />
-        <div className="fixed inset-0 bg-gradient-to-b from-blue-900/20 via-transparent to-transparent" />
+        {/* Modern Healthcare Background - Same as Homepage */}
+        <div className="fixed inset-0 bg-gradient-to-br from-sky-200 via-sky-300 to-sky-400" />
+        <div className="fixed inset-0 bg-gradient-to-b from-white/30 via-transparent to-transparent" />
         <div className="fixed inset-0">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-700" />
           <div className="absolute top-1/2 left-1/3 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
         </div>
 
-        {/* Animated Grid Pattern */}
-        <div
-          className="fixed inset-0 opacity-20"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px',
-            animation: 'slide 20s linear infinite'
-          }}
-        />
-
-        {/* Floating Medical Icons */}
+        {/* Floating Medical Icons - Healthcare Theme */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <motion.div
             animate={{
@@ -97,11 +84,39 @@ export default function ForgotPasswordPage() {
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            className="absolute top-20 left-10 opacity-10"
+            className="absolute top-20 left-10 opacity-20"
           >
-            <Mail className="w-16 h-16 text-white/20" />
+            <Mail className="w-16 h-16 text-blue-600/30" />
+          </motion.div>
+          <motion.div
+            animate={{
+              y: [0, 30, 0],
+              rotate: [0, -5, 5, 0]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2
+            }}
+            className="absolute top-40 right-20 opacity-20"
+          >
+            <Heart className="w-20 h-20 text-blue-600/30" />
           </motion.div>
         </div>
+
+        {/* Healthcare Grid Pattern */}
+        <div
+          className="fixed inset-0 opacity-10"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px',
+            animation: 'slide 20s linear infinite'
+          }}
+        />
 
         {/* Success Message */}
         <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
@@ -124,13 +139,13 @@ export default function ForgotPasswordPage() {
                 </div>
               </div>
 
-              <h1 className="text-3xl font-bold tracking-tight leading-tight text-white mb-2">
+              <h1 className="text-3xl font-bold tracking-tight leading-tight text-sky-900 mb-2">
                 Pelita
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-emerald-400 to-green-400">
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-emerald-600 to-green-600">
                   Care
                 </span>
               </h1>
-              <p className="text-white/70 text-base">
+              <p className="text-sky-700 text-base">
                 Email Terkirim
               </p>
             </motion.div>
@@ -143,17 +158,17 @@ export default function ForgotPasswordPage() {
             >
               <div className="relative">
                 {/* Glow Effect */}
-                <div className="absolute -inset-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-2xl blur-xl opacity-30"></div>
+                <div className="absolute -inset-3 bg-gradient-to-r from-green-500/15 to-emerald-500/15 rounded-2xl blur-xl opacity-40"></div>
 
                 {/* Form Content */}
-                <div className="relative bg-white/10 border border-white/10 rounded-2xl p-6">
+                <div className="relative bg-white/95 backdrop-blur-lg border border-green-300 rounded-2xl p-6 shadow-xl">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
-                    className="bg-green-500/10 border border-green-400/20 rounded-xl p-4 mb-6"
+                    className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6"
                   >
-                    <p className="text-sm text-green-200 leading-relaxed text-center">
+                    <p className="text-sm text-green-800 leading-relaxed text-center">
                       Kami telah mengirimkan link reset password ke alamat email Anda.
                       Silakan periksa inbox dan folder spam Anda.
                     </p>
@@ -191,29 +206,16 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="relative overflow-hidden min-h-screen">
-      {/* Modern Animated Background - Same as Login/Register */}
-      <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900" />
-      <div className="fixed inset-0 bg-gradient-to-b from-blue-900/20 via-transparent to-transparent" />
+      {/* Modern Healthcare Background - Same as Homepage */}
+      <div className="fixed inset-0 bg-gradient-to-br from-sky-200 via-sky-300 to-sky-400" />
+      <div className="fixed inset-0 bg-gradient-to-b from-white/30 via-transparent to-transparent" />
       <div className="fixed inset-0">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-700" />
         <div className="absolute top-1/2 left-1/3 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
 
-      {/* Animated Grid Pattern */}
-      <div
-        className="fixed inset-0 opacity-20"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
-          animation: 'slide 20s linear infinite'
-        }}
-      />
-
-      {/* Floating Medical Icons */}
+      {/* Floating Medical Icons - Healthcare Theme */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div
           animate={{
@@ -225,11 +227,39 @@ export default function ForgotPasswordPage() {
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute top-20 left-10 opacity-10"
+          className="absolute top-20 left-10 opacity-20"
         >
-          <Mail className="w-16 h-16 text-white/20" />
+          <Mail className="w-16 h-16 text-blue-600/30" />
+        </motion.div>
+        <motion.div
+          animate={{
+            y: [0, 30, 0],
+            rotate: [0, -5, 5, 0]
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+          className="absolute top-40 right-20 opacity-20"
+        >
+          <Stethoscope className="w-20 h-20 text-blue-600/30" />
         </motion.div>
       </div>
+
+      {/* Healthcare Grid Pattern */}
+      <div
+        className="fixed inset-0 opacity-10"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px',
+          animation: 'slide 20s linear infinite'
+        }}
+      />
 
       {/* Forgot Password Form */}
       <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
@@ -252,13 +282,13 @@ export default function ForgotPasswordPage() {
               </div>
             </div>
 
-            <h1 className="text-3xl font-bold tracking-tight leading-tight text-white mb-2">
+            <h1 className="text-3xl font-bold tracking-tight leading-tight text-sky-900 mb-2">
               Pelita
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
                 Care
               </span>
             </h1>
-            <p className="text-white/70 text-base">
+            <p className="text-sky-700 text-base">
               Lupa Password
             </p>
           </motion.div>
@@ -271,10 +301,10 @@ export default function ForgotPasswordPage() {
           >
             <div className="relative">
               {/* Glow Effect */}
-              <div className="absolute -inset-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-30"></div>
+              <div className="absolute -inset-3 bg-gradient-to-r from-blue-500/15 to-purple-500/15 rounded-2xl blur-xl opacity-40"></div>
 
               {/* Form Content */}
-              <div className="relative bg-white/10 border border-white/10 rounded-2xl p-6">
+              <div className="relative bg-white/95 backdrop-blur-lg border border-sky-300 rounded-2xl p-6 shadow-xl">
                 <motion.form
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -284,20 +314,20 @@ export default function ForgotPasswordPage() {
                 >
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="text-white/90 font-semibold text-sm">Email</Label>
+                      <Label htmlFor="email" className="text-sky-800 font-semibold text-sm">Email</Label>
                       <Input
                         id="email"
                         type="email"
                         placeholder="nama@email.com"
                         disabled={isLoading}
                         {...register('email')}
-                        className={`bg-white/10 border border-white/20 text-white placeholder-white/50 focus:border-blue-400 focus:ring-blue-400/20 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                        className={`bg-white/80 border-sky-200 text-sky-900 placeholder-sky-500 focus:border-blue-400 focus:ring-blue-400/20 ${errors.email ? 'border-red-400 focus:border-red-400 focus:ring-red-400/20' : ''}`}
                       />
                       {errors.email && (
                         <motion.p
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          className="text-sm text-red-400 flex items-center gap-1"
+                          className="text-sm text-red-500 flex items-center gap-1"
                         >
                           {errors.email.message}
                         </motion.p>
@@ -309,9 +339,9 @@ export default function ForgotPasswordPage() {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-blue-500/10 border border-blue-400/20 rounded-xl p-4"
+                    className="bg-blue-50 border border-blue-200 rounded-xl p-4"
                   >
-                    <p className="text-xs text-blue-200 leading-relaxed">
+                    <p className="text-xs text-blue-800 leading-relaxed">
                       Masukkan email yang terdaftar pada akun Anda. Kami akan mengirimkan link untuk mereset password Anda.
                     </p>
                   </motion.div>
@@ -345,11 +375,11 @@ export default function ForgotPasswordPage() {
                       </Button>
                     </motion.div>
 
-                    <div className="text-center text-sm text-white/70">
+                    <div className="text-center text-sm text-sky-700">
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
                         <Link
                           href="/login"
-                          className="text-blue-400 hover:text-blue-300 font-semibold transition-colors inline-flex items-center"
+                          className="text-blue-600 hover:text-blue-700 font-semibold transition-colors inline-flex items-center"
                         >
                           <ArrowLeft className="mr-1 h-3 w-3" />
                           Kembali ke Login

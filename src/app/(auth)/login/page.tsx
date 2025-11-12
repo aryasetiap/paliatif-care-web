@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { loginSchema, type LoginFormData } from '@/lib/validations'
 import { useToast } from '@/hooks/use-toast'
-import { Loader2, Eye, EyeOff, Stethoscope } from 'lucide-react'
+import { Loader2, Eye, EyeOff, Stethoscope, Heart, ShieldCheck } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export default function LoginPage() {
@@ -67,29 +67,16 @@ export default function LoginPage() {
 
   return (
     <div className="relative overflow-hidden min-h-screen">
-      {/* Modern Animated Background - Same as Homepage */}
-      <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900" />
-      <div className="fixed inset-0 bg-gradient-to-b from-blue-900/20 via-transparent to-transparent" />
+      {/* Modern Healthcare Background - Same as Homepage */}
+      <div className="fixed inset-0 bg-gradient-to-br from-sky-200 via-sky-300 to-sky-400" />
+      <div className="fixed inset-0 bg-gradient-to-b from-white/30 via-transparent to-transparent" />
       <div className="fixed inset-0">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-700" />
         <div className="absolute top-1/2 left-1/3 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
 
-      {/* Animated Grid Pattern */}
-      <div
-        className="fixed inset-0 opacity-20"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
-          animation: 'slide 20s linear infinite'
-        }}
-      />
-
-      {/* Floating Medical Icons */}
+      {/* Floating Medical Icons - Healthcare Theme */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div
           animate={{
@@ -101,9 +88,9 @@ export default function LoginPage() {
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute top-20 left-10 opacity-10"
+          className="absolute top-20 left-10 opacity-20"
         >
-          <Stethoscope className="w-16 h-16 text-white/20" />
+          <Heart className="w-16 h-16 text-blue-600/30" />
         </motion.div>
         <motion.div
           animate={{
@@ -116,11 +103,39 @@ export default function LoginPage() {
             ease: "easeInOut",
             delay: 2
           }}
-          className="absolute top-40 right-20 opacity-10"
+          className="absolute top-40 right-20 opacity-20"
         >
-          <Stethoscope className="w-20 h-20 text-white/20" />
+          <Stethoscope className="w-20 h-20 text-blue-600/30" />
+        </motion.div>
+        <motion.div
+          animate={{
+            x: [0, 20, 0],
+            y: [0, -20, 0]
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 4
+          }}
+          className="absolute bottom-40 left-20 opacity-20"
+        >
+          <ShieldCheck className="w-16 h-16 text-blue-600/30" />
         </motion.div>
       </div>
+
+      {/* Healthcare Grid Pattern */}
+      <div
+        className="fixed inset-0 opacity-10"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px',
+          animation: 'slide 20s linear infinite'
+        }}
+      />
 
       {/* Login Form */}
       <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
@@ -143,13 +158,13 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <h1 className="text-3xl font-bold tracking-tight leading-tight text-white mb-2">
+            <h1 className="text-3xl font-bold tracking-tight leading-tight text-sky-900 mb-2">
               Pelita
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
                 Care
               </span>
             </h1>
-            <p className="text-white/70 text-base">
+            <p className="text-sky-700 text-base">
               Pemetaan Layanan Paliatif Berbasis ESAS
             </p>
           </motion.div>
@@ -162,10 +177,10 @@ export default function LoginPage() {
           >
             <div className="relative">
               {/* Glow Effect */}
-              <div className="absolute -inset-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-30"></div>
+              <div className="absolute -inset-3 bg-gradient-to-r from-blue-500/15 to-purple-500/15 rounded-2xl blur-xl opacity-40"></div>
 
               {/* Form Content */}
-              <div className="relative bg-white/10 border border-white/10 rounded-2xl p-6">
+              <div className="relative bg-white/95 backdrop-blur-lg border border-sky-300 rounded-2xl p-6 shadow-xl">
                 <motion.form
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -175,20 +190,20 @@ export default function LoginPage() {
                 >
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="text-white/90 font-semibold text-sm">Email</Label>
+                      <Label htmlFor="email" className="text-sky-800 font-semibold text-sm">Email</Label>
                       <Input
                         id="email"
                         type="email"
                         placeholder="nama@email.com"
                         disabled={isLoading}
                         {...register('email')}
-                        className={`bg-white/10 border border-white/20 text-white placeholder-white/50 focus:border-blue-400 focus:ring-blue-400/20 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                        className={`bg-white/80 border-sky-200 text-sky-900 placeholder-sky-500 focus:border-blue-400 focus:ring-blue-400/20 ${errors.email ? 'border-red-400 focus:border-red-400 focus:ring-red-400/20' : ''}`}
                       />
                       {errors.email && (
                         <motion.p
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          className="text-sm text-red-400 flex items-center gap-1"
+                          className="text-sm text-red-500 flex items-center gap-1"
                         >
                           {errors.email.message}
                         </motion.p>
@@ -196,7 +211,7 @@ export default function LoginPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="password" className="text-white/90 font-semibold text-sm">Password</Label>
+                      <Label htmlFor="password" className="text-sky-800 font-semibold text-sm">Password</Label>
                       <div className="relative">
                         <Input
                           id="password"
@@ -204,11 +219,11 @@ export default function LoginPage() {
                           placeholder="Masukkan password"
                           disabled={isLoading}
                           {...register('password')}
-                          className={`bg-white/10 border border-white/20 text-white placeholder-white/50 pr-12 focus:border-blue-400 focus:ring-blue-400/20 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                          className={`bg-white/80 border-sky-200 text-sky-900 placeholder-sky-500 pr-12 focus:border-blue-400 focus:ring-blue-400/20 ${errors.password ? 'border-red-400 focus:border-red-400 focus:ring-red-400/20' : ''}`}
                         />
                         <motion.button
                           type="button"
-                          className="absolute inset-y-0 right-0 pr-4 flex items-center text-white/50 hover:text-white transition-colors"
+                          className="absolute inset-y-0 right-0 pr-4 flex items-center text-sky-500 hover:text-sky-700 transition-colors"
                           onClick={() => setShowPassword(!showPassword)}
                           disabled={isLoading}
                           whileTap={{ scale: 0.95 }}
@@ -225,7 +240,7 @@ export default function LoginPage() {
                         <motion.p
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          className="text-sm text-red-400 flex items-center gap-1"
+                          className="text-sm text-red-500 flex items-center gap-1"
                         >
                           {errors.password.message}
                         </motion.p>
@@ -260,12 +275,12 @@ export default function LoginPage() {
                     </motion.div>
 
                     <div className="flex flex-col space-y-3 text-center">
-                      <div className="text-sm text-white/70">
+                      <div className="text-sm text-sky-700">
                         Belum punya akun?{' '}
                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
                           <Link
                             href="/register"
-                            className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+                            className="text-blue-600 hover:text-blue-700 font-semibold transition-colors"
                           >
                             Daftar sekarang
                           </Link>
@@ -275,7 +290,7 @@ export default function LoginPage() {
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
                         <Link
                           href="/forgot-password"
-                          className="text-sm text-white/60 hover:text-white transition-colors"
+                          className="text-sm text-sky-600 hover:text-sky-800 transition-colors"
                         >
                           Lupa password?
                         </Link>
