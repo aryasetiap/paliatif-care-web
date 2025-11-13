@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { loginSchema, type LoginFormData } from '@/lib/validations'
 import { useToast } from '@/hooks/use-toast'
+import { useAuthStore } from '@/lib/stores/authStore'
 import { Loader2, Eye, EyeOff, Stethoscope, Heart, ShieldCheck } from 'lucide-react'
 import { motion } from 'framer-motion'
 
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+  const { login } = useAuthStore()
 
   const {
     register,
@@ -35,29 +37,20 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      // Simulasi API call - akan diintegrasikan dengan Supabase
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      // Login dengan Supabase menggunakan authStore
+      await login(data.email, data.password)
 
-      // Simulasi validasi kredensial
-      if (data.email === 'nurse@example.com' && data.password === 'Password123') {
-        toast({
-          title: 'Login berhasil',
-          description: 'Selamat datang kembali!',
-        })
-
-        // Redirect ke dashboard setelah login berhasil
-        router.push('/dashboard')
-      } else {
-        toast({
-          title: 'Login gagal',
-          description: 'Email atau password salah. Silakan coba lagi.',
-          variant: 'destructive',
-        })
-      }
-    } catch {
       toast({
-        title: 'Terjadi kesalahan',
-        description: 'Gagal melakukan login. Silakan coba lagi.',
+        title: 'Login berhasil',
+        description: 'Selamat datang kembali!',
+      })
+
+      // Redirect ke dashboard setelah login berhasil
+      router.push('/dashboard')
+    } catch (error) {
+      toast({
+        title: 'Login gagal',
+        description: error instanceof Error ? error.message : 'Email atau password salah. Silakan coba lagi.',
         variant: 'destructive',
       })
     } finally {

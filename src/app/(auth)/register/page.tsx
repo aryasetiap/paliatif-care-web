@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { registerSchema, type RegisterFormData } from '@/lib/validations'
 import { useToast } from '@/hooks/use-toast'
+import { useAuthStore } from '@/lib/stores/authStore'
 import { Loader2, Eye, EyeOff, UserPlus, Stethoscope, Heart } from 'lucide-react'
 import { motion } from 'framer-motion'
 
@@ -19,6 +20,7 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+  const { register: registerUser } = useAuthStore()
 
   const {
     register,
@@ -37,25 +39,25 @@ export default function RegisterPage() {
 
   const password = watch('password')
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true)
 
     try {
-      // Simulasi API call - akan diintegrasikan dengan Supabase
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Registrasi dengan Supabase menggunakan authStore
+      await registerUser(data.email, data.password, data.fullName)
 
-      // Simulasi registrasi berhasil
       toast({
         title: 'Registrasi berhasil',
         description: 'Akun Anda telah dibuat. Silakan login.',
       })
 
-      // Redirect ke login setelah registrasi berhasil
-      router.push('/login')
-    } catch {
+      // Redirect ke dashboard setelah registrasi berhasil
+      router.push('/dashboard')
+    } catch (error) {
       toast({
         title: 'Registrasi gagal',
-        description: 'Terjadi kesalahan. Silakan coba lagi.',
+        description:
+          error instanceof Error ? error.message : 'Terjadi kesalahan. Silakan coba lagi.',
         variant: 'destructive',
       })
     } finally {
@@ -64,14 +66,20 @@ export default function RegisterPage() {
   }
 
   const getPasswordStrength = (password: string) => {
-    if (!password) return { score: 0, text: '', color: '' }
+    if (!password) return { score: 0, text: '', color: '', requirements: [] }
 
     let score = 0
-    if (password.length >= 6) score++
-    if (password.length >= 10) score++
-    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++
-    if (/\d/.test(password)) score++
-    if (/[^a-zA-Z\d]/.test(password)) score++
+    const requirements = [
+      { test: password.length >= 8, desc: 'Min 8 karakter' },
+      { test: /[a-z]/.test(password), desc: 'Huruf kecil' },
+      { test: /[A-Z]/.test(password), desc: 'Huruf besar' },
+      { test: /\d/.test(password), desc: 'Angka' },
+      { test: /[^a-zA-Z\d]/.test(password), desc: 'Simbol' },
+    ]
+
+    requirements.forEach((req) => {
+      if (req.test) score++
+    })
 
     const levels = [
       { text: 'Sangat Lemah', color: 'bg-red-500' },
@@ -81,7 +89,7 @@ export default function RegisterPage() {
       { text: 'Sangat Kuat', color: 'bg-green-500' },
     ]
 
-    return { score, ...levels[score] }
+    return { score, ...levels[score], requirements }
   }
 
   const passwordStrength = getPasswordStrength(password)
@@ -102,12 +110,12 @@ export default function RegisterPage() {
         <motion.div
           animate={{
             y: [0, -30, 0],
-            rotate: [0, 5, -5, 0]
+            rotate: [0, 5, -5, 0],
           }}
           transition={{
             duration: 8,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: 'easeInOut',
           }}
           className="absolute top-20 right-10 opacity-20"
         >
@@ -116,13 +124,13 @@ export default function RegisterPage() {
         <motion.div
           animate={{
             y: [0, 30, 0],
-            rotate: [0, -5, 5, 0]
+            rotate: [0, -5, 5, 0],
           }}
           transition={{
             duration: 10,
             repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
+            ease: 'easeInOut',
+            delay: 2,
           }}
           className="absolute bottom-40 left-20 opacity-20"
         >
@@ -131,13 +139,13 @@ export default function RegisterPage() {
         <motion.div
           animate={{
             x: [0, 20, 0],
-            y: [0, -20, 0]
+            y: [0, -20, 0],
           }}
           transition={{
             duration: 12,
             repeat: Infinity,
-            ease: "easeInOut",
-            delay: 4
+            ease: 'easeInOut',
+            delay: 4,
           }}
           className="absolute top-1/3 right-1/4 opacity-20"
         >
@@ -154,7 +162,7 @@ export default function RegisterPage() {
             linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
           `,
           backgroundSize: '50px 50px',
-          animation: 'slide 20s linear infinite'
+          animation: 'slide 20s linear infinite',
         }}
       />
 
@@ -163,14 +171,14 @@ export default function RegisterPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
           className="w-full max-w-md"
         >
           {/* Header with Logo and Title */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
             className="text-center mb-8"
           >
             <div className="relative mb-6">
@@ -185,16 +193,14 @@ export default function RegisterPage() {
                 Care
               </span>
             </h1>
-            <p className="text-sky-700 text-base">
-              Pemetaan Layanan Paliatif Berbasis ESAS
-            </p>
+            <p className="text-sky-700 text-base">Pemetaan Layanan Paliatif Berbasis ESAS</p>
           </motion.div>
 
           {/* Register Form Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+            transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
           >
             <div className="relative">
               {/* Glow Effect */}
@@ -205,13 +211,15 @@ export default function RegisterPage() {
                 <motion.form
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+                  transition={{ duration: 0.6, delay: 0.6, ease: 'easeOut' }}
                   onSubmit={handleSubmit(onSubmit)}
                   className="space-y-5"
                 >
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="fullName" className="text-sky-800 font-semibold text-sm">Nama Lengkap</Label>
+                      <Label htmlFor="fullName" className="text-sky-800 font-semibold text-sm">
+                        Nama Lengkap
+                      </Label>
                       <Input
                         id="fullName"
                         type="text"
@@ -232,7 +240,9 @@ export default function RegisterPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="text-sky-800 font-semibold text-sm">Email</Label>
+                      <Label htmlFor="email" className="text-sky-800 font-semibold text-sm">
+                        Email
+                      </Label>
                       <Input
                         id="email"
                         type="email"
@@ -253,12 +263,14 @@ export default function RegisterPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="password" className="text-sky-800 font-semibold text-sm">Password</Label>
+                      <Label htmlFor="password" className="text-sky-800 font-semibold text-sm">
+                        Password
+                      </Label>
                       <div className="relative">
                         <Input
                           id="password"
                           type={showPassword ? 'text' : 'password'}
-                          placeholder="Minimal 6 karakter"
+                          placeholder="Minimal 8 karakter dengan huruf besar, kecil, angka, dan simbol"
                           disabled={isLoading}
                           {...register('password')}
                           className={`bg-white/80 border-sky-200 text-sky-900 placeholder-sky-500 pr-12 focus:border-blue-400 focus:ring-blue-400/20 ${errors.password ? 'border-red-400 focus:border-red-400 focus:ring-red-400/20' : ''}`}
@@ -296,15 +308,21 @@ export default function RegisterPage() {
                           className="space-y-2"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-sky-600 font-semibold">Kekuatan Password:</span>
+                            <span className="text-xs text-sky-600 font-semibold">
+                              Kekuatan Password:
+                            </span>
                             <motion.span
                               key={passwordStrength.text}
                               initial={{ opacity: 0, scale: 0.8 }}
                               animate={{ opacity: 1, scale: 1 }}
                               className={`text-xs font-semibold ${
-                                passwordStrength.score <= 1 ? 'text-red-500' :
-                                passwordStrength.score === 2 ? 'text-yellow-600' :
-                                passwordStrength.score === 3 ? 'text-blue-600' : 'text-green-600'
+                                passwordStrength.score <= 2
+                                  ? 'text-red-500'
+                                  : passwordStrength.score === 3
+                                    ? 'text-yellow-600'
+                                    : passwordStrength.score === 4
+                                      ? 'text-blue-600'
+                                      : 'text-green-600'
                               }`}
                             >
                               {passwordStrength.text}
@@ -313,21 +331,56 @@ export default function RegisterPage() {
                           <div className="h-2 bg-sky-200 rounded-full overflow-hidden">
                             <motion.div
                               className={`h-full rounded-full transition-all duration-500 bg-gradient-to-r ${
-                                passwordStrength.score <= 1 ? 'from-red-500 to-red-400' :
-                                passwordStrength.score === 2 ? 'from-orange-500 to-orange-400' :
-                                passwordStrength.score === 3 ? 'from-blue-500 to-blue-400' : 'from-green-500 to-green-400'
+                                passwordStrength.score <= 2
+                                  ? 'from-red-500 to-red-400'
+                                  : passwordStrength.score === 3
+                                    ? 'from-orange-500 to-orange-400'
+                                    : passwordStrength.score === 4
+                                      ? 'from-blue-500 to-blue-400'
+                                      : 'from-green-500 to-green-400'
                               }`}
-                              style={{ width: `${(passwordStrength.score / 4) * 100}%` }}
+                              style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
                               initial={{ width: 0 }}
-                              animate={{ width: `${(passwordStrength.score / 4) * 100}%` }}
+                              animate={{ width: `${(passwordStrength.score / 5) * 100}%` }}
                             />
+                          </div>
+
+                          {/* Password Requirements */}
+                          <div className="space-y-1">
+                            {passwordStrength.requirements.map((req: any, index: number) => (
+                              <motion.div
+                                key={index}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                                className={`text-xs flex items-center gap-1 ${
+                                  req.test ? 'text-green-600' : 'text-gray-400'
+                                }`}
+                              >
+                                <span
+                                  className={`w-3 h-3 rounded-full flex items-center justify-center ${
+                                    req.test
+                                      ? 'bg-green-100 text-green-600'
+                                      : 'bg-gray-100 text-gray-400'
+                                  }`}
+                                >
+                                  {req.test ? '✓' : '○'}
+                                </span>
+                                {req.desc}
+                              </motion.div>
+                            ))}
                           </div>
                         </motion.div>
                       )}
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="confirmPassword" className="text-sky-800 font-semibold text-sm">Konfirmasi Password</Label>
+                      <Label
+                        htmlFor="confirmPassword"
+                        className="text-sky-800 font-semibold text-sm"
+                      >
+                        Konfirmasi Password
+                      </Label>
                       <div className="relative">
                         <Input
                           id="confirmPassword"
@@ -371,20 +424,18 @@ export default function RegisterPage() {
                     className="bg-blue-50 border border-blue-200 rounded-xl p-4"
                   >
                     <p className="text-xs text-blue-800 leading-relaxed">
-                      Dengan mendaftar, Anda setuju dengan syarat dan ketentuan yang berlaku untuk penggunaan sistem Pelita Care.
+                      Dengan mendaftar, Anda setuju dengan syarat dan ketentuan yang berlaku untuk
+                      penggunaan sistem Pelita Care.
                     </p>
                   </motion.div>
 
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
+                    transition={{ duration: 0.6, delay: 0.8, ease: 'easeOut' }}
                     className="w-full space-y-4"
                   >
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Button
                         type="submit"
                         className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold shadow-lg hover:shadow-blue-500/25 disabled:opacity-50"
@@ -406,7 +457,11 @@ export default function RegisterPage() {
 
                     <div className="text-center text-sm text-sky-700">
                       Sudah punya akun?{' '}
-                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="inline-block"
+                      >
                         <Link
                           href="/login"
                           className="text-blue-600 hover:text-blue-700 font-semibold transition-colors"
