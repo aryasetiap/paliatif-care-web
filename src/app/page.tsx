@@ -12,11 +12,14 @@ import {
   Heart,
   ShieldCheck,
   Sparkles,
+  User,
 } from 'lucide-react'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
+import { useAuthStore } from '@/lib/stores/authStore'
+import { useRouter } from 'next/navigation'
 import '@/styles/modern-patterns.css'
 
 export default function Home() {
@@ -24,6 +27,17 @@ export default function Home() {
   const rightSectionRef = useRef(null)
   const leftSectionInView = useInView(leftSectionRef, { once: true, amount: 0.3 })
   const rightSectionInView = useInView(rightSectionRef, { once: true, amount: 0.3 })
+  const router = useRouter()
+  const { isAuthenticated } = useAuthStore()
+
+  // Handle screening click
+  const handleScreeningClick = () => {
+    if (!isAuthenticated) {
+      router.push('/login')
+    } else {
+      router.push('/screening/new')
+    }
+  }
 
   const features = [
     {
@@ -206,34 +220,65 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.8, ease: 'easeOut' }}
                 className="flex flex-col sm:flex-row gap-4 items-center lg:items-start justify-center lg:justify-start"
               >
-                <Button
-                  size="lg"
-                  className="relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group border-0 overflow-hidden"
-                  asChild
-                >
-                  <Link href="/screening/new">
-                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                    <div className="relative flex items-center">
-                      <Activity className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
-                      <span>Mulai Screening</span>
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                    </div>
-                  </Link>
-                </Button>
+                {isAuthenticated ? (
+                  <>
+                    <Button
+                      size="lg"
+                      className="relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group border-0 overflow-hidden"
+                      onClick={handleScreeningClick}
+                    >
+                      <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                      <div className="relative flex items-center">
+                        <Activity className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                        <span>Mulai Screening</span>
+                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                      </div>
+                    </Button>
 
-                <Button
-                  size="lg"
-                  className="relative bg-sky-800/20 backdrop-blur-md border border-sky-600/30 text-white hover:bg-sky-800/30 shadow-lg hover:shadow-sky-800/20 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group"
-                  asChild
-                >
-                  <Link href="/edukasi">
-                    <div className="relative flex items-center">
-                      <BookOpen className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
-                      <span>Lihat Edukasi</span>
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                    </div>
-                  </Link>
-                </Button>
+                    <Button
+                      size="lg"
+                      className="relative bg-sky-800/20 backdrop-blur-md border border-sky-600/30 text-white hover:bg-sky-800/30 shadow-lg hover:shadow-sky-800/20 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group"
+                      asChild
+                    >
+                      <Link href="/dashboard">
+                        <div className="relative flex items-center">
+                          <User className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+                          <span>Dashboard</span>
+                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                        </div>
+                      </Link>
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      size="lg"
+                      className="relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group border-0 overflow-hidden"
+                      onClick={handleScreeningClick}
+                    >
+                      <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                      <div className="relative flex items-center">
+                        <Activity className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                        <span>Mulai Screening</span>
+                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                      </div>
+                    </Button>
+
+                    <Button
+                      size="lg"
+                      className="relative bg-sky-800/20 backdrop-blur-md border border-sky-600/30 text-white hover:bg-sky-800/30 shadow-lg hover:shadow-sky-800/20 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group"
+                      asChild
+                    >
+                      <Link href="/register">
+                        <div className="relative flex items-center">
+                          <BookOpen className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+                          <span>Daftar Sekarang</span>
+                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                        </div>
+                      </Link>
+                    </Button>
+                  </>
+                )}
               </motion.div>
             </motion.div>
 
@@ -376,12 +421,16 @@ export default function Home() {
                         <Button
                           size="sm"
                           className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-md hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 px-5 py-2.5 font-medium border-0"
-                          asChild
+                          onClick={() => {
+                            if (feature.title === 'Skrining') {
+                              handleScreeningClick()
+                            } else {
+                              router.push(feature.href)
+                            }
+                          }}
                         >
-                          <Link href={feature.href}>
-                            <span>Mulai</span>
-                            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                          </Link>
+                          <span>Mulai</span>
+                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
                         </Button>
                       </div>
                     </div>
@@ -512,12 +561,16 @@ export default function Home() {
                     {/* CTA Button */}
                     <Button
                       className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 font-semibold"
-                      asChild
+                      onClick={() => {
+                        if (isAuthenticated) {
+                          router.push('/screening/new')
+                        } else {
+                          router.push('/register')
+                        }
+                      }}
                     >
-                      <Link href="/register">
-                        Mulai Sekarang
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
+                      {isAuthenticated ? 'Mulai Screening' : 'Mulai Sekarang'}
+                      <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 </div>

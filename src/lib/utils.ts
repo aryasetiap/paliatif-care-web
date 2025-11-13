@@ -27,6 +27,48 @@ export function handleAnchorLinkClick(e: React.MouseEvent<HTMLAnchorElement>, hr
   if (href.startsWith('#')) {
     e.preventDefault()
     const elementId = href.substring(1)
-    smoothScrollTo(elementId)
+
+    // Check if we're currently on the home page
+    const isHomePage = window.location.pathname === '/'
+
+    if (isHomePage) {
+      // If on home page, try to scroll to the element
+      const element = document.getElementById(elementId)
+      if (element) {
+        smoothScrollTo(elementId)
+      } else {
+        // If element doesn't exist, navigate to home page with hash
+        window.location.href = '/' + href
+      }
+    } else {
+      // If not on home page, navigate to home page with hash
+      window.location.href = '/' + href
+    }
+  }
+}
+
+// Router-aware version for use with Next.js router
+export function handleAnchorLinkNavigation(router: any, href: string, e?: React.MouseEvent) {
+  if (e) {
+    e.preventDefault()
+  }
+
+  if (href.startsWith('#')) {
+    const elementId = href.substring(1)
+    const isHomePage = window.location.pathname === '/'
+
+    if (isHomePage) {
+      // If on home page, try smooth scroll
+      const element = document.getElementById(elementId)
+      if (element) {
+        smoothScrollTo(elementId)
+      } else {
+        // Navigate to home with hash if element doesn't exist
+        router.push('/' + href)
+      }
+    } else {
+      // Navigate to home page with hash
+      router.push('/' + href)
+    }
   }
 }
