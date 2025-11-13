@@ -1,95 +1,97 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { useAuthStore } from '@/lib/stores/authStore'
-import { Loader2, Mail, ArrowLeft, Stethoscope, Heart } from 'lucide-react'
+import { resetPasswordSchema, type ResetPasswordFormData } from '@/lib/validations'
+import { Loader2, Eye, EyeOff, Lock, ArrowLeft, ShieldCheck } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { forgotPasswordSchema, type ForgotPasswordFormData } from '@/lib/validations'
 
-export default function ForgotPasswordPage() {
-  const [isSubmitted, setIsSubmitted] = useState(false)
+function ResetPasswordContent() {
+  const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const { toast } = useToast()
-  const { forgotPassword, loading: authLoading } = useAuthStore()
+  const { resetPassword: resetPasswordAction, loading: authLoading } = useAuthStore()
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ForgotPasswordFormData>({
-    resolver: zodResolver(forgotPasswordSchema),
+    watch,
+  } = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      email: '',
+      password: '',
+      confirmPassword: '',
     },
   })
 
-  const onSubmit = async (data: ForgotPasswordFormData) => {
-    try {
-      await forgotPassword(data.email)
+  const watchedPassword = watch('password')
 
-      setIsSubmitted(true)
+  // Get error parameters from Supabase
+  const error = searchParams.get('error')
+  const errorDescription = searchParams.get('error_description')
+
+  // Handle error parameters only
+  useEffect(() => {
+    if (error) {
       toast({
-        title: 'Email terkirim',
-        description: 'Instruksi reset password telah dikirim ke email Anda.',
+        title: 'Link tidak valid',
+        description: decodeURIComponent(errorDescription || 'Link reset password tidak valid atau telah kadaluarsa.'),
+        variant: 'destructive',
       })
+      router.push('/login')
+    }
+  }, [error, errorDescription, router, toast])
+
+  const onSubmit = async (data: ResetPasswordFormData) => {
+    setIsLoading(true)
+
+    try {
+      await resetPasswordAction(data.password)
+
+      setIsSuccess(true)
+      toast({
+        title: 'Password berhasil diubah',
+        description: 'Password Anda telah berhasil diperbarui.',
+      })
+
+      // Redirect ke login setelah 2 detik
+      setTimeout(() => {
+        router.push('/login')
+      }, 2000)
     } catch (error) {
       toast({
-        title: 'Gagal mengirim email',
+        title: 'Gagal mengubah password',
         description: error instanceof Error ? error.message : 'Terjadi kesalahan. Silakan coba lagi.',
         variant: 'destructive',
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  if (isSubmitted) {
+  if (isSuccess) {
     return (
       <div className="relative overflow-hidden min-h-screen">
-        {/* Modern Healthcare Background - Same as Homepage */}
-        <div className="fixed inset-0 bg-gradient-to-br from-sky-200 via-sky-300 to-sky-400" />
+        {/* Modern Healthcare Background */}
+        <div className="fixed inset-0 bg-gradient-to-br from-green-200 via-emerald-300 to-green-400" />
         <div className="fixed inset-0 bg-gradient-to-b from-white/30 via-transparent to-transparent" />
         <div className="fixed inset-0">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-700" />
-          <div className="absolute top-1/2 left-1/3 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
-        </div>
-
-        {/* Floating Medical Icons - Healthcare Theme */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <motion.div
-            animate={{
-              y: [0, -30, 0],
-              rotate: [0, 5, -5, 0]
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="absolute top-20 left-10 opacity-20"
-          >
-            <Mail className="w-16 h-16 text-blue-600/30" />
-          </motion.div>
-          <motion.div
-            animate={{
-              y: [0, 30, 0],
-              rotate: [0, -5, 5, 0]
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 2
-            }}
-            className="absolute top-40 right-20 opacity-20"
-          >
-            <Heart className="w-20 h-20 text-blue-600/30" />
-          </motion.div>
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-green-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse delay-700" />
+          <div className="absolute top-1/2 left-1/3 w-96 h-96 bg-green-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
         </div>
 
         {/* Healthcare Grid Pattern */}
@@ -122,18 +124,18 @@ export default function ForgotPasswordPage() {
             >
               <div className="relative mb-6">
                 <div className="relative bg-gradient-to-br from-green-600 to-emerald-600 rounded-full p-4 shadow-xl border border-white/20 mx-auto w-fit">
-                  <Mail className="h-8 w-8 text-white" />
+                  <ShieldCheck className="h-8 w-8 text-white" />
                 </div>
               </div>
 
-              <h1 className="text-3xl font-bold tracking-tight leading-tight text-sky-900 mb-2">
+              <h1 className="text-3xl font-bold tracking-tight leading-tight text-green-900 mb-2">
                 Pelita
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-emerald-600 to-green-600">
                   Care
                 </span>
               </h1>
-              <p className="text-sky-700 text-base">
-                Email Terkirim
+              <p className="text-green-700 text-base">
+                Password Berhasil Diubah
               </p>
             </motion.div>
 
@@ -156,8 +158,7 @@ export default function ForgotPasswordPage() {
                     className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6"
                   >
                     <p className="text-sm text-green-800 leading-relaxed text-center">
-                      Kami telah mengirimkan link reset password ke alamat email Anda.
-                      Silakan periksa inbox dan folder spam Anda.
+                      Password Anda telah berhasil diperbarui. Anda akan dialihkan ke halaman login dalam beberapa saat.
                     </p>
                   </motion.div>
 
@@ -193,46 +194,13 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="relative overflow-hidden min-h-screen">
-      {/* Modern Healthcare Background - Same as Homepage */}
-      <div className="fixed inset-0 bg-gradient-to-br from-sky-200 via-sky-300 to-sky-400" />
+      {/* Modern Healthcare Background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-200 via-sky-300 to-blue-400" />
       <div className="fixed inset-0 bg-gradient-to-b from-white/30 via-transparent to-transparent" />
       <div className="fixed inset-0">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-700" />
-        <div className="absolute top-1/2 left-1/3 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
-      </div>
-
-      {/* Floating Medical Icons - Healthcare Theme */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          animate={{
-            y: [0, -30, 0],
-            rotate: [0, 5, -5, 0]
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute top-20 left-10 opacity-20"
-        >
-          <Mail className="w-16 h-16 text-blue-600/30" />
-        </motion.div>
-        <motion.div
-          animate={{
-            y: [0, 30, 0],
-            rotate: [0, -5, 5, 0]
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
-          className="absolute top-40 right-20 opacity-20"
-        >
-          <Stethoscope className="w-20 h-20 text-blue-600/30" />
-        </motion.div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl animate-pulse delay-700" />
+        <div className="absolute top-1/2 left-1/3 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
 
       {/* Healthcare Grid Pattern */}
@@ -248,7 +216,7 @@ export default function ForgotPasswordPage() {
         }}
       />
 
-      {/* Forgot Password Form */}
+      {/* Reset Password Form */}
       <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -265,7 +233,7 @@ export default function ForgotPasswordPage() {
           >
             <div className="relative mb-6">
               <div className="relative bg-gradient-to-br from-blue-600 to-purple-600 rounded-full p-4 shadow-xl border border-white/20 mx-auto w-fit">
-                <Stethoscope className="h-8 w-8 text-white" />
+                <Lock className="h-8 w-8 text-white" />
               </div>
             </div>
 
@@ -276,11 +244,11 @@ export default function ForgotPasswordPage() {
               </span>
             </h1>
             <p className="text-sky-700 text-base">
-              Lupa Password
+              Reset Password
             </p>
           </motion.div>
 
-          {/* Forgot Password Form Card */}
+          {/* Reset Password Form Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -301,24 +269,90 @@ export default function ForgotPasswordPage() {
                 >
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="text-sky-800 font-semibold text-sm">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="nama@email.com"
-                        disabled={authLoading}
-                        {...register('email')}
-                        className={`bg-white/80 border-sky-200 text-sky-900 placeholder-sky-500 focus:border-blue-400 focus:ring-blue-400/20 ${errors.email ? 'border-red-400 focus:border-red-400 focus:ring-red-400/20' : ''}`}
-                      />
-                      {errors.email && (
+                      <Label htmlFor="password" className="text-sky-800 font-semibold text-sm">Password Baru</Label>
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="Masukkan password baru"
+                          disabled={isLoading || authLoading}
+                          {...register('password')}
+                          className={`bg-white/80 border-sky-200 text-sky-900 placeholder-sky-500 focus:border-blue-400 focus:ring-blue-400/20 pr-10 ${errors.password ? 'border-red-400 focus:border-red-400 focus:ring-red-400/20' : ''}`}
+                        />
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4 text-sky-500 hover:text-sky-700" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-sky-500 hover:text-sky-700" />
+                          )}
+                        </button>
+                      </div>
+                      {errors.password && (
                         <motion.p
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           className="text-sm text-red-500 flex items-center gap-1"
                         >
-                          {errors.email.message}
+                          {errors.password.message}
                         </motion.p>
                       )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="confirmPassword" className="text-sky-800 font-semibold text-sm">Konfirmasi Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="confirmPassword"
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          placeholder="Konfirmasi password baru"
+                          disabled={isLoading || authLoading}
+                          {...register('confirmPassword')}
+                          className={`bg-white/80 border-sky-200 text-sky-900 placeholder-sky-500 focus:border-blue-400 focus:ring-blue-400/20 pr-10 ${errors.confirmPassword ? 'border-red-400 focus:border-red-400 focus:ring-red-400/20' : ''}`}
+                        />
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="h-4 w-4 text-sky-500 hover:text-sky-700" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-sky-500 hover:text-sky-700" />
+                          )}
+                        </button>
+                      </div>
+                      {errors.confirmPassword && (
+                        <motion.p
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="text-sm text-red-500 flex items-center gap-1"
+                        >
+                          {errors.confirmPassword.message}
+                        </motion.p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Password Strength Indicator */}
+                  <div className="space-y-2">
+                    <p className="text-xs text-sky-600 font-medium">Kekuatan Password:</p>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <div className={`h-1 flex-1 rounded-full ${watchedPassword.length >= 8 ? 'bg-green-500' : 'bg-gray-200'}`} />
+                        <div className={`h-1 flex-1 rounded-full ${watchedPassword.match(/[A-Z]/) ? 'bg-green-500' : 'bg-gray-200'}`} />
+                        <div className={`h-1 flex-1 rounded-full ${watchedPassword.match(/[a-z]/) ? 'bg-green-500' : 'bg-gray-200'}`} />
+                        <div className={`h-1 flex-1 rounded-full ${watchedPassword.match(/[0-9]/) ? 'bg-green-500' : 'bg-gray-200'}`} />
+                      </div>
+                      <div className="flex justify-between text-xs text-sky-600">
+                        <span>8+ karakter</span>
+                        <span>Huruf besar</span>
+                        <span>Huruf kecil</span>
+                        <span>Angka</span>
+                      </div>
                     </div>
                   </div>
 
@@ -329,7 +363,7 @@ export default function ForgotPasswordPage() {
                     className="bg-blue-50 border border-blue-200 rounded-xl p-4"
                   >
                     <p className="text-xs text-blue-800 leading-relaxed">
-                      Masukkan email yang terdaftar pada akun Anda. Kami akan mengirimkan link untuk mereset password Anda.
+                      Buat password baru yang kuat dan belum pernah digunakan sebelumnya.
                     </p>
                   </motion.div>
 
@@ -346,17 +380,17 @@ export default function ForgotPasswordPage() {
                       <Button
                         type="submit"
                         className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold shadow-lg hover:shadow-blue-500/25 disabled:opacity-50"
-                        disabled={authLoading}
+                        disabled={isLoading || authLoading}
                       >
-                        {authLoading ? (
+                        {isLoading || authLoading ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Mengirim email...
+                            Mengubah password...
                           </>
                         ) : (
                           <>
-                            <Mail className="mr-2 h-4 w-4" />
-                            Kirim Instruksi Reset
+                            <Lock className="mr-2 h-4 w-4" />
+                            Reset Password
                           </>
                         )}
                       </Button>
@@ -381,5 +415,20 @@ export default function ForgotPasswordPage() {
         </motion.div>
       </div>
     </div>
+  )
+}
+
+export default function ResetPasswordForm() {
+  return (
+    <Suspense fallback={
+      <div className="relative overflow-hidden min-h-screen">
+        <div className="fixed inset-0 bg-gradient-to-br from-blue-200 via-sky-300 to-blue-400" />
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <div className="text-white text-xl">Loading...</div>
+        </div>
+      </div>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
   )
 }

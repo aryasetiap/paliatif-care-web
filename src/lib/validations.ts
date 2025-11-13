@@ -27,8 +27,8 @@ export const registerSchema = z
       .string()
       .min(8, 'Password minimal 8 karakter')
       .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-        'Password harus mengandung huruf besar, huruf kecil, angka, dan simbol'
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]/,
+        'Password harus mengandung huruf besar, huruf kecil, dan angka'
       ),
     confirmPassword: z.string().min(1, 'Konfirmasi password harus diisi'),
   })
@@ -36,6 +36,28 @@ export const registerSchema = z
     message: 'Konfirmasi password tidak cocok',
     path: ['confirmPassword'],
   })
+
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'Email wajib diisi')
+    .email('Format email tidak valid'),
+})
+
+export const resetPasswordSchema = z.object({
+  password: z
+    .string()
+    .min(8, 'Password minimal 8 karakter')
+    .regex(/[A-Z]/, 'Password harus mengandung huruf besar')
+    .regex(/[a-z]/, 'Password harus mengandung huruf kecil')
+    .regex(/[0-9]/, 'Password harus mengandung angka'),
+  confirmPassword: z
+    .string()
+    .min(1, 'Konfirmasi password wajib diisi'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Password tidak cocok',
+  path: ['confirmPassword'],
+})
 
 // Patient validation schemas
 export const patientSchema = z.object({
@@ -204,6 +226,8 @@ export const patientSearchSchema = z.object({
 // Export type inference
 export type LoginFormData = z.infer<typeof loginSchema>
 export type RegisterFormData = z.infer<typeof registerSchema>
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>
 export type PatientFormData = z.infer<typeof patientSchema>
 export type ScreeningPatientInfoFormData = z.infer<typeof screeningPatientInfoSchema>
 export type ScreeningFormData = z.infer<typeof screeningFormSchema>

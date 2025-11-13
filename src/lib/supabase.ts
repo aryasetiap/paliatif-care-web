@@ -176,6 +176,43 @@ export const createScreening = async (screeningData: any) => {
   return data
 }
 
+export const resetPassword = async (email: string) => {
+  const supabase = createClient()
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset-password`,
+  })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+}
+
+export const updatePassword = async (newPassword: string) => {
+  const supabase = createClient()
+
+  try {
+    // Update the password - Supabase will handle session validation automatically
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    })
+
+    if (error) {
+      // Handle specific error cases
+      if (error.message.includes('Invalid session') || error.message.includes('expired')) {
+        throw new Error('Link reset password telah kadaluarsa. Silakan minta link reset password baru.')
+      }
+      throw new Error(error.message)
+    }
+  } catch (err: any) {
+    // Handle network or other errors
+    if (err.message?.includes('session') || err.message?.includes('expired')) {
+      throw new Error('Link reset password telah kadaluarsa. Silakan minta link reset password baru.')
+    }
+    throw err
+  }
+}
+
 export const getScreeningById = async (screeningId: string) => {
   const supabase = createClient()
 
