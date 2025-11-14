@@ -9,12 +9,12 @@ import {
   ClipboardList,
   Activity,
   AlertTriangle,
-  Heart,
+  // Heart,
   BookOpen,
   UserCheck,
   Calendar,
   Clock,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react'
 import Link from 'next/link'
 import HeaderNav from '@/components/ui/header-nav'
@@ -80,7 +80,7 @@ export default function DashboardPage() {
         totalPatients: totalPatients || 0,
         totalScreenings: totalScreenings || 0,
         screeningsThisMonth: screeningsThisMonth || 0,
-        highRiskPatients: highRiskPatients || []
+        highRiskPatients: highRiskPatients || [],
       })
 
       setRecentActivities(activities || [])
@@ -94,21 +94,31 @@ export default function DashboardPage() {
 
   const getRiskLevelColor = (level: string) => {
     switch (level) {
-      case 'critical': return 'bg-red-100 text-red-800 border-red-200'
-      case 'high': return 'bg-orange-100 text-orange-800 border-orange-200'
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
-      case 'low': return 'bg-green-100 text-green-800 border-green-200'
-      default: return 'bg-gray-100 text-gray-800 border-gray-200'
+      case 'critical':
+        return 'bg-red-100 text-red-800 border-red-200'
+      case 'high':
+        return 'bg-orange-100 text-orange-800 border-orange-200'
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200'
+      case 'low':
+        return 'bg-green-100 text-green-800 border-green-200'
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200'
     }
   }
 
   const getRiskLevelText = (level: string) => {
     switch (level) {
-      case 'critical': return 'Kritis'
-      case 'high': return 'Tinggi'
-      case 'medium': return 'Sedang'
-      case 'low': return 'Rendah'
-      default: return 'Tidak Diketahui'
+      case 'critical':
+        return 'Kritis'
+      case 'high':
+        return 'Tinggi'
+      case 'medium':
+        return 'Sedang'
+      case 'low':
+        return 'Rendah'
+      default:
+        return 'Tidak Diketahui'
     }
   }
 
@@ -124,7 +134,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen mt-16">
       <HeaderNav />
 
       <div className="relative z-10 container mx-auto px-4 py-8">
@@ -138,12 +148,13 @@ export default function DashboardPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-3xl font-bold text-sky-900 mb-2">Dashboard</h1>
-              <p className="text-sky-600">
-                Sistem Edukasi & Skrining Paliatif Care
-              </p>
+              <p className="text-sky-600">Sistem Edukasi & Skrining Paliatif Care</p>
             </div>
             <div className="mt-4 md:mt-0">
-              <Button asChild className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500">
+              <Button
+                asChild
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
+              >
                 <Link href="/screening/new">
                   <Activity className="mr-2 h-4 w-4" />
                   Screening Baru
@@ -158,7 +169,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
         >
           <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
@@ -191,26 +202,32 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-sky-600">Screening Bulan Ini</p>
-                  <p className="text-3xl font-bold text-sky-900">{stats?.screeningsThisMonth || 0}</p>
-                  <p className="text-xs text-sky-500 mt-1">Bulan {new Date().toLocaleDateString('id-ID', { month: 'long' })}</p>
+                  <p className="text-3xl font-bold text-sky-900">
+                    {stats?.screeningsThisMonth || 0}
+                  </p>
+                  <p className="text-xs text-sky-500 mt-1">
+                    Bulan {new Date().toLocaleDateString('id-ID', { month: 'long' })}
+                  </p>
                 </div>
                 <Calendar className="h-8 w-8 text-purple-500" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-shadow">
+          {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-sky-600">Risiko Tinggi</p>
-                  <p className="text-3xl font-bold text-sky-900">{stats?.highRiskPatients?.length || 0}</p>
+                  <p className="text-3xl font-bold text-sky-900">
+                    {stats?.highRiskPatients?.length || 0}
+                  </p>
                   <p className="text-xs text-sky-500 mt-1">Perlu intervensi segera</p>
                 </div>
                 <AlertTriangle className="h-8 w-8 text-red-500" />
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </motion.div>
 
         {/* Quick Actions */}
@@ -218,7 +235,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
         >
           <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="text-center">
@@ -247,7 +264,11 @@ export default function DashboardPage() {
               <CardDescription>Kelola data pasien</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full border-sky-300 text-sky-700 hover:bg-sky-50" asChild>
+              <Button
+                variant="outline"
+                className="w-full border-sky-300 text-sky-700 hover:bg-sky-50"
+                asChild
+              >
                 <Link href="/pasien">
                   Lihat Pasien
                   <ChevronRight className="ml-2 h-4 w-4" />
@@ -265,7 +286,11 @@ export default function DashboardPage() {
               <CardDescription>8 Penyakit Terminal</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full border-sky-300 text-sky-700 hover:bg-sky-50" asChild>
+              <Button
+                variant="outline"
+                className="w-full border-sky-300 text-sky-700 hover:bg-sky-50"
+                asChild
+              >
                 <Link href="/edukasi">
                   Lihat Materi
                   <ChevronRight className="ml-2 h-4 w-4" />
@@ -274,7 +299,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
+          {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="text-center">
               <div className="mx-auto mb-2 p-3 bg-red-100 rounded-full group-hover:bg-red-200 transition-colors">
                 <Heart className="h-6 w-6 text-red-600" />
@@ -283,11 +308,15 @@ export default function DashboardPage() {
               <CardDescription>Terapi Komplementer</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full border-sky-300 text-sky-700 hover:bg-sky-50" disabled>
+              <Button
+                variant="outline"
+                className="w-full border-sky-300 text-sky-700 hover:bg-sky-50"
+                disabled
+              >
                 Coming Soon
               </Button>
             </CardContent>
-          </Card>
+          </Card> */}
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -303,9 +332,7 @@ export default function DashboardPage() {
                   <Clock className="mr-2 h-5 w-5 text-sky-600" />
                   Aktivitas Terbaru
                 </CardTitle>
-                <CardDescription>
-                  Screening dan aktivitas terkini
-                </CardDescription>
+                <CardDescription>Screening dan aktivitas terkini</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -324,7 +351,7 @@ export default function DashboardPage() {
                               day: 'numeric',
                               month: 'short',
                               hour: '2-digit',
-                              minute: '2-digit'
+                              minute: '2-digit',
                             })}
                           </p>
                         </div>
@@ -351,9 +378,7 @@ export default function DashboardPage() {
                   <AlertTriangle className="mr-2 h-5 w-5 text-red-500" />
                   Pasien Risiko Tinggi
                 </CardTitle>
-                <CardDescription>
-                  Pasien yang memerlukan intervensi segera
-                </CardDescription>
+                <CardDescription>Pasien yang memerlukan intervensi segera</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -361,7 +386,10 @@ export default function DashboardPage() {
                     <p className="text-sky-600 text-center py-4">Tidak ada pasien Risiko tinggi</p>
                   ) : (
                     stats?.highRiskPatients?.map((screening, _index) => (
-                      <div key={screening.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100">
+                      <div
+                        key={screening.id}
+                        className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100"
+                      >
                         <div className="flex items-center space-x-3">
                           <UserCheck className="h-5 w-5 text-red-500" />
                           <div>
@@ -369,7 +397,8 @@ export default function DashboardPage() {
                               {screening.patients?.name || 'Pasien'}
                             </p>
                             <p className="text-xs text-sky-600">
-                              {screening.patients?.age} tahun • {screening.patients?.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
+                              {screening.patients?.age} tahun •{' '}
+                              {screening.patients?.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
                             </p>
                           </div>
                         </div>

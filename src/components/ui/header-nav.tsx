@@ -193,8 +193,7 @@ export default function HeaderNav() {
                   }`}
                   onClick={handleLogout}
                 >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Keluar
+                  <LogOut className="h-4 w-4" />
                 </Button>
               </>
             ) : (
@@ -339,7 +338,6 @@ export default function HeaderNav() {
                       <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/20 border border-red-400/30 mr-3">
                         <LogOut className="h-4 w-4 text-red-400" />
                       </div>
-                      <span>Keluar</span>
                     </Button>
                   </>
                 ) : (
