@@ -11,13 +11,16 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 import { esasScreeningFormSchema, type ESAScreeningFormData } from '@/lib/validations'
 import { ESASRuleEngine } from '@/lib/esas-rule-engine'
 import { createClient } from '@/lib/supabase'
 import { useToast } from '@/hooks/use-toast'
+import HeaderNav from '@/components/ui/header-nav'
+import { Footer } from '@/components/layout/footer'
+import { motion } from 'framer-motion'
+import '@/styles/modern-patterns.css'
 
 // ESAS Questions dengan deskripsi lengkap sesuai PERTANYAAN_SKRINING_ESAS.md
 const ESAS_QUESTIONS = [
@@ -152,16 +155,16 @@ function ESASQuestionComponent({ question, value, onChange, error }: ESASQuestio
   }
 
   return (
-    <Card className={`${getScoreColor(value)} transition-all duration-300`}>
+    <Card className={`${getScoreColor(value)} transition-all duration-300 hover:shadow-lg bg-white/80 backdrop-blur-md border-sky-200`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-lg font-semibold text-gray-900">
+            <CardTitle className="text-lg font-semibold text-sky-900">
               {question.number}. {question.text}
             </CardTitle>
           </div>
           {value !== undefined && (
-            <Badge className={`${getScoreBadgeColor(value)} text-white`}>
+            <Badge className={`${getScoreBadgeColor(value)} text-white border-0`}>
               {value} - {getScoreLevel(value)}
             </Badge>
           )}
@@ -169,7 +172,7 @@ function ESASQuestionComponent({ question, value, onChange, error }: ESASQuestio
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <FormLabel className="text-sm font-medium">Pilih Skor (0-10)</FormLabel>
+          <FormLabel className="text-sm font-medium text-sky-700">Pilih Skor (0-10)</FormLabel>
           <div className="grid grid-cols-6 sm:grid-cols-11 gap-1 sm:gap-2">
             {Array.from({ length: 11 }, (_, i) => (
               <Button
@@ -177,10 +180,10 @@ function ESASQuestionComponent({ question, value, onChange, error }: ESASQuestio
                 type="button"
                 variant={value === i ? "default" : "outline"}
                 size="sm"
-                className={`h-8 w-8 p-0 text-xs ${
+                className={`h-8 w-8 p-0 text-xs transition-all duration-200 hover:scale-105 ${
                   value === i
-                    ? getScoreBadgeColor(i) + ' text-white border-current'
-                    : 'border-gray-300 hover:border-gray-400'
+                    ? getScoreBadgeColor(i) + ' text-white border-current shadow-md'
+                    : 'border-sky-300 hover:border-sky-400 hover:bg-sky-50'
                 }`}
                 onClick={() => onChange(i)}
               >
@@ -194,14 +197,14 @@ function ESASQuestionComponent({ question, value, onChange, error }: ESASQuestio
         </div>
 
         {value !== undefined && (
-          <div className={`p-3 rounded-lg text-sm ${
-            value === 0 ? 'bg-gray-50 text-gray-700' :
-            value >= 1 && value <= 3 ? 'bg-green-50 text-green-700' :
-            value >= 4 && value <= 6 ? 'bg-yellow-50 text-yellow-700' :
-            value >= 7 && value <= 10 ? 'bg-red-50 text-red-700' :
-            'bg-gray-50 text-gray-700'
+          <div className={`p-3 rounded-lg text-sm border transition-all duration-300 ${
+            value === 0 ? 'bg-gray-50 text-gray-700 border-gray-200' :
+            value >= 1 && value <= 3 ? 'bg-green-50 text-green-700 border-green-200' :
+            value >= 4 && value <= 6 ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+            value >= 7 && value <= 10 ? 'bg-red-50 text-red-700 border-red-200' :
+            'bg-gray-50 text-gray-700 border-gray-200'
           }`}>
-            <div className="font-medium mb-1">
+            <div className="font-medium mb-1 flex items-center">
               {getScoreLevel(value)}
             </div>
             <div className="text-xs leading-relaxed">
@@ -434,24 +437,43 @@ export default function ESASScreeningPage() {
   })
 
   return (
-    <div className="container mx-auto py-6 max-w-4xl">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Form Skrining ESAS</h1>
-        <p className="text-gray-600">
-          Edmonton Symptom Assessment System - Penilaian Gejala Pasien Paliatif
-        </p>
-      </div>
+    <div className="relative min-h-screen">
+      <HeaderNav />
+
+      <div className="relative z-10 container mx-auto px-4 py-8 max-w-5xl">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
+          <div className="text-center mb-6">
+            <h1 className="text-4xl font-bold text-sky-900 mb-2">Form Skrining ESAS</h1>
+            <p className="text-sky-600 text-lg">
+              Edmonton Symptom Assessment System - Penilaian Gejala Pasien Paliatif
+            </p>
+            <p className="text-sky-500 text-sm mt-2">
+              Evaluasi komprehensif 9 gejala paliatif dengan skala 0-10
+            </p>
+          </div>
+        </motion.div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Patient Information Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Informasi Pasien</CardTitle>
-              <CardDescription>
-                Masukkan data identitas pasien yang akan discreening
-              </CardDescription>
-            </CardHeader>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <Card className="bg-white/80 backdrop-blur-md border-sky-200">
+              <CardHeader>
+                <CardTitle className="text-xl text-sky-900">Informasi Pasien</CardTitle>
+                <CardDescription className="text-sky-600">
+                  Masukkan data identitas pasien yang akan discreening
+                </CardDescription>
+              </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
@@ -459,12 +481,13 @@ export default function ESASScreeningPage() {
                   name="patient_info.patient_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nama Pasien *</FormLabel>
+                      <FormLabel className="text-sky-700">Nama Pasien *</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
                             placeholder="Masukkan nama pasien"
                             {...field}
+                            className="bg-white/90 border-sky-300 focus:border-blue-500"
                             onChange={(e) => {
                               field.onChange(e)
                               handleSearchChange(e.target.value)
@@ -483,16 +506,16 @@ export default function ESASScreeningPage() {
 
                       {/* Show existing patients dropdown */}
                       {showExistingPatients && searchQuery.trim() && existingPatients.length > 0 && (
-                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                        <div className="absolute z-10 w-full mt-1 bg-white/90 backdrop-blur-md border-sky-200 rounded-md shadow-lg max-h-40 overflow-y-auto">
                           {existingPatients.map((patient) => (
                             <button
                               key={patient.id}
                               type="button"
-                              className="w-full text-left px-3 py-2 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
+                              className="w-full text-left px-3 py-2 hover:bg-sky-50 border-b border-sky-100 last:border-b-0 transition-colors"
                               onClick={() => selectPatient(patient)}
                             >
-                              <div className="font-medium text-sm">{patient.name}</div>
-                              <div className="text-xs text-gray-500">
+                              <div className="font-medium text-sm text-sky-900">{patient.name}</div>
+                              <div className="text-xs text-sky-600">
                                 {patient.age} tahun • {patient.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
                               </div>
                             </button>
@@ -508,11 +531,12 @@ export default function ESASScreeningPage() {
                   name="patient_info.patient_age"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Usia *</FormLabel>
+                      <FormLabel className="text-sky-700">Usia *</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           placeholder="Masukkan usia"
+                          className="bg-white/90 border-sky-300 focus:border-blue-500"
                           {...field}
                           onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                         />
@@ -529,10 +553,10 @@ export default function ESASScreeningPage() {
                   name="patient_info.patient_gender"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Jenis Kelamin *</FormLabel>
+                      <FormLabel className="text-sky-700">Jenis Kelamin *</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-white/90 border-sky-300 focus:border-blue-500">
                             <SelectValue placeholder="Pilih jenis kelamin" />
                           </SelectTrigger>
                         </FormControl>
@@ -551,10 +575,11 @@ export default function ESASScreeningPage() {
                   name="patient_info.facility_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nama Fasilitas (Opsional)</FormLabel>
+                      <FormLabel className="text-sky-700">Nama Fasilitas (Opsional)</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Masukkan nama fasilitas kesehatan"
+                          className="bg-white/90 border-sky-300 focus:border-blue-500"
                           {...field}
                         />
                       </FormControl>
@@ -569,10 +594,10 @@ export default function ESASScreeningPage() {
                 name="patient_info.screening_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tipe Screening *</FormLabel>
+                    <FormLabel className="text-sky-700">Tipe Screening *</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-white/90 border-sky-300 focus:border-blue-500">
                           <SelectValue placeholder="Pilih tipe screening" />
                         </SelectTrigger>
                       </FormControl>
@@ -587,94 +612,113 @@ export default function ESASScreeningPage() {
               />
             </CardContent>
           </Card>
-
-          <Separator />
+          </motion.div>
 
           {/* ESAS Questions Section */}
-          <div>
-            <div className="mb-4">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-2">Pertanyaan ESAS</h2>
-              <p className="text-gray-600 mb-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-sky-900 mb-2">Pertanyaan ESAS</h2>
+              <p className="text-sky-600 mb-4">
                 Nilai setiap gejala dari 0 (tidak ada keluhan) hingga 10 (keluhan terberat)
               </p>
 
               {/* Score Legend */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                <Badge variant="outline" className="bg-gray-100">0 = Tidak ada keluhan</Badge>
-                <Badge variant="outline" className="bg-green-100 text-green-800">1-3 = Ringan</Badge>
-                <Badge variant="outline" className="bg-yellow-100 text-yellow-800">4-6 = Sedang</Badge>
-                <Badge variant="outline" className="bg-red-100 text-red-800">7-10 = Berat</Badge>
+              <div className="flex flex-wrap gap-2 mb-6">
+                <Badge variant="outline" className="bg-gray-100 border-gray-300 text-gray-700">0 = Tidak ada keluhan</Badge>
+                <Badge variant="outline" className="bg-green-100 border-green-300 text-green-800">1-3 = Ringan</Badge>
+                <Badge variant="outline" className="bg-yellow-100 border-yellow-300 text-yellow-800">4-6 = Sedang</Badge>
+                <Badge variant="outline" className="bg-red-100 border-red-300 text-red-800">7-10 = Berat</Badge>
               </div>
             </div>
 
-            <ScrollArea className="h-[calc(100vh-400px)]">
+            <ScrollArea className="h-[calc(100vh-500px)]">
               <div className="space-y-4">
-                {ESAS_QUESTIONS.map((question) => (
-                  <FormField
+                {ESAS_QUESTIONS.map((question, index) => (
+                  <motion.div
                     key={question.number}
-                    control={form.control}
-                    name={`questions.${question.number}` as any}
-                    render={({ field }) => (
-                      <FormItem>
-                        <ESASQuestionComponent
-                          question={question}
-                          value={field.value || 0}
-                          onChange={field.onChange}
-                          error={
-                        (form.formState.errors.questions?.[question.number as keyof typeof form.formState.errors.questions] as any)?.message
-                      }
-                        />
-                      </FormItem>
-                    )}
-                  />
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.3 + (index * 0.05) }}
+                  >
+                    <FormField
+                      control={form.control}
+                      name={`questions.${question.number}` as any}
+                      render={({ field }) => (
+                        <FormItem>
+                          <ESASQuestionComponent
+                            question={question}
+                            value={field.value || 0}
+                            onChange={field.onChange}
+                            error={
+                          (form.formState.errors.questions?.[question.number as keyof typeof form.formState.errors.questions] as any)?.message
+                        }
+                          />
+                        </FormItem>
+                      )}
+                    />
+                  </motion.div>
                 ))}
               </div>
             </ScrollArea>
-          </div>
-
-          <Separator />
+          </motion.div>
 
           {/* Form Actions */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-between">
-            <div className="flex gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={saveDraft}
-                disabled={isSavingDraft}
-              >
-                {isSavingDraft ? "Menyimpan..." : "Simpan Draft"}
-              </Button>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <div className="flex flex-col sm:flex-row gap-4 justify-between">
+              <div className="flex gap-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={saveDraft}
+                  disabled={isSavingDraft}
+                  className="border-sky-300 text-sky-700 hover:bg-sky-50"
+                >
+                  {isSavingDraft ? "Menyimpan..." : "Simpan Draft"}
+                </Button>
 
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => form.reset()}
-              >
-                Reset Form
-              </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => form.reset()}
+                  className="border-sky-300 text-sky-700 hover:bg-sky-50"
+                >
+                  Reset Form
+                </Button>
+              </div>
+
+              <div className="flex gap-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.back()}
+                  className="border-sky-300 text-sky-700 hover:bg-sky-50"
+                >
+                  Batal
+                </Button>
+
+                <Button
+                  type="submit"
+                  disabled={isSubmitting || !form.formState.isValid}
+                  className="px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
+                >
+                  {isSubmitting ? "Memproses..." : "Submit Screening"}
+                </Button>
+              </div>
             </div>
-
-            <div className="flex gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.back()}
-              >
-                Batal
-              </Button>
-
-              <Button
-                type="submit"
-                disabled={isSubmitting || !form.formState.isValid}
-                className="px-8"
-              >
-                {isSubmitting ? "Memproses..." : "Submit Screening"}
-              </Button>
-            </div>
-          </div>
+          </motion.div>
         </form>
       </Form>
+      </div>
+
+      <Footer />
     </div>
   )
 }

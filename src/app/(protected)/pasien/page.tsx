@@ -28,6 +28,8 @@ import {
 import { PatientCardList } from '@/components/pasien/patient-cards'
 import { PatientFormDialog, QuickAddPatient } from '@/components/pasien/patient-form'
 import '@/styles/modern-patterns.css'
+import { createClient } from '@/lib/supabase'
+import { InterventionEngine } from '@/lib/intervention-system'
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState<Patient[]>([])
@@ -51,6 +53,7 @@ export default function PatientsPage() {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table')
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [patientsWithScreening, setPatientsWithScreening] = useState<any[]>([])
+  const [latestScreenings, setLatestScreenings] = useState<Record<string, any>>({})
 
   const loadPatients = useCallback(async () => {
     try {
@@ -64,6 +67,16 @@ export default function PatientsPage() {
       setPatients(result.patients)
       setTotal(result.total)
       setTotalPages(result.totalPages)
+
+      // Load latest screening data for each patient
+      const screeningData: Record<string, any> = {}
+      for (const patient of result.patients) {
+        const latestScreening = await getLatestScreening(patient.id)
+        if (latestScreening) {
+          screeningData[patient.id] = latestScreening
+        }
+      }
+      setLatestScreenings(screeningData)
 
       // Load patients with latest screening for card view
       const patientsWithLatest = await getPatientsWithLatestScreening(searchParams.limit || 10)
@@ -145,25 +158,26 @@ export default function PatientsPage() {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const calculateAge = (birthDate: string) => {
-    const today = new Date()
-    const birth = new Date(birthDate)
-    let age = today.getFullYear() - birth.getFullYear()
-    const monthDiff = today.getMonth() - birth.getMonth()
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--
-    }
-    return age
-  }
+  
+  const getLatestScreening = async (patientId: string) => {
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('screenings')
+        .select('*')
+        .eq('patient_id', patientId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single()
 
-  const getLatestScreening = (patient: Patient) => {
-    // This would need to be implemented with actual screening data
-    // For now, return mock data
-    return {
-      risk_level: 'low',
-      highest_score: 2,
-      created_at: patient.created_at,
+      if (error || !data) {
+        return null
+      }
+
+      return data
+    } catch {
+      // Error fetching latest screening data
+      return null
     }
   }
 
@@ -394,13 +408,14 @@ export default function PatientsPage() {
                           )}
                         </TableHead>
                         <TableHead>Risiko Terakhir</TableHead>
+                        <TableHead>Intervensi</TableHead>
                         <TableHead>Screening Terakhir</TableHead>
                         <TableHead className="text-right">Aksi</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {patients.map((patient) => {
-                        const latestScreening = getLatestScreening(patient)
+                        const latestScreening = latestScreenings[patient.id]
                         return (
                           <TableRow
                             key={patient.id}
@@ -424,23 +439,57 @@ export default function PatientsPage() {
                                 : 'N/A'}
                             </TableCell>
                             <TableCell>
-                              <Badge className={getRiskLevelColor(latestScreening.risk_level)}>
-                                {getRiskLevelText(latestScreening.risk_level)}
-                              </Badge>
+                              {latestScreening ? (
+                                <Badge className={getRiskLevelColor(latestScreening.risk_level)}>
+                                  {getRiskLevelText(latestScreening.risk_level)}
+                                </Badge>
+                              ) : (
+                                <Badge className="bg-gray-100 text-gray-800 border-gray-200">
+                                  Belum Ada
+                                </Badge>
+                              )}
                             </TableCell>
                             <TableCell>
-                              <div className="text-sm">
-                                <p className="text-sky-900">
-                                  Skor: {latestScreening.highest_score}
-                                </p>
-                                <p className="text-xs text-sky-600">
-                                  {latestScreening.created_at
-                                    ? new Date(latestScreening.created_at).toLocaleDateString(
-                                        'id-ID'
-                                      )
-                                    : 'N/A'}
-                                </p>
-                              </div>
+                              {latestScreening ? (
+                                <div className="text-sm max-w-xs">
+                                  <p className="font-medium text-sky-900">
+                                    {latestScreening.primary_question &&
+                                      InterventionEngine.getInterventionByESASQuestion(latestScreening.primary_question)?.therapyType ||
+                                      'Tidak Diketahui'
+                                    }
+                                  </p>
+                                  <p className="text-xs text-sky-600 truncate">
+                                    {latestScreening.primary_question &&
+                                      InterventionEngine.getInterventionByESASQuestion(latestScreening.primary_question)?.diagnosisName ||
+                                      '-'
+                                    }
+                                  </p>
+                                </div>
+                              ) : (
+                                <div className="text-sm text-sky-600">
+                                  <p>-</p>
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {latestScreening ? (
+                                <div className="text-sm">
+                                  <p className="text-sky-900">
+                                    Skor: {latestScreening.highest_score}
+                                  </p>
+                                  <p className="text-xs text-sky-600">
+                                    {latestScreening.created_at
+                                      ? new Date(latestScreening.created_at).toLocaleDateString(
+                                          'id-ID'
+                                        )
+                                      : 'N/A'}
+                                  </p>
+                                </div>
+                              ) : (
+                                <div className="text-sm text-sky-600">
+                                  <p>Belum ada screening</p>
+                                </div>
+                              )}
                             </TableCell>
                             <TableCell className="text-right">
                               <div className="flex justify-end gap-2">

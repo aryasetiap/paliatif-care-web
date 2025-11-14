@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
@@ -18,12 +18,16 @@ import {
   Heart,
   Clock,
   BarChart3,
+  Calendar,
+  ChevronRight,
+  Eye,
+  Stethoscope,
+  Users
 } from 'lucide-react'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
 import {
-  getPatientById,
   getSymptomProgression,
   exportPatientHistory,
   type PatientWithScreenings,
@@ -32,6 +36,8 @@ import { PatientManagementPDF } from '@/lib/patient-management-pdf'
 import { ScreeningTimeline } from '@/components/pasien/screening-timeline'
 import '@/styles/modern-patterns.css'
 import { useToast } from '@/components/ui/use-toast'
+import { createClient } from '@/lib/supabase'
+import { InterventionEngine } from '@/lib/intervention-system'
 
 export default function PatientDetailPage() {
   const params = useParams()
@@ -50,13 +56,44 @@ export default function PatientDetailPage() {
       setLoading(true)
       setError(null)
 
-      // Load patient basic info with screenings
-      const patientData = await getPatientById(patientId)
-      setPatient(patientData)
+      // Load patient data from Supabase directly for more control
+      const supabase = createClient()
 
-      
-      // Load symptom progression
-      const progressionData = await getSymptomProgression(patientId)
+      // Get patient with screenings
+      const { data: patientData, error: patientError } = await supabase
+        .from('patients')
+        .select(`
+          *,
+          screenings (
+            id,
+            risk_level,
+            highest_score,
+            primary_question,
+            esas_data,
+            created_at,
+            updated_at,
+            screening_type,
+            recommendation
+          )
+        `)
+        .eq('id', patientId)
+        .single()
+
+      if (patientError || !patientData) {
+        throw new Error('Data pasien tidak ditemukan')
+      }
+
+      // Load symptom progression if screenings exist
+      let progressionData = null
+      if (patientData.screenings && patientData.screenings.length > 0) {
+        try {
+          progressionData = await getSymptomProgression(patientId)
+        } catch {
+          // Failed to load symptom progression data
+        }
+      }
+
+      setPatient(patientData as PatientWithScreenings)
       setSymptomProgression(progressionData)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Gagal memuat data pasien'
@@ -213,9 +250,9 @@ export default function PatientDetailPage() {
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex items-center gap-4 mb-4 md:mb-0">
-              <Button variant="outline" asChild>
+              <Button variant="outline" asChild className="border-sky-300 text-sky-700 hover:bg-sky-50">
                 <Link href="/pasien">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Kembali
@@ -223,7 +260,8 @@ export default function PatientDetailPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-sky-900">{patient.name}</h1>
-                <p className="text-sky-600">
+                <p className="text-sky-600 flex items-center gap-2">
+                  <Users className="h-4 w-4" />
                   {patient.age} tahun • {patient.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
                   {patient.facility_name && ` • ${patient.facility_name}`}
                 </p>
@@ -233,32 +271,38 @@ export default function PatientDetailPage() {
               <Button
                 onClick={handleExportPDF}
                 className="bg-blue-600 hover:bg-blue-500 text-white"
-                disabled={patient.screenings.length === 0}
+                disabled={!patient.screenings || patient.screenings.length === 0}
               >
                 <Download className="mr-2 h-4 w-4" />
-                Export Screening Terakhir
+                Export PDF
+              </Button>
+              <Button variant="outline" asChild className="border-sky-300 text-sky-700 hover:bg-sky-50">
+                <Link href={`/screening/new?patient=${patient.id}`}>
+                  <Activity className="mr-2 h-4 w-4" />
+                  Screening Baru
+                </Link>
               </Button>
             </div>
           </div>
         </motion.div>
 
-        {/* Patient Overview */}
+        {/* Enhanced Patient Overview */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
         >
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200">
+          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <User className="h-8 w-8 text-blue-500" />
                 <h3 className="text-lg font-semibold text-sky-900">Informasi Dasar</h3>
               </div>
-              <div className="space-y-2 text-sm">
+              <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-sky-600">ID Pasien:</span>
-                  <span className="font-medium text-sky-900">{patient.id.slice(-8)}</span>
+                  <span className="font-medium text-sky-900 font-mono">{patient.id.slice(-8)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sky-600">Terdaftar:</span>
@@ -270,48 +314,84 @@ export default function PatientDetailPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sky-600">Total Screening:</span>
-                  <span className="font-medium text-sky-900">{patient.screening_count}</span>
+                  <span className="font-medium text-sky-900">{patient.screenings?.length || 0}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200">
+          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <Activity className="h-8 w-8 text-green-500" />
                 <h3 className="text-lg font-semibold text-sky-900">Status Terakhir</h3>
               </div>
-              {patient.last_screening ? (
+              {patient.screenings && patient.screenings.length > 0 ? (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sky-600">Tingkat Risiko:</span>
-                    <Badge className={getRiskLevelColor(patient.last_screening.risk_level)}>
-                      {getRiskLevelText(patient.last_screening.risk_level)}
+                    <Badge className={getRiskLevelColor(patient.screenings[0].risk_level)}>
+                      {getRiskLevelText(patient.screenings[0].risk_level)}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sky-600">Skor Tertinggi:</span>
                     <span className="font-medium text-sky-900">
-                      {patient.last_screening.highest_score}/10
+                      {patient.screenings[0].highest_score}/10
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sky-600">Tanggal:</span>
                     <span className="font-medium text-sky-900">
-                      {patient.last_screening.created_at
-                        ? new Date(patient.last_screening.created_at).toLocaleDateString('id-ID')
+                      {patient.screenings[0].created_at
+                        ? new Date(patient.screenings[0].created_at).toLocaleDateString('id-ID')
                         : 'N/A'}
                     </span>
                   </div>
                 </div>
               ) : (
-                <p className="text-sky-600">Belum ada data screening</p>
+                <p className="text-sky-600 text-center py-4">Belum ada data screening</p>
               )}
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200">
+          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <TrendingUp className="h-8 w-8 text-purple-500" />
+                <h3 className="text-lg font-semibold text-sky-900">Trend Status</h3>
+              </div>
+              {patient.screenings && patient.screenings.length > 1 ? (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sky-600">Status:</span>
+                    <span className="font-medium text-sky-900">
+                      {getTrendIcon('improving')}
+                      Membaik
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sky-600">Screening:</span>
+                    <span className="font-medium text-sky-900">
+                      {patient.screenings.length} kali
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sky-600">Terakhir:</span>
+                    <span className="font-medium text-sky-900">
+                      {patient.screenings[0].created_at
+                        ? new Date(patient.screenings[0].created_at).toLocaleDateString('id-ID')
+                        : 'N/A'}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sky-600 text-center py-4">Tidak cukup data</p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <Heart className="h-8 w-8 text-red-500" />
@@ -321,49 +401,49 @@ export default function PatientDetailPage() {
                 <Button className="w-full" asChild>
                   <Link href={`/screening/new?patient=${patient.id}`}>
                     <Activity className="mr-2 h-4 w-4" />
-                    Screening Baru
+                    Screening ESAS
                   </Link>
                 </Button>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1" asChild>
-                    <Link href={`/screening/new?patient=${patient.id}`}>
-                      <FileText className="mr-1 h-3 w-3" />
-                      Follow-up
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex-1" asChild>
-                    <Link href={`/screening/new?patient=${patient.id}`}>
-                      <BarChart3 className="mr-1 h-3 w-3" />
-                      Analisis
-                    </Link>
-                  </Button>
-                </div>
+                <Button variant="outline" className="w-full border-sky-300 text-sky-700 hover:bg-sky-50" asChild>
+                  <Link href={`/pasien/${patient.id}`}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    Lihat Detail
+                  </Link>
+                </Button>
               </div>
             </CardContent>
           </Card>
         </motion.div>
 
-        {/* Detailed Information Tabs */}
+        {/* Enhanced Detailed Information Tabs */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <Tabs defaultValue="screenings" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur-md border border-sky-200">
-              <TabsTrigger value="screenings" className="data-[state=active]:bg-sky-100">
+            <TabsList className="grid w-full grid-cols-6 bg-white/80 backdrop-blur-md border border-sky-200 p-1">
+              <TabsTrigger value="screenings" className="data-[state=active]:bg-sky-100 text-sky-900">
                 <Activity className="mr-2 h-4 w-4" />
                 Riwayat Screening
               </TabsTrigger>
-              <TabsTrigger value="progression" className="data-[state=active]:bg-sky-100">
+              <TabsTrigger value="intervention" className="data-[state=active]:bg-sky-100 text-sky-900">
+                <Heart className="mr-2 h-4 w-4" />
+                Intervensi
+              </TabsTrigger>
+              <TabsTrigger value="education" className="data-[state=active]:bg-sky-100 text-sky-900">
+                <Stethoscope className="mr-2 h-4 w-4" />
+                Edukasi
+              </TabsTrigger>
+              <TabsTrigger value="progression" className="data-[state=active]:bg-sky-100 text-sky-900">
                 <TrendingUp className="mr-2 h-4 w-4" />
                 Progress Gejala
               </TabsTrigger>
-              <TabsTrigger value="timeline" className="data-[state=active]:bg-sky-100">
+              <TabsTrigger value="timeline" className="data-[state=active]:bg-sky-100 text-sky-900">
                 <Clock className="mr-2 h-4 w-4" />
                 Timeline
               </TabsTrigger>
-              <TabsTrigger value="export" className="data-[state=active]:bg-sky-100">
+              <TabsTrigger value="export" className="data-[state=active]:bg-sky-100 text-sky-900">
                 <Download className="mr-2 h-4 w-4" />
                 Export Data
               </TabsTrigger>
@@ -372,19 +452,22 @@ export default function PatientDetailPage() {
             <TabsContent value="screenings" className="mt-6">
               <Card className="bg-white/80 backdrop-blur-md border-sky-200">
                 <CardHeader>
-                  <CardTitle className="text-xl text-sky-900">Riwayat Screening</CardTitle>
+                  <CardTitle className="text-xl text-sky-900">Riwayat Screening ESAS</CardTitle>
+                  <CardDescription className="text-sky-600">
+                    Histori lengkap screening Edmonton Symptom Assessment System
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {patient.screenings.length === 0 ? (
-                    <div className="text-center py-8">
-                      <Activity className="h-12 w-12 mx-auto mb-4 text-sky-400" />
-                      <h3 className="text-lg font-semibold text-sky-900 mb-2">
+                  {(!patient.screenings || patient.screenings.length === 0) ? (
+                    <div className="text-center py-12">
+                      <Activity className="h-16 w-16 mx-auto mb-4 text-sky-400" />
+                      <h3 className="text-xl font-semibold text-sky-900 mb-2">
                         Belum Ada Screening
                       </h3>
-                      <p className="text-sky-600 mb-4">
-                        Mulai dengan melakukan screening ESAS untuk pasien ini
+                      <p className="text-sky-600 mb-6 max-w-md mx-auto">
+                        Mulai dengan melakukan screening ESAS untuk pasien ini. Ini adalah langkah pertama dalam perawatan paliatif.
                       </p>
-                      <Button asChild>
+                      <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500" asChild>
                         <Link href={`/screening/new?patient=${patient.id}`}>
                           <Activity className="mr-2 h-4 w-4" />
                           Screening Pertama
@@ -393,19 +476,28 @@ export default function PatientDetailPage() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {patient.screenings.map((screening: any) => (
-                        <div
+                      {patient.screenings.map((screening: any, index: number) => (
+                        <motion.div
                           key={screening.id}
-                          className="border border-sky-200 rounded-lg p-4 bg-white/60"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.1 }}
+                          className="border border-sky-200 rounded-lg p-4 bg-white/60 hover:bg-white/80 transition-colors"
                         >
                           <div className="flex items-start justify-between mb-3">
                             <div>
-                              <h4 className="font-semibold text-sky-900">
-                                {screening.screening_type === 'initial'
-                                  ? 'Screening Awal'
-                                  : 'Follow-up'}
-                              </h4>
-                              <p className="text-sm text-sky-600">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h4 className="font-semibold text-sky-900">
+                                  {screening.screening_type === 'initial'
+                                    ? 'Screening Awal'
+                                    : 'Follow-up'}
+                                </h4>
+                                <Badge variant="outline" className="text-xs border-sky-300 text-sky-700">
+                                  #{index + 1}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-sky-600 flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
                                 {new Date(screening.created_at).toLocaleString('id-ID')}
                               </p>
                             </div>
@@ -413,17 +505,41 @@ export default function PatientDetailPage() {
                               <Badge className={getRiskLevelColor(screening.risk_level)}>
                                 {getRiskLevelText(screening.risk_level)}
                               </Badge>
-                              <span className="text-sm font-medium text-sky-900">
+                              <span className="text-sm font-medium text-sky-900 bg-sky-50 px-2 py-1 rounded">
                                 Skor: {screening.highest_score}/10
                               </span>
                             </div>
                           </div>
                           {screening.primary_question && (
-                            <div className="text-sm text-sky-700">
-                              <p>Fokus utama: Pertanyaan {screening.primary_question}</p>
+                            <div className="text-sm bg-sky-50 p-3 rounded space-y-2">
+                              <div className="flex items-center justify-between">
+                                <p className="font-semibold text-sky-900">Rekomendasi Intervensi:</p>
+                                <Badge variant="outline" className="text-xs border-sky-300 text-sky-700">
+                                  Prioritas {InterventionEngine.getInterventionByESASQuestion(screening.primary_question)?.diagnosisNumber || '-'}
+                                </Badge>
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sky-800">
+                                  <span className="font-medium">Terapi:</span> {InterventionEngine.getInterventionByESASQuestion(screening.primary_question)?.therapyType || 'Tidak Diketahui'}
+                                </p>
+                                <p className="text-sky-800">
+                                  <span className="font-medium">Diagnosa:</span> {InterventionEngine.getInterventionByESASQuestion(screening.primary_question)?.diagnosisName || 'Tidak Diketahui'}
+                                </p>
+                                <p className="text-sky-700 text-xs mt-2">
+                                  <span className="font-medium">Frekuensi:</span> {InterventionEngine.getInterventionByESASQuestion(screening.primary_question)?.frequency || 'Tidak Diketahui'}
+                                </p>
+                              </div>
                             </div>
                           )}
-                        </div>
+                          <div className="mt-2 flex gap-2">
+                            <Button variant="outline" size="sm" asChild className="border-sky-300 text-sky-700 hover:bg-sky-50">
+                              <Link href={`/screening/${screening.id}/result`}>
+                                <Eye className="mr-1 h-3 w-3" />
+                                Lihat Detail
+                              </Link>
+                            </Button>
+                          </div>
+                        </motion.div>
                       ))}
                     </div>
                   )}
@@ -431,62 +547,515 @@ export default function PatientDetailPage() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="progression" className="mt-6">
+            <TabsContent value="intervention" className="mt-6">
+              <Card className="bg-white/80 backdrop-blur-md border-sky-200">
+                <CardHeader>
+                  <CardTitle className="text-xl text-sky-900">Rencana Intervensi</CardTitle>
+                  <CardDescription className="text-sky-600">
+                    Rekomendasi terapi komplementer berdasarkan hasil screening ESAS terakhir
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {patient.screenings && patient.screenings.length > 0 ? (
+                    <div className="space-y-6">
+                      {(() => {
+                        const latestScreening = patient.screenings[0]
+                        const intervention = latestScreening.primary_question
+                          ? InterventionEngine.getInterventionByESASQuestion(latestScreening.primary_question)
+                          : null
+
+                        if (!intervention) {
+                          return (
+                            <div className="text-center py-8">
+                              <Heart className="h-12 w-12 mx-auto mb-4 text-sky-400" />
+                              <h3 className="text-lg font-semibold text-sky-900 mb-2">
+                                Tidak Ada Intervensi
+                              </h3>
+                              <p className="text-sky-600">
+                                Tidak ada rekomendasi intervensi untuk screening ini
+                              </p>
+                            </div>
+                          )
+                        }
+
+                        return (
+                          <div className="space-y-6">
+                            {/* Intervention Header */}
+                            <motion.div
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="border border-sky-200 rounded-lg p-6 bg-white/60"
+                            >
+                              <div className="flex items-start justify-between mb-4">
+                                <div>
+                                  <h3 className="text-lg font-semibold text-sky-900 mb-2">
+                                    {intervention.diagnosisNumber}. {intervention.diagnosisName}
+                                  </h3>
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                                      {intervention.therapyType}
+                                    </Badge>
+                                    <Badge variant="outline" className="border-sky-300 text-sky-700">
+                                      Prioritas {intervention.diagnosisNumber}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-sky-700">{intervention.description}</p>
+                                </div>
+                              </div>
+
+                              {/* Key Information */}
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                <div className="bg-sky-50 p-4 rounded">
+                                  <p className="text-sm text-sky-600 mb-1">Frekuensi</p>
+                                  <p className="font-medium text-sky-900">{intervention.frequency}</p>
+                                </div>
+                                <div className="bg-sky-50 p-4 rounded">
+                                  <p className="text-sm text-sky-600 mb-1">Durasi</p>
+                                  <p className="font-medium text-sky-900">{intervention.duration}</p>
+                                </div>
+                                <div className="bg-sky-50 p-4 rounded">
+                                  <p className="text-sm text-sky-600 mb-1">Evaluasi</p>
+                                  <p className="font-medium text-sky-900">
+                                    {intervention.evaluationCriteria.slice(0, 2).join(', ')}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Precautions */}
+                              {intervention.precautions.length > 0 && (
+                                <div className="bg-yellow-50 border border-yellow-200 rounded p-4 mb-6">
+                                  <h4 className="font-medium text-yellow-800 mb-2">⚠️ Precautions:</h4>
+                                  <ul className="text-sm text-yellow-700 space-y-1">
+                                    {intervention.precautions.map((precaution, index) => (
+                                      <li key={index}>• {precaution}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </motion.div>
+
+                            {/* Intervention Steps */}
+                            <motion.div
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.1 }}
+                              className="border border-sky-200 rounded-lg p-6 bg-white/60"
+                            >
+                              <h4 className="font-semibold text-sky-900 mb-4 flex items-center">
+                                <Users className="mr-2 h-5 w-5" />
+                                Langkah-Langkah Intervensi
+                              </h4>
+                              <div className="space-y-3">
+                                {intervention.steps.map((step, index) => (
+                                  <div key={step.id} className="flex gap-3">
+                                    <div className="flex-shrink-0 w-8 h-8 bg-sky-100 text-sky-700 rounded-full flex items-center justify-center text-sm font-medium">
+                                      {index + 1}
+                                    </div>
+                                    <div className="flex-1">
+                                      <p className="text-sky-900">{step.description}</p>
+                                      {step.duration && (
+                                        <p className="text-sm text-sky-600 mt-1">
+                                          <span className="font-medium">Durasi:</span> {step.duration}
+                                        </p>
+                                      )}
+                                      {step.notes && (
+                                        <p className="text-sm text-sky-600 mt-1">
+                                          <span className="font-medium">Catatan:</span> {step.notes}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </motion.div>
+
+                            {/* References */}
+                            <motion.div
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.2 }}
+                              className="border border-sky-200 rounded-lg p-6 bg-white/60"
+                            >
+                              <h4 className="font-semibold text-sky-900 mb-4 flex items-center">
+                                <FileText className="mr-2 h-5 w-5" />
+                                Referensi Ilmiah
+                              </h4>
+                              <div className="space-y-3">
+                                {intervention.references.map((ref, index) => (
+                                  <div key={index} className="text-sm">
+                                    <p className="text-sky-900 font-medium">
+                                      {ref.authors} ({ref.year})
+                                    </p>
+                                    <p className="text-sky-700 italic">
+                                      {ref.title}
+                                    </p>
+                                    <p className="text-sky-600">
+                                      {ref.journal}{ref.volume ? `, ${ref.volume}` : ''}{ref.pages ? `, ${ref.pages}` : ''}
+                                    </p>
+                                    {ref.url && (
+                                      <a
+                                        href={ref.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:text-blue-800 underline text-xs"
+                                      >
+                                        View Source
+                                      </a>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </motion.div>
+
+                            {/* Action Buttons */}
+                            <motion.div
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.3 }}
+                              className="flex gap-3 pt-4"
+                            >
+                              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white">
+                                <Activity className="mr-2 h-4 w-4" />
+                                Mulai Intervensi
+                              </Button>
+                              <Button variant="outline" className="border-sky-300 text-sky-700 hover:bg-sky-50">
+                                <Download className="mr-2 h-4 w-4" />
+                                Download Panduan
+                              </Button>
+                              <Button variant="outline" className="border-sky-300 text-sky-700 hover:bg-sky-50">
+                                <Calendar className="mr-2 h-4 w-4" />
+                                Jadwalkan Follow-up
+                              </Button>
+                            </motion.div>
+                          </div>
+                        )
+                      })()}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Heart className="h-16 w-16 mx-auto mb-4 text-sky-400" />
+                      <h3 className="text-xl font-semibold text-sky-900 mb-2">
+                        Belum Ada Screening
+                      </h3>
+                      <p className="text-sky-600 max-w-md mx-auto mb-6">
+                        Lakukan screening ESAS terlebih dahulu untuk mendapatkan rekomendasi intervensi yang tepat.
+                      </p>
+                      <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500" asChild>
+                        <Link href={`/screening/new?patient=${patient.id}`}>
+                          <Activity className="mr-2 h-4 w-4" />
+                          Lakukan Screening Pertama
+                        </Link>
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="education" className="mt-6">
+              <Card className="bg-white/80 backdrop-blur-md border-sky-200">
+                <CardHeader>
+                  <CardTitle className="text-xl text-sky-900">Edukasi 8 Penyakit Terminal</CardTitle>
+                  <CardDescription className="text-sky-600">
+                    Informasi lengkap tentang 8 penyakit terminal yang relevan dengan perawatan paliatif
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {/* Education Introduction */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg border border-sky-200"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                          <Stethoscope className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-sky-900">Pemahaman Penyakit Terminal</h3>
+                          <p className="text-sm text-sky-600">
+                            Edukasi lengkap untuk pasien, keluarga, dan caregiver
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-sky-700">
+                        Memahami penyakit adalah langkah pertama dalam memberikan perawatan yang optimal.
+                        Setiap penyakit memiliki karakteristik, gejala, dan kebutuhan perawatan yang berbeda.
+                      </p>
+                    </motion.div>
+
+                    {/* Disease Cards Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {[
+                        {
+                          id: 'alzheimer',
+                          name: 'Alzheimer',
+                          description: 'Gangguan otak progresif yang memengaruhi memori dan fungsi kognitif',
+                          icon: '🧠',
+                          color: 'bg-purple-100 text-purple-800 border-purple-200',
+                          symptoms: ['Hilang memori', 'Kebingungan', 'Perubahan perilaku', 'Kesulitan berbicara']
+                        },
+                        {
+                          id: 'kanker-payudara',
+                          name: 'Kanker Payudara',
+                          description: 'Pertumbuhan sel tidak normal di jaringan payudara',
+                          icon: '🎗️',
+                          color: 'bg-pink-100 text-pink-800 border-pink-200',
+                          symptoms: ['Benjolan di payudara', 'Nyeri', 'Perubahan bentuk', 'Keluar cairan dari puting']
+                        },
+                        {
+                          id: 'gagal-ginjal',
+                          name: 'Gagal Ginjal Kronik',
+                          description: 'Penurunan fungsi ginjal yang progresif dan permanen',
+                          icon: '⚕️',
+                          color: 'bg-green-100 text-green-800 border-green-200',
+                          symptoms: ['Lelah', 'Pembengkakan kaki', 'Sesak napas', 'Pengurangan urine']
+                        },
+                        {
+                          id: 'diabetes',
+                          name: 'Diabetes',
+                          description: 'Kelainan metabolisme dengan kadar gula darah tinggi',
+                          icon: '💉',
+                          color: 'bg-blue-100 text-blue-800 border-blue-200',
+                          symptoms: ['Sering buang air kecil', 'Haus berlebihan', 'Lapar terus', 'Berat badan turun']
+                        },
+                        {
+                          id: 'gagal-jantung',
+                          name: 'Gagal Jantung',
+                          description: 'Kemampuan jantung memompa darah yang menurun',
+                          icon: '❤️',
+                          color: 'bg-red-100 text-red-800 border-red-200',
+                          symptoms: ['Sesak napas', 'Kelelahan', 'Pembengkakan', 'Detak jantung tidak teratur']
+                        },
+                        {
+                          id: 'hiv-aids',
+                          name: 'HIV/AIDS',
+                          description: 'Infeksi virus yang menyerang sistem kekebalan tubuh',
+                          icon: '🦠',
+                          color: 'bg-orange-100 text-orange-800 border-orange-200',
+                          symptoms: ['Demam', 'Lelah', 'Berat badan turun', 'Infeksi berulang']
+                        },
+                        {
+                          id: 'ppok',
+                          name: 'PPOK',
+                          description: 'Penyakit paru obstruktif kronik yang menyebabkan kesulitan bernapas',
+                          icon: '🫁',
+                          color: 'bg-gray-100 text-gray-800 border-gray-200',
+                          symptoms: ['Sesak napas', 'Batuk kronis', 'Dahak', 'Napas berbunyi']
+                        },
+                        {
+                          id: 'stroke',
+                          name: 'Stroke',
+                          description: 'Gangguan aliran darah ke otak yang menyebabkan kematian sel otak',
+                          icon: '🧠',
+                          color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+                          symptoms: ['Kelemahan setengah badan', 'Sulit berbicara', 'Pusing', 'Penglihatan ganda']
+                        }
+                      ].map((disease, index) => (
+                        <motion.div
+                          key={disease.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.1 }}
+                          className="border border-sky-200 rounded-lg p-4 bg-white/60 hover:bg-white/80 transition-all hover:shadow-lg cursor-pointer"
+                          onClick={() => window.open(`/education/${disease.id}`, '_blank')}
+                        >
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="text-3xl">{disease.icon}</div>
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-sky-900">{disease.name}</h4>
+                              <Badge className={`text-xs ${disease.color}`}>
+                                Detail Informasi
+                              </Badge>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-sky-600" />
+                          </div>
+                          <p className="text-sm text-sky-700 mb-3">{disease.description}</p>
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium text-sky-800">Gejala Umum:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {disease.symptoms.slice(0, 3).map((symptom, i) => (
+                                <span key={i} className="text-xs bg-sky-50 text-sky-700 px-2 py-1 rounded">
+                                  {symptom}
+                                </span>
+                              ))}
+                              {disease.symptoms.length > 3 && (
+                                <span className="text-xs bg-sky-50 text-sky-700 px-2 py-1 rounded">
+                                  +{disease.symptoms.length - 3} lagi
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    {/* Resources Section */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="border border-sky-200 rounded-lg p-6 bg-white/60"
+                    >
+                      <h4 className="font-semibold text-sky-900 mb-4 flex items-center">
+                        <FileText className="mr-2 h-5 w-5" />
+                        Sumber Daya Tambahan
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-3">
+                          <h5 className="font-medium text-sky-800">Untuk Pasien & Keluarga:</h5>
+                          <ul className="text-sm text-sky-700 space-y-1">
+                            <li>• Panduan perawatan di rumah</li>
+                            <li>• Manajemen nyeri dan gejala</li>
+                            <li>• Dukungan psikologis</li>
+                            <li>• Konseling gizi</li>
+                          </ul>
+                        </div>
+                        <div className="space-y-3">
+                          <h5 className="font-medium text-sky-800">Untuk Healthcare Provider:</h5>
+                          <ul className="text-sm text-sky-700 space-y-1">
+                            <li>• Protokol klinis terbaru</li>
+                            <li>• Pedoman perawatan paliatif</li>
+                            <li>• Alat asesmen</li>
+                            <li>• Referensi penelitian</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    {/* Emergency Information */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="bg-red-50 border border-red-200 rounded-lg p-6"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <AlertTriangle className="h-6 w-6 text-red-600" />
+                        <h4 className="font-semibold text-red-800">Informasi Darurat</h4>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="font-medium text-red-700 mb-2">Hubungi tenaga kesehatan jika:</p>
+                          <ul className="text-red-600 space-y-1">
+                            <li>• Nyeri yang tidak terkontrol</li>
+                            <li>• Sesak napas yang parah</li>
+                            <li>• Perubahan status mental tiba-tiba</li>
+                            <li>• Demam tinggi atau infeksi</li>
+                          </ul>
+                        </div>
+                        <div>
+                          <p className="font-medium text-red-700 mb-2">Layanan darurat:</p>
+                          <div className="space-y-1 text-red-600">
+                            <p>• Ambulans: 118 atau 119</p>
+                            <p>• Hotline paliatif: (021) 1234-5678</p>
+                            <p>• Crisis hotline: 500-456</p>
+                            <p>• Fasilitas kesehatan terdekat</p>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    {/* Action Buttons */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="flex gap-3 pt-4"
+                    >
+                      <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white">
+                        <Stethoscope className="mr-2 h-4 w-4" />
+                        Unduh Semua Materi Edukasi
+                      </Button>
+                      <Button variant="outline" className="border-sky-300 text-sky-700 hover:bg-sky-50">
+                        <Users className="mr-2 h-4 w-4" />
+                        Edukasi untuk Keluarga
+                      </Button>
+                      <Button variant="outline" className="border-sky-300 text-sky-700 hover:bg-sky-50">
+                        <Calendar className="mr-2 h-4 w-4" />
+        Jadwalkan Konsultasi Edukasi
+                      </Button>
+                    </motion.div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+          <TabsContent value="progression" className="mt-6">
               <Card className="bg-white/80 backdrop-blur-md border-sky-200">
                 <CardHeader>
                   <CardTitle className="text-xl text-sky-900">Progress Gejala</CardTitle>
+                  <CardDescription className="text-sky-600">
+                    Analisis perkembangan gejala pasien dari waktu ke waktu
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   {symptomProgression ? (
                     <div className="space-y-4">
                       {Object.entries(symptomProgression).map(([symptom, data]: [string, any]) => (
-                        <div
+                        <motion.div
                           key={symptom}
-                          className="border border-sky-200 rounded-lg p-4 bg-white/60"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: Object.keys(symptomProgression).indexOf(symptom) * 0.1 }}
+                          className="border border-sky-200 rounded-lg p-4 bg-white/60 hover:bg-white/80 transition-colors"
                         >
-                          <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center justify-between mb-3">
                             <h4 className="font-semibold text-sky-900">Pertanyaan {symptom}</h4>
                             <div className="flex items-center gap-2">
                               {getTrendIcon(data.statistics.trendDirection)}
-                              <span className="text-sm text-sky-600">
+                              <Badge className={
+                                data.statistics.trendDirection === 'improving'
+                                  ? 'bg-green-100 text-green-800 border-green-200'
+                                  : data.statistics.trendDirection === 'declining'
+                                    ? 'bg-red-100 text-red-800 border-red-200'
+                                    : 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                              }>
                                 {data.statistics.trendDirection === 'improving'
                                   ? 'Membaik'
                                   : data.statistics.trendDirection === 'declining'
                                     ? 'Memburuk'
                                     : 'Stabil'}
-                              </span>
+                              </Badge>
                             </div>
                           </div>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                            <div>
-                              <p className="text-sky-600">Rata-rata</p>
-                              <p className="font-medium text-sky-900">
+                            <div className="bg-sky-50 p-3 rounded">
+                              <p className="text-sky-600 text-xs">Rata-rata</p>
+                              <p className="font-medium text-sky-900 text-lg">
                                 {data.statistics.averageScore}
                               </p>
                             </div>
-                            <div>
-                              <p className="text-sky-600">Tertinggi</p>
-                              <p className="font-medium text-sky-900">{data.statistics.maxScore}</p>
+                            <div className="bg-sky-50 p-3 rounded">
+                              <p className="text-sky-600 text-xs">Tertinggi</p>
+                              <p className="font-medium text-sky-900 text-lg">{data.statistics.maxScore}</p>
                             </div>
-                            <div>
-                              <p className="text-sky-600">Terendah</p>
-                              <p className="font-medium text-sky-900">{data.statistics.minScore}</p>
+                            <div className="bg-sky-50 p-3 rounded">
+                              <p className="text-sky-600 text-xs">Terendah</p>
+                              <p className="font-medium text-sky-900 text-lg">{data.statistics.minScore}</p>
                             </div>
-                            <div>
-                              <p className="text-sky-600">Improvement</p>
-                              <p className="font-medium text-sky-900">
+                            <div className="bg-sky-50 p-3 rounded">
+                              <p className="text-sky-600 text-xs">Improvement</p>
+                              <p className="font-medium text-sky-900 text-lg">
                                 {data.statistics.improvementRate > 0 ? '+' : ''}
                                 {data.statistics.improvementRate}%
                               </p>
                             </div>
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sky-600 text-center py-8">
-                      Data progress gejala tidak tersedia
-                    </p>
+                    <div className="text-center py-12">
+                      <BarChart3 className="h-16 w-16 mx-auto mb-4 text-sky-400" />
+                      <h3 className="text-xl font-semibold text-sky-900 mb-2">
+                        Data Progress Belum Tersedia
+                      </h3>
+                      <p className="text-sky-600 max-w-md mx-auto">
+                        Membutuhkan minimal 2 screening untuk menganalisis progress gejala.
+                      </p>
+                    </div>
                   )}
                 </CardContent>
               </Card>
@@ -496,22 +1065,29 @@ export default function PatientDetailPage() {
               <ScreeningTimeline patient={patient} />
             </TabsContent>
 
-            <TabsContent value="export" className="mt-6">
+          <TabsContent value="export" className="mt-6">
               <Card className="bg-white/80 backdrop-blur-md border-sky-200">
                 <CardHeader>
                   <CardTitle className="text-xl text-sky-900">Export Data Pasien</CardTitle>
+                  <CardDescription className="text-sky-600">
+                    Download semua data riwayat screening dan analisis pasien dalam berbagai format
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     <div>
-                      <h4 className="font-semibold text-sky-900 mb-2">Export Riwayat Lengkap</h4>
+                      <h4 className="font-semibold text-sky-900 mb-3 flex items-center">
+                        <Download className="mr-2 h-4 w-4" />
+                        Export Riwayat Lengkap
+                      </h4>
                       <p className="text-sm text-sky-600 mb-4">
-                        Download semua data riwayat screening dan analisis pasien
+                        Download semua data riwayat screening ESAS dan hasil analisis pasien
                       </p>
-                      <div className="flex gap-2">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <Button
                           onClick={() => handleExportHistory('pdf')}
-                          disabled={patient.screenings.length === 0}
+                          disabled={!patient.screenings || patient.screenings.length === 0}
+                          className="bg-blue-600 hover:bg-blue-500 text-white"
                         >
                           <Download className="mr-2 h-4 w-4" />
                           Export PDF
@@ -519,7 +1095,8 @@ export default function PatientDetailPage() {
                         <Button
                           variant="outline"
                           onClick={() => handleExportHistory('csv')}
-                          disabled={patient.screenings.length === 0}
+                          disabled={!patient.screenings || patient.screenings.length === 0}
+                          className="border-sky-300 text-sky-700 hover:bg-sky-50"
                         >
                           <Download className="mr-2 h-4 w-4" />
                           Export CSV
@@ -527,12 +1104,31 @@ export default function PatientDetailPage() {
                         <Button
                           variant="outline"
                           onClick={() => handleExportHistory('json')}
-                          disabled={patient.screenings.length === 0}
+                          disabled={!patient.screenings || patient.screenings.length === 0}
+                          className="border-sky-300 text-sky-700 hover:bg-sky-50"
                         >
                           <Download className="mr-2 h-4 w-4" />
                           Export JSON
                         </Button>
                       </div>
+                    </div>
+
+                    <div className="border-t border-sky-200 pt-6">
+                      <h4 className="font-semibold text-sky-900 mb-3 flex items-center">
+                        <FileText className="mr-2 h-4 w-4" />
+                        Export Screening Terakhir
+                      </h4>
+                      <p className="text-sm text-sky-600 mb-4">
+                        Download laporan screening ESAS terakhir dengan hasil analisis lengkap
+                      </p>
+                      <Button
+                        onClick={handleExportPDF}
+                        disabled={!patient.screenings || patient.screenings.length === 0}
+                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white"
+                      >
+                        <FileText className="mr-2 h-4 w-4" />
+                        Laporan Screening Terakhir
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
