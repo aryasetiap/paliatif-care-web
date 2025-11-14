@@ -24,7 +24,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
 
 import { esasScreeningFormSchema, type ESAScreeningFormData } from '@/lib/validations'
 import { ESASRuleEngine } from '@/lib/esas-rule-engine'
@@ -698,39 +697,37 @@ export default function ESASScreeningPage() {
                 </div>
               </div>
 
-              <ScrollArea className="h-[calc(100vh-500px)]">
-                <div className="space-y-4">
-                  {ESAS_QUESTIONS.map((question, index) => (
-                    <motion.div
-                      key={question.number}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.3 + index * 0.05 }}
-                    >
-                      <FormField
-                        control={form.control}
-                        name={`questions.${question.number}` as any}
-                        render={({ field }) => (
-                          <FormItem>
-                            <ESASQuestionComponent
-                              question={question}
-                              value={field.value || 0}
-                              onChange={field.onChange}
-                              error={
-                                (
-                                  form.formState.errors.questions?.[
-                                    question.number as keyof typeof form.formState.errors.questions
-                                  ] as any
-                                )?.message
-                              }
-                            />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
-                  ))}
-                </div>
-              </ScrollArea>
+              <div className="space-y-4">
+                {ESAS_QUESTIONS.map((question, index) => (
+                  <motion.div
+                    key={question.number}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.3 + index * 0.05 }}
+                  >
+                    <FormField
+                      control={form.control}
+                      name={`questions.${question.number}` as any}
+                      render={({ field }) => (
+                        <FormItem>
+                          <ESASQuestionComponent
+                            question={question}
+                            value={field.value || 0}
+                            onChange={field.onChange}
+                            error={
+                              (
+                                form.formState.errors.questions?.[
+                                  question.number as keyof typeof form.formState.errors.questions
+                                ] as any
+                              )?.message
+                            }
+                          />
+                        </FormItem>
+                      )}
+                    />
+                  </motion.div>
+                ))}
+              </div>
             </motion.div>
 
             {/* Form Actions */}
