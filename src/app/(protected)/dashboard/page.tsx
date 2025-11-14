@@ -54,12 +54,14 @@ export default function DashboardPage() {
         .select('*', { count: 'exact', head: true })
 
       // Load screenings this month
-      const currentMonth = new Date().toISOString().slice(0, 7) // YYYY-MM format
+      const now = new Date()
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
+      const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10)
       const { count: screeningsThisMonth } = await supabase
         .from('screenings')
         .select('*', { count: 'exact', head: true })
-        .gte('created_at', currentMonth + '-01')
-        .lt('created_at', currentMonth + '-31')
+        .gte('created_at', firstDayOfMonth)
+        .lte('created_at', lastDayOfMonth)
 
       // Load high risk patients
       const { data: highRiskPatients } = await supabase
