@@ -301,15 +301,24 @@ export default function ESASScreeningPage() {
       setIsSearching(true)
       try {
         const supabase = createClient()
+
+        // Get current user first
+        const { data: { user }, error: userError } = await supabase.auth.getUser()
+        if (userError || !user) {
+          throw new Error('User not authenticated')
+        }
+
         const { data, error } = await supabase
           .from('patients')
           .select('*')
+          .eq('user_id', user.id)
           .ilike('name', `%${query}%`)
           .limit(5)
 
         if (error) throw error
         setExistingPatients(data || [])
-      } catch {
+      } catch (error) {
+        console.error('Search patients error:', error)
         toast({
           title: 'Error',
           description: 'Gagal mencari pasien',
@@ -353,7 +362,38 @@ export default function ESASScreeningPage() {
   const onSubmit = async (data: ESAScreeningFormData) => {
     setIsSubmitting(true)
     try {
+      console.log('=== FORM SUBMISSION START ===')
+      console.log('Form data received:', data)
+
+      // Validate input data
+      if (!data.patient_info.patient_name?.trim()) {
+        throw new Error('Nama pasien harus diisi')
+      }
+
+      if (!data.patient_info.patient_age || data.patient_info.patient_age <= 0) {
+        throw new Error('Usia pasien harus valid')
+      }
+
+      if (!data.patient_info.patient_gender) {
+        throw new Error('Jenis kelamin harus dipilih')
+      }
+
+      console.log('Input validation passed')
       const supabase = createClient()
+
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      if (userError || !user) {
+        console.error('Authentication error:', userError)
+        throw new Error('User not authenticated')
+      }
+
+      console.log('Current user authenticated:', {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        app_metadata: user.app_metadata
+      })
 
       // Process ESAS screening using rule engine
       const esasResult = ESASRuleEngine.processESASScreening(data.questions)
@@ -366,46 +406,99 @@ export default function ESASScreeningPage() {
       )
 
       // Check if patient exists
-      const { data: existingPatient } = await supabase
+      console.log('Looking for existing patient with criteria:', {
+        user_id: user.id,
+        name: data.patient_info.patient_name.trim(),
+        age: data.patient_info.patient_age,
+        gender: data.patient_info.patient_gender
+      })
+
+      const { data: existingPatients, error: patientCheckError } = await supabase
         .from('patients')
-        .select('id')
-        .eq('name', data.patient_info.patient_name)
+        .select('id, name, age, gender')
+        .eq('user_id', user.id)
+        .eq('name', data.patient_info.patient_name.trim())
         .eq('age', data.patient_info.patient_age)
         .eq('gender', data.patient_info.patient_gender)
-        .single()
+
+      if (patientCheckError) {
+        console.error('Error checking existing patient:', patientCheckError)
+        throw new Error(`Gagal memeriksa data pasien: ${patientCheckError.message}`)
+      }
+
+      console.log('Found existing patients:', existingPatients)
+
+      const existingPatient = existingPatients && existingPatients.length > 0 ? existingPatients[0] : null
 
       let patientId: string
 
       if (existingPatient) {
+        console.log('Using existing patient ID:', existingPatient.id)
         patientId = existingPatient.id
       } else {
         // Create new patient
+        const patientData = {
+          user_id: user.id,
+          name: data.patient_info.patient_name.trim(),
+          age: data.patient_info.patient_age,
+          gender: data.patient_info.patient_gender,
+          facility_name: data.patient_info.facility_name?.trim() || null,
+        }
+
+        console.log('Creating new patient with data:', patientData)
+
         const { data: newPatient, error: patientError } = await supabase
           .from('patients')
-          .insert({
-            name: data.patient_info.patient_name,
-            age: data.patient_info.patient_age,
-            gender: data.patient_info.patient_gender,
-            facility_name: data.patient_info.facility_name,
-          })
+          .insert(patientData)
           .select()
           .single()
 
-        if (patientError) throw patientError
+        if (patientError) {
+          console.error('Error creating patient:', patientError)
+          console.error('Patient error details:', {
+            message: patientError.message,
+            details: patientError.details,
+            hint: patientError.hint,
+            code: patientError.code
+          })
+          throw new Error(`Gagal membuat data pasien: ${patientError.message}`)
+        }
+
         patientId = newPatient.id
+        console.log('New patient created successfully:', newPatient)
       }
 
       // Create screening
+      console.log('Creating screening with data:', { ...dbData, patient_id: patientId })
+
       const { data: screening, error: screeningError } = await supabase
         .from('screenings')
         .insert({
+          user_id: user.id,
           ...dbData,
           patient_id: patientId,
         })
         .select()
         .single()
 
-      if (screeningError) throw screeningError
+      if (screeningError) {
+        console.error('Error creating screening:', screeningError)
+        console.error('Screening error details:', {
+          message: screeningError.message,
+          details: screeningError.details,
+          hint: screeningError.hint,
+          code: screeningError.code
+        })
+        console.error('Screening data attempted:', {
+          user_id: user.id,
+          ...dbData,
+          patient_id: patientId,
+        })
+        throw new Error(`Gagal membuat screening: ${screeningError.message}`)
+      }
+
+      console.log('=== SCREENING CREATION SUCCESS ===')
+      console.log('Screening created:', screening)
 
       toast({
         title: 'Berhasil',
@@ -414,10 +507,17 @@ export default function ESASScreeningPage() {
 
       // Redirect to result page
       router.push(`/screening/${screening.id}/result`)
-    } catch {
+    } catch (error) {
+      console.error('Screening submission error:', error)
+
+      let errorMessage = 'Gagal menyimpan screening. Silakan coba lagi.'
+      if (error instanceof Error) {
+        errorMessage = error.message
+      }
+
       toast({
         title: 'Error',
-        description: 'Gagal menyimpan screening. Silakan coba lagi.',
+        description: errorMessage,
         variant: 'destructive',
       })
     } finally {
