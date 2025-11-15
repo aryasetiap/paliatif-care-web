@@ -15,7 +15,7 @@ export interface Disease {
   name: string;
   slug: string;
   category: string;
-  definition: string | { hiv: string; aids: string };
+  definition: string | { hiv: string; aids: string } | Record<string, string>;
   symptoms: string[] | {
     utama?: string[];
     sisi_kiri?: string[];
@@ -30,6 +30,9 @@ export interface Disease {
   risk_factors?: {
     unchangeable?: string[];
     changeable?: string[];
+    internal?: string[];
+    external?: string[];
+    genetic_role?: string;
   } | string[] | Array<{
     kategori: string;
     faktor: string;

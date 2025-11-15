@@ -286,7 +286,9 @@ export default function EducationSearch({ onResultSelect, className = '' }: Educ
                   <p className="text-xs text-sky-600 line-clamp-2">
                     {typeof result.disease.definition === 'string'
                       ? result.disease.definition
-                      : result.disease.definition.hiv}
+                      : result.disease.definition && typeof result.disease.definition === 'object'
+                        ? result.disease.definition.hiv || result.disease.definition.aids || Object.values(result.disease.definition)[0]
+                        : 'Definisi tidak tersedia'}
                   </p>
                 </CardContent>
               </Card>
