@@ -3,7 +3,7 @@
 1. **Ajukan semua pertanyaan** yang terdapat pada dokumen `PERTANYAAN_SKRINING_ESAS.md`.
 2. **Catat skor** yang dipilih untuk setiap pertanyaan.
 3. **Ambil nilai tertinggi** dari seluruh pertanyaan:
-    - **Jika skor tertinggi berada pada pertanyaan 1 hingga 3**, lakukan pemetaan ke intervensi sesuai aturan berikut:
+    - **Jika skor tertinggi memiliki nilai 1 hingga 3**, lakukan pemetaan ke intervensi sesuai aturan berikut:
         - Pertanyaan 1: **1. Diagnosa: Nyeri Kronis**
         - Pertanyaan 2: **6. Diagnosa: Intoleransi Aktivitas**
         - Pertanyaan 3: **2. Diagnosa: Gangguan Pola Tidur**
@@ -23,7 +23,7 @@
             7. Prioritas 7: Pertanyaan 8
             8. Prioritas 8: Pertanyaan 7
             9. Prioritas 9: Pertanyaan 9
-    - **Jika skor tertinggi berada pada pertanyaan 4 hingga 6**, tampilkan hasil berupa  
+    - **Jika skor tertinggi  memiliki nilai 4 hingga 6**, tampilkan hasil berupa  
       **"Hubungi/Temukan fasilitas kesehatan terdekat untuk evaluasi lebih lanjut"**.
-    - **Jika skor tertinggi berada pada pertanyaan 7 hingga 10**, tampilkan hasil berupa  
+    - **Jika skor tertinggi  memiliki nilai 7 hingga 10**, tampilkan hasil berupa  
       **"Segera rujuk ke Fasilitas Kesehatan atau Profesional untuk Penanganan Segera"**.

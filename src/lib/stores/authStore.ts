@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { User } from '../types'
-import { signUp, signIn, signOut, getCurrentUser, getProfile } from '../supabase'
+import { signUp, signIn, signOut, getCurrentUser, getProfile, resetPassword, updatePassword } from '../supabase'
 
 interface AuthState {
   user: User | null
@@ -17,6 +17,8 @@ interface AuthActions {
   logout: () => Promise<void>
   loadUser: () => Promise<void>
   loadProfile: () => Promise<void>
+  forgotPassword: (email: string) => Promise<void>
+  resetPassword: (newPassword: string) => Promise<void>
   clearError: () => void
   setLoading: (loading: boolean) => void
 }
@@ -138,6 +140,36 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           // Profile might not exist yet, which is okay for new users
           // Optional: Log this for debugging
           // console.warn('Profile not found:', error)
+        }
+      },
+
+      forgotPassword: async (email: string) => {
+        set({ loading: true, error: null })
+
+        try {
+          await resetPassword(email)
+          set({ loading: false })
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : 'Password reset failed',
+            loading: false
+          })
+          throw error
+        }
+      },
+
+      resetPassword: async (newPassword: string) => {
+        set({ loading: true, error: null })
+
+        try {
+          await updatePassword(newPassword)
+          set({ loading: false })
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : 'Password update failed',
+            loading: false
+          })
+          throw error
         }
       },
 
