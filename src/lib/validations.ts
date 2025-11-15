@@ -2,14 +2,8 @@ import { z } from 'zod'
 
 // Authentication validation schemas
 export const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email harus diisi')
-    .email('Format email tidak valid'),
-  password: z
-    .string()
-    .min(1, 'Password harus diisi')
-    .min(6, 'Password minimal 6 karakter'),
+  email: z.string().min(1, 'Email harus diisi').email('Format email tidak valid'),
+  password: z.string().min(1, 'Password harus diisi').min(6, 'Password minimal 6 karakter'),
 })
 
 export const registerSchema = z
@@ -19,10 +13,7 @@ export const registerSchema = z
       .min(1, 'Nama lengkap harus diisi')
       .min(3, 'Nama lengkap minimal 3 karakter')
       .max(100, 'Nama lengkap maksimal 100 karakter'),
-    email: z
-      .string()
-      .min(1, 'Email harus diisi')
-      .email('Format email tidak valid'),
+    email: z.string().min(1, 'Email harus diisi').email('Format email tidak valid'),
     password: z
       .string()
       .min(8, 'Password minimal 8 karakter')
@@ -38,26 +29,23 @@ export const registerSchema = z
   })
 
 export const forgotPasswordSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email wajib diisi')
-    .email('Format email tidak valid'),
+  email: z.string().min(1, 'Email wajib diisi').email('Format email tidak valid'),
 })
 
-export const resetPasswordSchema = z.object({
-  password: z
-    .string()
-    .min(8, 'Password minimal 8 karakter')
-    .regex(/[A-Z]/, 'Password harus mengandung huruf besar')
-    .regex(/[a-z]/, 'Password harus mengandung huruf kecil')
-    .regex(/[0-9]/, 'Password harus mengandung angka'),
-  confirmPassword: z
-    .string()
-    .min(1, 'Konfirmasi password wajib diisi'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Password tidak cocok',
-  path: ['confirmPassword'],
-})
+export const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, 'Password minimal 8 karakter')
+      .regex(/[A-Z]/, 'Password harus mengandung huruf besar')
+      .regex(/[a-z]/, 'Password harus mengandung huruf kecil')
+      .regex(/[0-9]/, 'Password harus mengandung angka'),
+    confirmPassword: z.string().min(1, 'Konfirmasi password wajib diisi'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Password tidak cocok',
+    path: ['confirmPassword'],
+  })
 
 // Patient validation schemas
 export const patientSchema = z.object({
@@ -107,83 +95,88 @@ export const screeningPatientInfoSchema = z.object({
 })
 
 // ESAS Question validation schema sesuai PERTANYAAN_SKRINING_ESAS.md
-export const esasQuestionsSchema = z.object({
-  "1": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
-  "2": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
-  "3": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
-  "4": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
-  "5": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
-  "6": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
-  "7": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
-  "8": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
-  "9": z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
-}, {
-  required_error: 'Semua pertanyaan ESAS harus diisi',
-  invalid_type_error: 'Format skor tidak valid'
-})
+export const esasQuestionsSchema = z.object(
+  {
+    '1': z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+    '2': z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+    '3': z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+    '4': z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+    '5': z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+    '6': z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+    '7': z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+    '8': z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+    '9': z.number().min(0, 'Skor harus antara 0-10').max(10, 'Skor harus antara 0-10'),
+  },
+  {
+    required_error: 'Semua pertanyaan ESAS harus diisi',
+    invalid_type_error: 'Format skor tidak valid',
+  }
+)
 
 // ESAS Question data structure with text descriptions
 export const esasQuestionsDataSchema = z.object({
-  "1": z.object({
+  '1': z.object({
     score: z.number().min(0).max(10),
     text: z.literal('Nyeri'),
-    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+    description: z.enum(['ringan', 'sedang', 'berat']).optional(),
   }),
-  "2": z.object({
+  '2': z.object({
     score: z.number().min(0).max(10),
     text: z.literal('Lelah/Kekurangan Tenaga'),
-    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+    description: z.enum(['ringan', 'sedang', 'berat']).optional(),
   }),
-  "3": z.object({
+  '3': z.object({
     score: z.number().min(0).max(10),
     text: z.literal('Kantuk/Gangguan Tidur'),
-    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+    description: z.enum(['ringan', 'sedang', 'berat']).optional(),
   }),
-  "4": z.object({
+  '4': z.object({
     score: z.number().min(0).max(10),
     text: z.literal('Mual/Nausea'),
-    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+    description: z.enum(['ringan', 'sedang', 'berat']).optional(),
   }),
-  "5": z.object({
+  '5': z.object({
     score: z.number().min(0).max(10),
     text: z.literal('Nafsu Makan'),
-    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+    description: z.enum(['ringan', 'sedang', 'berat']).optional(),
   }),
-  "6": z.object({
+  '6': z.object({
     score: z.number().min(0).max(10),
     text: z.literal('Sesak/Pola Napas'),
-    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+    description: z.enum(['ringan', 'sedang', 'berat']).optional(),
   }),
-  "7": z.object({
+  '7': z.object({
     score: z.number().min(0).max(10),
     text: z.literal('Sedih/Keputusasaan'),
-    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+    description: z.enum(['ringan', 'sedang', 'berat']).optional(),
   }),
-  "8": z.object({
+  '8': z.object({
     score: z.number().min(0).max(10),
     text: z.literal('Cemas/Ansietas'),
-    description: z.enum(['ringan', 'sedang', 'berat']).optional()
+    description: z.enum(['ringan', 'sedang', 'berat']).optional(),
   }),
-  "9": z.object({
+  '9': z.object({
     score: z.number().min(0).max(10),
     text: z.literal('Perasaan Keseluruhan'),
-    description: z.enum(['ringan', 'sedang', 'berat']).optional()
-  })
+    description: z.enum(['ringan', 'sedang', 'berat']).optional(),
+  }),
 })
 
 // Complete ESAS Screening form validation schema
 export const esasScreeningFormSchema = z.object({
   patient_info: screeningPatientInfoSchema,
   questions: esasQuestionsSchema,
-  esas_data: z.object({
-    identity: z.object({
-      name: z.string().min(1, 'Nama pasien harus diisi'),
-      age: z.number().min(0, 'Usia tidak valid').max(150, 'Usia maksimal 150 tahun'),
-      gender: z.enum(['L', 'P']),
-      facility_name: z.string().optional()
-    }),
-    questions: esasQuestionsDataSchema
-  }).optional()
+  esas_data: z
+    .object({
+      identity: z.object({
+        name: z.string().min(1, 'Nama pasien harus diisi'),
+        age: z.number().min(0, 'Usia tidak valid').max(150, 'Usia maksimal 150 tahun'),
+        gender: z.enum(['L', 'P']),
+        facility_name: z.string().optional(),
+      }),
+      questions: esasQuestionsDataSchema,
+    })
+    .optional(),
 })
 
 // Legacy schema for backward compatibility
@@ -212,16 +205,49 @@ export const profileUpdateSchema = z.object({
 })
 
 // Search and filter schemas
-export const patientSearchSchema = z.object({
-  search: z.string().optional(),
-  dateFrom: z.string().optional(),
-  dateTo: z.string().optional(),
-  riskLevel: z.enum(['low', 'medium', 'high']).optional(),
-  page: z.number().min(1).default(1),
-  limit: z.number().min(1).max(100).default(10),
-  sortBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'desc']).default('desc'),
-})
+export const patientSearchSchema = z
+  .object({
+    search: z.string().optional(),
+    dateFrom: z
+      .string()
+      .optional()
+      .refine(
+        (date) => {
+          if (!date) return true // Allow undefined
+          const parsedDate = new Date(date)
+          return !isNaN(parsedDate.getTime()) && parsedDate <= new Date()
+        },
+        { message: 'dateFrom harus tanggal yang valid dan tidak di masa depan' }
+      ),
+    dateTo: z
+      .string()
+      .optional()
+      .refine(
+        (date) => {
+          if (!date) return true // Allow undefined
+          const parsedDate = new Date(date)
+          return !isNaN(parsedDate.getTime()) && parsedDate <= new Date()
+        },
+        { message: 'dateTo harus tanggal yang valid dan tidak di masa depan' }
+      ),
+    riskLevel: z.enum(['low', 'medium', 'high']).optional(),
+    page: z.number().min(1).default(1),
+    limit: z.number().min(1).max(100).default(10),
+    sortBy: z.string().optional(),
+    sortOrder: z.enum(['asc', 'desc']).default('desc'),
+  })
+  .refine(
+    (data) => {
+      // Ensure dateFrom <= dateTo if both are provided
+      if (data.dateFrom && data.dateTo) {
+        const fromDate = new Date(data.dateFrom)
+        const toDate = new Date(data.dateTo)
+        return fromDate <= toDate
+      }
+      return true
+    },
+    { message: 'dateFrom harus kurang dari atau sama dengan dateTo' }
+  )
 
 // Export type inference
 export type LoginFormData = z.infer<typeof loginSchema>

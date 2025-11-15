@@ -411,14 +411,25 @@ export const getDashboardStats = async (): Promise<DashboardStats> => {
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
 
-    // Get screenings this month
-    const currentMonth = new Date().toISOString().slice(0, 7) // YYYY-MM
+    // Get screenings this month with proper date calculation
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = now.getMonth() + 1 // JavaScript months are 0-based
+    const currentMonth = `${year}-${month.toString().padStart(2, '0')}`
+
+    // Calculate first day of month
+    const firstDay = `${currentMonth}-01`
+
+    // Calculate last day of month correctly
+    const lastDayOfMonth = new Date(year, month, 0) // month+1, day 0 gives last day of current month
+    const lastDay = `${currentMonth}-${lastDayOfMonth.getDate().toString().padStart(2, '0')}`
+
     const { count: screeningsThisMonth } = await supabase
       .from('screenings')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
-      .gte('created_at', `${currentMonth}-01`)
-      .lt('created_at', `${currentMonth}-31`)
+      .gte('created_at', firstDay)
+      .lt('created_at', lastDay)
 
     // Get recent patients (last 5)
     const { data: recentPatients } = await supabase
@@ -551,51 +562,70 @@ export const getPatientsWithLatestScreening = async (limit: number = 10) => {
       throw new PatientError('User not authenticated', 'UNAUTHORIZED', 401)
     }
 
-    // Get patients with their latest screening using a subquery approach
-    const { data, error } = await supabase
+    // Simplified approach: Get patients first, then get their screenings
+    const { data: patients, error: patientsError } = await supabase
       .from('patients')
       .select(
         `
         id,
+        user_id,
         name,
         age,
         gender,
         facility_name,
         created_at,
-        updated_at,
-        screenings!inner (
-          id,
-          screening_type,
-          highest_score,
-          primary_question,
-          risk_level,
-          created_at
-        )
+        updated_at
       `
       )
       .eq('user_id', currentUser.data.user.id)
-      .order('screenings.created_at', { ascending: false })
-      .limit(limit)
+      .order('created_at', { ascending: false })
+      .limit(limit * 2) // Get more patients to account for those without screenings
 
-    if (error) {
-      throw new PatientError(error.message, 'DATABASE_ERROR', 500)
+    if (patientsError) {
+      throw new PatientError(patientsError.message, 'DATABASE_ERROR', 500)
     }
 
-    // Group by patient and get only the latest screening for each
-    const patientMap = new Map()
+    if (!patients || patients.length === 0) {
+      return []
+    }
 
-    data?.forEach((item: any) => {
-      const patientKey = item.id
-      if (
-        !patientMap.has(patientKey) ||
-        new Date(item.screenings.created_at).getTime() >
-          new Date(patientMap.get(patientKey).screenings.created_at).getTime()
-      ) {
-        patientMap.set(patientKey, item)
+    // Get latest screening for each patient
+    const patientIds = patients.map((p) => p.id)
+    const { data: screenings, error: screeningsError } = await supabase
+      .from('screenings')
+      .select('*')
+      .in('patient_id', patientIds)
+      .order('created_at', { ascending: false })
+
+    if (screeningsError) {
+      throw new PatientError(screeningsError.message, 'DATABASE_ERROR', 500)
+    }
+
+    // Combine patients with their latest screenings
+    const screeningMap = new Map()
+    screenings?.forEach((screening: any) => {
+      if (!screeningMap.has(screening.patient_id)) {
+        screeningMap.set(screening.patient_id, screening)
       }
     })
 
-    return Array.from(patientMap.values())
+    // Get screening counts for each patient
+    const screeningCounts = new Map()
+    screenings?.forEach((screening: any) => {
+      const currentCount = screeningCounts.get(screening.patient_id) || 0
+      screeningCounts.set(screening.patient_id, currentCount + 1)
+    })
+
+    // Combine patient data with their latest screening (include all patients)
+    const patientsWithScreenings = patients
+      .map((patient) => ({
+        ...patient,
+        screenings: screeningMap.get(patient.id) || null, // Keep all patients, even those without screenings
+        screening_count: screeningCounts.get(patient.id) || 0,
+      }))
+      .slice(0, limit) // Ensure we don't exceed the requested limit
+
+    return patientsWithScreenings
   } catch (error) {
     if (error instanceof PatientError) {
       throw error

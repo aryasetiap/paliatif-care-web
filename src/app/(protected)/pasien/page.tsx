@@ -14,7 +14,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Search, Plus, Calendar, User, AlertTriangle, TrendingUp, Filter, Eye, Grid, List } from 'lucide-react'
+import {
+  Search,
+  Plus,
+  Calendar,
+  User,
+  AlertTriangle,
+  TrendingUp,
+  Filter,
+  Eye,
+  Grid,
+  List,
+} from 'lucide-react'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
@@ -37,7 +48,7 @@ export default function PatientsPage() {
   const [searchParams, setSearchParams] = useState<PatientSearch>({
     page: 1,
     limit: 10,
-    sortBy: 'created_at',
+    sortBy: 'name', // Use valid column from patients table
     sortOrder: 'desc',
   })
   const [total, setTotal] = useState(0)
@@ -52,47 +63,158 @@ export default function PatientsPage() {
   // View state
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table')
   const [showAddDialog, setShowAddDialog] = useState(false)
-  const [patientsWithScreening, setPatientsWithScreening] = useState<any[]>([])
+  const [patientsWithScreening, setPatientsWithScreening] = useState<
+    Array<
+      Patient & {
+        last_screening?: {
+          risk_level: string
+          highest_score: number
+          created_at: string
+        }
+        screening_count?: number
+      }
+    >
+  >([])
   const [latestScreenings, setLatestScreenings] = useState<Record<string, any>>({})
+
+  // Helper function to validate and format dates
+  const validateAndFormatDate = useCallback(
+    (dateString: string | undefined, _fieldName: string): string | undefined => {
+      if (!dateString) return undefined
+
+      const date = new Date(dateString)
+
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return undefined
+      }
+
+      // Check if date is in the future
+      const today = new Date()
+      today.setHours(23, 59, 59, 999)
+
+      if (date > today) {
+        return today.toISOString().split('T')[0]
+      }
+
+      // Additional validation for calendar dates
+      const [year, month, day] = dateString.split('-').map(Number)
+      const isValidCalendarDate = year && month && day && month >= 1 && month <= 12 && day >= 1
+
+      // Validate days per month
+      const daysInMonth = new Date(year, month, 0).getDate()
+      if (!isValidCalendarDate || day > daysInMonth) {
+        return undefined
+      }
+
+      return dateString
+    },
+    []
+  )
 
   const loadPatients = useCallback(async () => {
     try {
       setLoading(true)
+
+      // Validate and format dates using helper function
+      const formattedDateFrom = validateAndFormatDate(dateFrom, 'loadPatients.dateFrom')
+      const formattedDateTo = validateAndFormatDate(dateTo, 'loadPatients.dateTo')
+
       const params = {
         ...searchParams,
-        dateFrom: dateFrom || undefined,
-        dateTo: dateTo || undefined,
+        dateFrom: formattedDateFrom,
+        dateTo: formattedDateTo,
+        // Fix order parameter - patients table doesn't have screenings.created_at
+        sortBy:
+          searchParams.sortBy === 'screenings.created_at' ? 'created_at' : searchParams.sortBy,
+        sortOrder: searchParams.sortOrder || 'desc',
       }
+
       const result = await searchPatients(params)
-      setPatients(result.patients)
-      setTotal(result.total)
-      setTotalPages(result.totalPages)
 
-      // Load latest screening data for each patient
-      const screeningData: Record<string, any> = {}
-      for (const patient of result.patients) {
-        const latestScreening = await getLatestScreening(patient.id)
-        if (latestScreening) {
-          screeningData[patient.id] = latestScreening
-        }
+      if (!result) {
+        throw new Error('Failed to fetch patients data')
       }
-      setLatestScreenings(screeningData)
 
-      // Load patients with latest screening for card view
-      const patientsWithLatest = await getPatientsWithLatestScreening(searchParams.limit || 10)
-      setPatientsWithScreening(patientsWithLatest)
+      setPatients(result.patients || [])
+      setTotal(result.total || 0)
+      setTotalPages(result.totalPages || 0)
+
+      // Load latest screening data for each patient in parallel
+      if (result.patients && result.patients.length > 0) {
+        const screeningPromises = result.patients.map(async (patient) => {
+          try {
+            const latestScreening = await getLatestScreening(patient.id)
+            return { patientId: patient.id, screening: latestScreening }
+          } catch {
+            return { patientId: patient.id, screening: null }
+          }
+        })
+
+        const screeningResults = await Promise.allSettled(screeningPromises)
+        const screeningData: Record<string, any> = {}
+
+        screeningResults.forEach((result) => {
+          if (result.status === 'fulfilled' && result.value.screening) {
+            screeningData[result.value.patientId] = result.value.screening
+          }
+        })
+
+        setLatestScreenings(screeningData)
+
+        // Load patients with latest screening for card view
+        try {
+          // getPatientsWithLatestScreening only accepts a number limit parameter
+          const cardViewLimit = typeof searchParams.limit === 'number' ? searchParams.limit : 10
+          const patientsWithLatest = await getPatientsWithLatestScreening(cardViewLimit)
+
+          // Map data structure to match what PatientCard component expects
+          const mappedPatients = (patientsWithLatest || []).map((patient) => ({
+            ...patient,
+            // Transform screenings to last_screening for card compatibility
+            last_screening: patient.screenings
+              ? {
+                  risk_level: patient.screenings.risk_level,
+                  highest_score: patient.screenings.highest_score,
+                  created_at: patient.screenings.created_at,
+                }
+              : undefined, // Pasien tanpa screening akan punya undefined
+            screening_count: patient.screening_count || 0,
+          }))
+
+          setPatientsWithScreening(mappedPatients)
+        } catch {
+          setPatientsWithScreening([])
+        }
+      } else {
+        setLatestScreenings({})
+        setPatientsWithScreening([])
+      }
     } catch {
-      // Error handling - silently handle the error for production
-      // Consider adding error logging service or user notification in the future
+      // Reset state on error
+      setPatients([])
+      setTotal(0)
+      setTotalPages(0)
+      setLatestScreenings({})
+      setPatientsWithScreening([])
     } finally {
       setLoading(false)
     }
-  }, [searchParams, dateFrom, dateTo])
+  }, [searchParams, dateFrom, dateTo, validateAndFormatDate])
 
   useEffect(() => {
-    loadPatients()
-    loadStats()
-  }, [searchParams, loadPatients])
+    // Only load if search params are valid
+    const hasValidDates =
+      !searchParams.dateFrom ||
+      !searchParams.dateTo ||
+      (validateAndFormatDate(searchParams.dateFrom, 'effect.dateFrom') &&
+        validateAndFormatDate(searchParams.dateTo, 'effect.dateTo'))
+
+    if (hasValidDates) {
+      loadPatients()
+      loadStats()
+    }
+  }, [searchParams, loadPatients, validateAndFormatDate])
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -106,17 +228,83 @@ export default function PatientsPage() {
     return () => clearTimeout(timeoutId)
   }, [searchQuery])
 
+  // Initialize and validate dates on mount and clean any invalid state
+  useEffect(() => {
+    // Force clear any persistent invalid dates from storage or state
+    const today = new Date()
+
+    // Clear date inputs immediately if they contain invalid dates
+    if (dateFrom) {
+      const isInvalid =
+        dateFrom.includes('2025-11-31') ||
+        new Date(dateFrom) > today ||
+        isNaN(new Date(dateFrom).getTime())
+      if (isInvalid) {
+        setDateFrom('')
+      }
+    }
+
+    if (dateTo) {
+      const isInvalid =
+        dateTo.includes('2025-11-31') ||
+        new Date(dateTo) > today ||
+        isNaN(new Date(dateTo).getTime())
+      if (isInvalid) {
+        setDateTo('')
+      }
+    }
+
+    // Reset search params to clean defaults
+    setSearchParams({
+      page: 1,
+      limit: 10,
+      sortBy: 'name',
+      sortOrder: 'desc',
+      dateFrom: undefined,
+      dateTo: undefined,
+      search: undefined,
+    })
+
+    // Clear any localStorage/sessionStorage that might have invalid dates
+    try {
+      const keysToCheck = ['patientSearchFilters', 'dateFilters', 'pasien-page-state']
+      keysToCheck.forEach((key) => {
+        const item = localStorage.getItem(key)
+        if (item && item.includes('2025-11-31')) {
+          localStorage.removeItem(key)
+        }
+      })
+    } catch {
+      // Silently handle localStorage access errors
+    }
+  }, [dateFrom, dateTo]) // Dependencies: dateFrom and dateTo
+
   const loadStats = async () => {
     try {
       const dashboardStats = await getDashboardStats()
-      setStats(dashboardStats)
+      setStats(
+        dashboardStats || {
+          totalPatients: 0,
+          totalScreenings: 0,
+          screeningsThisMonth: 0,
+          highRiskPatients: [],
+        }
+      )
     } catch {
-      // Error handling - silently handle the error for production
-      // Consider adding error logging service or user notification in the future
+      // Set default stats on error
+      setStats({
+        totalPatients: 0,
+        totalScreenings: 0,
+        screeningsThisMonth: 0,
+        highRiskPatients: [],
+      })
     }
   }
 
   const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || (totalPages > 0 && newPage > totalPages)) {
+      return
+    }
     setSearchParams((prev: PatientSearch) => ({ ...prev, page: newPage }))
   }
 
@@ -125,6 +313,7 @@ export default function PatientsPage() {
       ...prev,
       sortBy,
       sortOrder: prev.sortBy === sortBy && prev.sortOrder === 'desc' ? 'asc' : 'desc',
+      page: 1, // Reset to first page when sorting
     }))
   }
 
@@ -158,9 +347,12 @@ export default function PatientsPage() {
     }
   }
 
-  
   const getLatestScreening = async (patientId: string) => {
     try {
+      if (!patientId) {
+        return null
+      }
+
       const supabase = createClient()
       const { data, error } = await supabase
         .from('screenings')
@@ -168,15 +360,14 @@ export default function PatientsPage() {
         .eq('patient_id', patientId)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single()
+        .maybeSingle() // Use maybeSingle() instead of single() to handle no results gracefully
 
-      if (error || !data) {
+      if (error) {
         return null
       }
 
       return data
     } catch {
-      // Error fetching latest screening data
       return null
     }
   }
@@ -191,7 +382,7 @@ export default function PatientsPage() {
 
       <HeaderNav />
 
-      <div className="relative z-10 container mx-auto px-4 py-8">
+      <div className="relative z-10 container mx-auto px-4 py-8 mt-16">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -303,25 +494,57 @@ export default function PatientsPage() {
                 className="pl-10 bg-white/90 border-sky-300 focus:border-blue-500"
               />
             </div>
-            <Input
-              type="date"
-              placeholder="Dari tanggal"
-              value={dateFrom}
-              onChange={(e) => setDateFrom(e.target.value)}
-              className="bg-white/90 border-sky-300 focus:border-blue-500"
-            />
-            <Input
-              type="date"
-              placeholder="Sampai tanggal"
-              value={dateTo}
-              onChange={(e) => setDateTo(e.target.value)}
-              className="bg-white/90 border-sky-300 focus:border-blue-500"
-            />
+            <div className="relative">
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sky-500" />
+              <Input
+                type="date"
+                placeholder="Dari tanggal pendaftaran"
+                value={dateFrom}
+                onChange={(e) => {
+                  const newDate = e.target.value
+                  const validDate = validateAndFormatDate(newDate, 'dateFrom input')
+                  if (validDate) {
+                    setDateFrom(validDate)
+                  } else {
+                    setDateFrom('')
+                  }
+                }}
+                max={new Date().toISOString().split('T')[0]}
+                className="pl-10 bg-white/90 border-sky-300 focus:border-blue-500"
+              />
+            </div>
+            <div className="relative">
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sky-500" />
+              <Input
+                type="date"
+                placeholder="Sampai tanggal pendaftaran"
+                value={dateTo}
+                onChange={(e) => {
+                  const newDate = e.target.value
+                  const validDate = validateAndFormatDate(newDate, 'dateTo input')
+                  if (validDate) {
+                    setDateTo(validDate)
+                  } else {
+                    setDateTo('')
+                  }
+                }}
+                max={new Date().toISOString().split('T')[0]}
+                className="pl-10 bg-white/90 border-sky-300 focus:border-blue-500"
+              />
+            </div>
             <Button
               onClick={() => {
                 setSearchQuery('')
                 setDateFrom('')
                 setDateTo('')
+                // Reset search params to valid defaults
+                setSearchParams((prev) => ({
+                  ...prev,
+                  dateFrom: undefined,
+                  dateTo: undefined,
+                  search: undefined,
+                  page: 1,
+                }))
               }}
               variant="outline"
               className="border-sky-300 text-sky-700 hover:bg-sky-50"
@@ -334,7 +557,11 @@ export default function PatientsPage() {
                 variant={viewMode === 'table' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('table')}
-                className={viewMode === 'table' ? 'bg-sky-600 text-white' : 'border-sky-300 text-sky-700 hover:bg-sky-50'}
+                className={
+                  viewMode === 'table'
+                    ? 'bg-sky-600 text-white'
+                    : 'border-sky-300 text-sky-700 hover:bg-sky-50'
+                }
               >
                 <List className="h-4 w-4" />
               </Button>
@@ -342,7 +569,11 @@ export default function PatientsPage() {
                 variant={viewMode === 'cards' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('cards')}
-                className={viewMode === 'cards' ? 'bg-sky-600 text-white' : 'border-sky-300 text-sky-700 hover:bg-sky-50'}
+                className={
+                  viewMode === 'cards'
+                    ? 'bg-sky-600 text-white'
+                    : 'border-sky-300 text-sky-700 hover:bg-sky-50'
+                }
               >
                 <Grid className="h-4 w-4" />
               </Button>
@@ -359,12 +590,23 @@ export default function PatientsPage() {
         >
           <Card className="border-0 shadow-none">
             <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                 <CardTitle className="text-xl text-sky-900">
                   Daftar Pasien ({total} pasien)
                 </CardTitle>
-                <div className="text-sm text-sky-600">
-                  Tampilan: {viewMode === 'table' ? 'Tabel' : 'Kartu'}
+                <div className="flex items-center gap-4">
+                  <div className="text-sm text-sky-600">
+                    Tampilan: {viewMode === 'table' ? 'Tabel' : 'Kartu'}
+                  </div>
+                  {(dateFrom || dateTo) && (
+                    <div className="text-xs bg-sky-100 text-sky-700 px-2 py-1 rounded-full">
+                      {dateFrom && dateTo
+                        ? `${new Date(dateFrom).toLocaleDateString('id-ID')} - ${new Date(dateTo).toLocaleDateString('id-ID')}`
+                        : dateFrom
+                          ? `Dari ${new Date(dateFrom).toLocaleDateString('id-ID')}`
+                          : `Sampai ${new Date(dateTo).toLocaleDateString('id-ID')}`}
+                    </div>
+                  )}
                 </div>
               </div>
             </CardHeader>
@@ -423,15 +665,19 @@ export default function PatientsPage() {
                           >
                             <TableCell className="font-medium">
                               <div>
-                                <p className="text-sky-900">{patient.name}</p>
+                                <p className="text-sky-900">{patient.name || 'Tanpa Nama'}</p>
                                 {patient.facility_name && (
                                   <p className="text-xs text-sky-600">{patient.facility_name}</p>
                                 )}
                               </div>
                             </TableCell>
-                            <TableCell>{patient.age} tahun</TableCell>
+                            <TableCell>{patient.age ? `${patient.age} tahun` : 'N/A'}</TableCell>
                             <TableCell>
-                              {patient.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
+                              {patient.gender === 'L'
+                                ? 'Laki-laki'
+                                : patient.gender === 'P'
+                                  ? 'Perempuan'
+                                  : 'N/A'}
                             </TableCell>
                             <TableCell>
                               {patient.created_at
@@ -453,16 +699,18 @@ export default function PatientsPage() {
                               {latestScreening ? (
                                 <div className="text-sm max-w-xs">
                                   <p className="font-medium text-sky-900">
-                                    {latestScreening.primary_question &&
-                                      InterventionEngine.getInterventionByESASQuestion(latestScreening.primary_question)?.therapyType ||
-                                      'Tidak Diketahui'
-                                    }
+                                    {(latestScreening.primary_question &&
+                                      InterventionEngine.getInterventionByESASQuestion(
+                                        latestScreening.primary_question
+                                      )?.therapyType) ||
+                                      'Tidak Diketahui'}
                                   </p>
                                   <p className="text-xs text-sky-600 truncate">
-                                    {latestScreening.primary_question &&
-                                      InterventionEngine.getInterventionByESASQuestion(latestScreening.primary_question)?.diagnosisName ||
-                                      '-'
-                                    }
+                                    {(latestScreening.primary_question &&
+                                      InterventionEngine.getInterventionByESASQuestion(
+                                        latestScreening.primary_question
+                                      )?.diagnosisName) ||
+                                      '-'}
                                   </p>
                                 </div>
                               ) : (
@@ -475,7 +723,7 @@ export default function PatientsPage() {
                               {latestScreening ? (
                                 <div className="text-sm">
                                   <p className="text-sky-900">
-                                    Skor: {latestScreening.highest_score}
+                                    Skor: {latestScreening.highest_score ?? 'N/A'}
                                   </p>
                                   <p className="text-xs text-sky-600">
                                     {latestScreening.created_at

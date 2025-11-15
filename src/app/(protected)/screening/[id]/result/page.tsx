@@ -114,7 +114,6 @@ export default function ScreeningResultPage() {
         .single()
 
       if (error) {
-        console.error('Supabase error:', error)
         setError(error.message || 'Gagal mengambil data screening')
         toast.error('Gagal mengambil data screening')
         return
@@ -134,7 +133,6 @@ export default function ScreeningResultPage() {
 
       setScreeningData(data)
     } catch (error: any) {
-      console.error('Fetch error:', error)
       setError(error.message || 'Gagal mengambil data screening')
       toast.error('Gagal mengambil data screening')
     } finally {
