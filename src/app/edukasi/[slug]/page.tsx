@@ -235,54 +235,6 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
       />
       <HeaderNav />
 
-      {/* Sticky Navigation */}
-      <section className="sticky top-16 z-40 bg-white/95 backdrop-blur-md border-b border-sky-200 shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center space-x-8 py-3 overflow-x-auto">
-            <a
-              href="#overview"
-              className="text-sky-700 hover:text-blue-600 font-medium text-sm whitespace-nowrap transition-colors duration-200"
-            >
-              Ringkasan
-            </a>
-            <a
-              href="#definition"
-              className="text-sky-700 hover:text-blue-600 font-medium text-sm whitespace-nowrap transition-colors duration-200"
-            >
-              Definisi
-            </a>
-            <a
-              href="#symptoms"
-              className="text-sky-700 hover:text-blue-600 font-medium text-sm whitespace-nowrap transition-colors duration-200"
-            >
-              Gejala
-            </a>
-            <a
-              href="#causes"
-              className="text-sky-700 hover:text-blue-600 font-medium text-sm whitespace-nowrap transition-colors duration-200"
-            >
-              Penyebab
-            </a>
-            {formattedRiskFactors && formattedRiskFactors.length > 0 && (
-              <a
-                href="#risk-factors"
-                className="text-sky-700 hover:text-blue-600 font-medium text-sm whitespace-nowrap transition-colors duration-200"
-              >
-                Faktor Risiko
-              </a>
-            )}
-            {disease.references && disease.references.length > 0 && (
-              <a
-                href="#references"
-                className="text-sky-700 hover:text-blue-600 font-medium text-sm whitespace-nowrap transition-colors duration-200"
-              >
-                Referensi
-              </a>
-            )}
-          </div>
-        </div>
-      </section>
-
       {/* Overview Section */}
       <section id="overview" className="relative pt-20 pb-16">
         {/* Background Blur */}
