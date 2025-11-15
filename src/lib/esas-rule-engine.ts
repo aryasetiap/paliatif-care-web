@@ -78,11 +78,11 @@ const ESAS_DIAGNOSIS_MAPPING: Record<string, string> = {
   "1": "1. Diagnosa: Nyeri Kronis",
   "2": "6. Diagnosa: Intoleransi Aktivitas",
   "3": "2. Diagnosa: Gangguan Pola Tidur",
-  "4": "5. Diagnosa: Nausea",
-  "5": "7. Diagnosa: Resiko Defisit Nutrisi",
-  "6": "3. Diagnosa: Pola Napas Tidak Efektif",
-  "7": "8. Diagnosa: Keputusasaan",
-  "8": "4. Diagnosa: Ansietas",
+  "4": "5. Diagnosa: Nausea",                      // Fixed: Q4 → Nausea (RULES_SKRINING.md line 10)
+  "5": "7. Diagnosa: Risiko Defisit Nutrisi",     // Fixed: Q5 → Risiko Defisit Nutrisi (RULES_SKRINING.md line 11)
+  "6": "3. Diagnosa: Pola Napas Tidak Efektif",   // Fixed: Q6 → Pola Napas (RULES_SKRINING.md line 12)
+  "7": "8. Diagnosa: Keputusasaan",               // Fixed: Q7 → Keputusasaan (RULES_SKRINING.md line 13)
+  "8": "4. Diagnosa: Ansietas",                    // Fixed: Q8 → Ansietas (RULES_SKRINING.md line 14)
   "9": "9. Diagnosa: Peningkatan Koping Keluarga"
 }
 
