@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -257,6 +257,7 @@ function ESASQuestionComponent({ question, value, onChange, error }: ESASQuestio
 
 export default function ESASScreeningPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSavingDraft, setIsSavingDraft] = useState(false)
@@ -264,6 +265,8 @@ export default function ESASScreeningPage() {
   const [isSearching, setIsSearching] = useState(false)
   const [showExistingPatients, setShowExistingPatients] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectedPatient, setSelectedPatient] = useState<any>(null)
+  const [isLoadingPatient, setIsLoadingPatient] = useState(false)
 
   const form = useForm<ESAScreeningFormData>({
     resolver: zodResolver(esasScreeningFormSchema),
@@ -346,9 +349,74 @@ export default function ESASScreeningPage() {
     [searchPatients, setSearchQuery]
   )
 
+  // Load patient data by ID
+  const loadPatientById = useCallback(
+    async (patientId: string) => {
+      setIsLoadingPatient(true)
+      try {
+        const supabase = createClient()
+
+        // Get current user first
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser()
+        if (userError || !user) {
+          throw new Error('User not authenticated')
+        }
+
+        const { data: patient, error } = await supabase
+          .from('patients')
+          .select('*')
+          .eq('id', patientId)
+          .eq('user_id', user.id)
+          .single()
+
+        if (error) {
+          throw new Error(`Pasien tidak ditemukan: ${error.message}`)
+        }
+
+        if (patient) {
+          setSelectedPatient(patient)
+          form.setValue('patient_info.patient_name', patient.name)
+          form.setValue('patient_info.patient_age', patient.age)
+          form.setValue('patient_info.patient_gender', patient.gender)
+          form.setValue('patient_info.facility_name', patient.facility_name || '')
+
+          // Check for existing screenings to determine appropriate type
+          const { data: screenings } = await supabase
+            .from('screenings')
+            .select('screening_type, created_at')
+            .eq('patient_id', patientId)
+            .order('created_at', { ascending: false })
+            .limit(1)
+
+          // Set screening type based on existing screenings
+          if (screenings && screenings.length > 0) {
+            // Patient already has screenings - this is a follow-up
+            form.setValue('patient_info.screening_type', 'follow_up')
+          } else {
+            // First time screening for this patient
+            form.setValue('patient_info.screening_type', 'initial')
+          }
+        }
+      } catch (error) {
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Gagal memuat data pasien',
+        variant: 'destructive',
+      })
+      } finally {
+        setIsLoadingPatient(false)
+      }
+    },
+    [form, toast]
+  )
+
   // Select existing patient
   const selectPatient = useCallback(
-    (patient: any) => {
+    async (patient: any) => {
+      setSelectedPatient(patient)
       form.setValue('patient_info.patient_name', patient.name)
       form.setValue('patient_info.patient_age', patient.age)
       form.setValue('patient_info.patient_gender', patient.gender)
@@ -356,6 +424,28 @@ export default function ESASScreeningPage() {
       setShowExistingPatients(false)
       setSearchQuery('')
       setExistingPatients([])
+
+      // Check if patient has existing screenings to set correct type
+      try {
+        const supabase = createClient()
+        const { data: screenings } = await supabase
+          .from('screenings')
+          .select('screening_type, created_at')
+          .eq('patient_id', patient.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+
+        if (screenings && screenings.length > 0) {
+          // Patient already has screenings - this is a follow-up
+          form.setValue('patient_info.screening_type', 'follow_up')
+        } else {
+          // First time screening for this patient
+          form.setValue('patient_info.screening_type', 'initial')
+        }
+      } catch {
+        // If error checking screenings, default to initial
+        form.setValue('patient_info.screening_type', 'initial')
+      }
     },
     [form]
   )
@@ -397,48 +487,51 @@ export default function ESASScreeningPage() {
         data.patient_info.screening_type
       )
 
-      // Check if patient exists
-
-      const { data: existingPatients, error: patientCheckError } = await supabase
-        .from('patients')
-        .select('id, name, age, gender')
-        .eq('user_id', user.id)
-        .eq('name', data.patient_info.patient_name.trim())
-        .eq('age', data.patient_info.patient_age)
-        .eq('gender', data.patient_info.patient_gender)
-
-      if (patientCheckError) {
-        throw new Error(`Gagal memeriksa data pasien: ${patientCheckError.message}`)
-      }
-
-      const existingPatient =
-        existingPatients && existingPatients.length > 0 ? existingPatients[0] : null
-
       let patientId: string
 
-      if (existingPatient) {
-        patientId = existingPatient.id
+      // Use selected patient if available, otherwise check if patient exists
+      if (selectedPatient) {
+        patientId = selectedPatient.id
       } else {
-        // Create new patient
-        const patientData = {
-          user_id: user.id,
-          name: data.patient_info.patient_name.trim(),
-          age: data.patient_info.patient_age,
-          gender: data.patient_info.patient_gender,
-          facility_name: data.patient_info.facility_name?.trim() || null,
-        }
-
-        const { data: newPatient, error: patientError } = await supabase
+        const { data: existingPatients, error: patientCheckError } = await supabase
           .from('patients')
-          .insert(patientData)
-          .select()
-          .single()
+          .select('id, name, age, gender')
+          .eq('user_id', user.id)
+          .eq('name', data.patient_info.patient_name.trim())
+          .eq('age', data.patient_info.patient_age)
+          .eq('gender', data.patient_info.patient_gender)
 
-        if (patientError) {
-          throw new Error(`Gagal membuat data pasien: ${patientError.message}`)
+        if (patientCheckError) {
+          throw new Error(`Gagal memeriksa data pasien: ${patientCheckError.message}`)
         }
 
-        patientId = newPatient.id
+        const existingPatient =
+          existingPatients && existingPatients.length > 0 ? existingPatients[0] : null
+
+        if (existingPatient) {
+          patientId = existingPatient.id
+        } else {
+          // Create new patient
+          const patientData = {
+            user_id: user.id,
+            name: data.patient_info.patient_name.trim(),
+            age: data.patient_info.patient_age,
+            gender: data.patient_info.patient_gender,
+            facility_name: data.patient_info.facility_name?.trim() || null,
+          }
+
+          const { data: newPatient, error: patientError } = await supabase
+            .from('patients')
+            .insert(patientData)
+            .select()
+            .single()
+
+          if (patientError) {
+            throw new Error(`Gagal membuat data pasien: ${patientError.message}`)
+          }
+
+          patientId = newPatient.id
+        }
       }
 
       // Create screening
@@ -509,10 +602,17 @@ export default function ESASScreeningPage() {
     }
   }
 
-  // Load draft on mount
+  // Load patient data and draft on mount
   useEffect(() => {
+    const patientId = searchParams.get('patient')
+
+    // Load patient data if patient ID is provided
+    if (patientId) {
+      loadPatientById(patientId)
+    }
+
     const savedDraft = localStorage.getItem('esas_screening_draft')
-    if (savedDraft) {
+    if (savedDraft && !patientId) { // Only load draft if no patient is pre-selected
       try {
         const draftData = JSON.parse(savedDraft)
         // Reset form with draft data (excluding patient info if user wants to start fresh)
@@ -535,7 +635,7 @@ export default function ESASScreeningPage() {
         // Silently handle draft loading error
       }
     }
-  })
+  }, [searchParams, loadPatientById, form, toast])
 
   return (
     <div className="relative min-h-screen">
@@ -558,6 +658,45 @@ export default function ESASScreeningPage() {
               Evaluasi komprehensif 9 gejala paliatif dengan skala 0-10
             </p>
           </div>
+
+          {/* Patient Info Banner */}
+          {selectedPatient && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-r from-blue-50 to-purple-50 border border-sky-200 rounded-lg p-4 mb-4"
+            >
+              <div className="flex items-center justify-center gap-2 text-sky-700">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="font-medium">Pasien Terpilih:</span>
+                <span className="font-semibold">{selectedPatient.name}</span>
+                <span>•</span>
+                <span>{selectedPatient.age} tahun</span>
+                <span>•</span>
+                <span>{selectedPatient.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
+                {selectedPatient.facility_name && (
+                  <>
+                    <span>•</span>
+                    <span>{selectedPatient.facility_name}</span>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Loading State */}
+          {isLoadingPatient && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4"
+            >
+              <div className="flex items-center justify-center gap-2 text-yellow-700">
+                <div className="animate-spin w-4 h-4 border-2 border-yellow-500 border-t-transparent rounded-full"></div>
+                <span className="font-medium">Memuat data pasien...</span>
+              </div>
+            </motion.div>
+          )}
         </motion.div>
 
         <Form {...form}>
@@ -582,23 +721,35 @@ export default function ESASScreeningPage() {
                       name="patient_info.patient_name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sky-700">Nama Pasien *</FormLabel>
+                          <FormLabel className="text-sky-700">
+                            Nama Pasien * {selectedPatient && <span className="text-xs text-gray-500">(Tidak dapat diubah)</span>}
+                          </FormLabel>
                           <FormControl>
                             <div className="relative">
                               <Input
                                 placeholder="Masukkan nama pasien"
                                 {...field}
-                                className="bg-white/90 border-sky-300 focus:border-blue-500"
+                                disabled={!!selectedPatient || isLoadingPatient}
+                                className={`bg-white/90 border-sky-300 focus:border-blue-500 ${
+                                  selectedPatient ? 'bg-gray-50 text-gray-700 cursor-not-allowed' : ''
+                                }`}
                                 onChange={(e) => {
                                   field.onChange(e)
-                                  handleSearchChange(e.target.value)
-                                  setShowExistingPatients(true)
+                                  if (!selectedPatient) {
+                                    handleSearchChange(e.target.value)
+                                    setShowExistingPatients(true)
+                                  }
                                 }}
-                                onFocus={() => setShowExistingPatients(true)}
+                                onFocus={() => !selectedPatient && setShowExistingPatients(true)}
                               />
                               {isSearching && (
                                 <div className="absolute right-3 top-3">
                                   <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                                </div>
+                              )}
+                              {selectedPatient && (
+                                <div className="absolute right-3 top-3">
+                                  <div className="text-xs text-green-600 font-medium">✓ Terpilih</div>
                                 </div>
                               )}
                             </div>
@@ -606,7 +757,7 @@ export default function ESASScreeningPage() {
                           <FormMessage />
 
                           {/* Show existing patients dropdown */}
-                          {showExistingPatients &&
+                          {!selectedPatient && showExistingPatients &&
                             searchQuery.trim() &&
                             existingPatients.length > 0 && (
                               <div className="absolute z-10 w-full mt-1 bg-white/90 backdrop-blur-md border-sky-200 rounded-md shadow-lg max-h-40 overflow-y-auto">
@@ -637,12 +788,17 @@ export default function ESASScreeningPage() {
                       name="patient_info.patient_age"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sky-700">Usia *</FormLabel>
+                          <FormLabel className="text-sky-700">
+                            Usia * {selectedPatient && <span className="text-xs text-gray-500">(Tidak dapat diubah)</span>}
+                          </FormLabel>
                           <FormControl>
                             <Input
                               type="number"
                               placeholder="Masukkan usia"
-                              className="bg-white/90 border-sky-300 focus:border-blue-500"
+                              disabled={!!selectedPatient || isLoadingPatient}
+                              className={`bg-white/90 border-sky-300 focus:border-blue-500 ${
+                                selectedPatient ? 'bg-gray-50 text-gray-700 cursor-not-allowed' : ''
+                              }`}
                               {...field}
                               onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                             />
@@ -659,10 +815,18 @@ export default function ESASScreeningPage() {
                       name="patient_info.patient_gender"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sky-700">Jenis Kelamin *</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormLabel className="text-sky-700">
+                            Jenis Kelamin * {selectedPatient && <span className="text-xs text-gray-500">(Tidak dapat diubah)</span>}
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            disabled={!!selectedPatient || isLoadingPatient}
+                          >
                             <FormControl>
-                              <SelectTrigger className="bg-white/90 border-sky-300 focus:border-blue-500">
+                              <SelectTrigger className={`bg-white/90 border-sky-300 focus:border-blue-500 ${
+                                selectedPatient ? 'bg-gray-50 text-gray-700 cursor-not-allowed' : ''
+                              }`}>
                                 <SelectValue placeholder="Pilih jenis kelamin" />
                               </SelectTrigger>
                             </FormControl>
@@ -700,10 +864,14 @@ export default function ESASScreeningPage() {
                     name="patient_info.screening_type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sky-700">Tipe Screening *</FormLabel>
+                        <FormLabel className="text-sky-700">
+                          Tipe Screening * {selectedPatient && <span className="text-xs text-gray-500">(Terdeteksi otomatis)</span>}
+                        </FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger className="bg-white/90 border-sky-300 focus:border-blue-500">
+                            <SelectTrigger className={`bg-white/90 border-sky-300 focus:border-blue-500 ${
+                              selectedPatient ? 'bg-green-50 border-green-300' : ''
+                            }`}>
                               <SelectValue placeholder="Pilih tipe screening" />
                             </SelectTrigger>
                           </FormControl>
@@ -712,10 +880,60 @@ export default function ESASScreeningPage() {
                             <SelectItem value="follow_up">Screening Follow-up</SelectItem>
                           </SelectContent>
                         </Select>
+                        {selectedPatient && (
+                          <div className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span>
+                              {field.value === 'follow_up'
+                                ? 'Pasien sudah pernah di-screening sebelumnya'
+                                : 'Screening pertama untuk pasien ini'
+                              }
+                            </span>
+                          </div>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  {/* Change Patient Button */}
+                  {selectedPatient && (
+                    <div className="flex justify-end">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedPatient(null)
+                          form.reset({
+                            patient_info: {
+                              patient_name: '',
+                              patient_age: 0,
+                              patient_gender: 'L',
+                              facility_name: '',
+                              screening_type: 'initial',
+                            },
+                            questions: {
+                              '1': 0,
+                              '2': 0,
+                              '3': 0,
+                              '4': 0,
+                              '5': 0,
+                              '6': 0,
+                              '7': 0,
+                              '8': 0,
+                              '9': 0,
+                            },
+                          })
+                          // Remove patient parameter from URL
+                          const newUrl = window.location.pathname
+                          window.history.replaceState({}, '', newUrl)
+                        }}
+                        className="border-red-300 text-red-700 hover:bg-red-50"
+                      >
+                        Ganti Pasien
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
