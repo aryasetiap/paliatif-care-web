@@ -8,10 +8,10 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { registerSchema, type RegisterFormData } from '@/lib/validations'
+import { registerSchema, type RegisterFormData, ROLE_OPTIONS } from '@/lib/validations'
 import { useToast } from '@/hooks/use-toast'
 import { useAuthStore } from '@/lib/stores/authStore'
-import { Loader2, Eye, EyeOff, UserPlus, ArrowRight } from 'lucide-react'
+import { Loader2, Eye, EyeOff, UserPlus, ArrowRight, Users, UserCheck } from 'lucide-react'
 import { motion } from 'framer-motion'
 import AuthLayout from '@/components/auth/AuthLayout'
 
@@ -35,6 +35,7 @@ export default function RegisterPage() {
       email: '',
       password: '',
       confirmPassword: '',
+      role: undefined,
     },
   })
 
@@ -45,11 +46,11 @@ export default function RegisterPage() {
 
     try {
       // Register dengan Supabase menggunakan authStore
-      await registerUser(data.email, data.password, data.fullName)
+      await registerUser(data.email, data.password, data.fullName, data.role)
 
       toast({
         title: 'Pendaftaran berhasil',
-        description: 'Akun Anda telah berhasil dibuat. Silakan login.',
+        description: `Akun Anda sebagai ${data.role === 'perawat' ? 'Perawat' : 'Pasien'} telah berhasil dibuat. Silakan login.`,
       })
 
       // Redirect ke login setelah registrasi berhasil
@@ -65,6 +66,8 @@ export default function RegisterPage() {
       setIsLoading(false)
     }
   }
+
+  const [selectedRole, setSelectedRole] = useState<'perawat' | 'pasien' | null>(null)
 
   const getPasswordStrength = (password: string) => {
     if (!password) return { score: 0, text: 'Minimal 8 karakter', color: 'text-gray-400' }
@@ -147,6 +150,81 @@ export default function RegisterPage() {
                 className="text-xs sm:text-sm text-red-500 flex items-center gap-1"
               >
                 {errors.email.message}
+              </motion.p>
+            )}
+          </div>
+
+          {/* Role Selection */}
+          <div className="space-y-3">
+            <Label className="text-sky-800 font-semibold text-sm">
+              Pilih Role Anda <span className="text-red-500">*</span>
+            </Label>
+            <div className="space-y-3">
+              {ROLE_OPTIONS.map((role) => (
+                <motion.div
+                  key={role.value}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className="relative"
+                >
+                  <input
+                    type="radio"
+                    id={role.value}
+                    value={role.value}
+                    {...register('role')}
+                    className="peer sr-only"
+                    disabled={isLoading}
+                    onChange={(e) => setSelectedRole(e.target.value as 'perawat' | 'pasien')}
+                  />
+                  <Label
+                    htmlFor={role.value}
+                    className={`flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                      selectedRole === role.value
+                        ? 'border-blue-500 bg-blue-50/80 shadow-md'
+                        : 'border-sky-200 bg-white/60 hover:bg-sky-50/60 hover:border-sky-300'
+                    }`}
+                  >
+                    <div className="flex items-start gap-4 w-full">
+                      <div className="flex-shrink-0 mt-0.5">
+                        <div
+                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                            selectedRole === role.value
+                              ? 'border-blue-500 bg-blue-500'
+                              : 'border-sky-400 peer-hover:border-blue-400'
+                          }`}
+                        >
+                          {selectedRole === role.value && (
+                            <div className="w-2 h-2 rounded-full bg-white" />
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 flex-1">
+                        <div className="flex-shrink-0">
+                          {role.value === 'perawat' ? (
+                            <Users className="h-6 w-6 text-sky-700" />
+                          ) : (
+                            <UserCheck className="h-6 w-6 text-sky-700" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-sky-900 text-sm">{role.label}</p>
+                          <p className="text-sky-600 text-xs mt-0.5 leading-relaxed">
+                            {role.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </Label>
+                </motion.div>
+              ))}
+            </div>
+            {errors.role && (
+              <motion.p
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-xs sm:text-sm text-red-500 flex items-center gap-1"
+              >
+                {errors.role.message}
               </motion.p>
             )}
           </div>

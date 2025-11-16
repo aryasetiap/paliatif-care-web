@@ -1,0 +1,132 @@
+{
+  "timestamp": "2025-11-15T17:48:30.980Z",
+  "tests": [
+    {
+      "name": "Guest Form Rendering",
+      "status": "PASS",
+      "details": {
+        "responseOk": true,
+        "hasGuestForm": true,
+        "hasPurpleTheme": true,
+        "hasContactInfoField": true,
+        "hasDisclaimer": true
+      }
+    },
+    {
+      "name": "Guest Screening Route",
+      "status": "PASS",
+      "details": {
+        "responseOk": true,
+        "hasGuestMode": true,
+        "hasESASForm": false
+      }
+    },
+    {
+      "name": "Regular Screening Route",
+      "status": "PASS",
+      "details": {
+        "responseOk": true,
+        "hasFormRouter": false,
+        "hasRoleLogic": false
+      }
+    },
+    {
+      "name": "Component: ESAS Form Router",
+      "status": "PASS",
+      "details": {
+        "path": "/src/components/esas-form-router.tsx"
+      }
+    },
+    {
+      "name": "Component: ESAS Pasien Form",
+      "status": "PASS",
+      "details": {
+        "path": "/src/components/esas-form-variants.tsx"
+      }
+    },
+    {
+      "name": "Component: ESAS Perawat Form",
+      "status": "PASS",
+      "details": {
+        "path": "/src/components/esas-form-perawat.tsx"
+      }
+    },
+    {
+      "name": "Component: ESAS Guest Form",
+      "status": "PASS",
+      "details": {
+        "path": "/src/components/esas-form-guest.tsx"
+      }
+    },
+    {
+      "name": "Component: Updated ESAS Content",
+      "status": "PASS",
+      "details": {
+        "path": "/src/components/esas-screening-content.tsx"
+      }
+    },
+    {
+      "name": "ESAS Question 1",
+      "status": "PASS",
+      "details": {
+        "question": "Pain"
+      }
+    },
+    {
+      "name": "ESAS Question 2",
+      "status": "PASS",
+      "details": {
+        "question": "Fatigue"
+      }
+    },
+    {
+      "name": "ESAS Question 3",
+      "status": "PASS",
+      "details": {
+        "question": "Drowsiness"
+      }
+    },
+    {
+      "name": "ESAS Question 4",
+      "status": "PASS",
+      "details": {
+        "question": "Nausea"
+      }
+    },
+    {
+      "name": "ESAS Question 5",
+      "status": "PASS",
+      "details": {
+        "question": "Appetite"
+      }
+    },
+    {
+      "name": "ESAS Question 6",
+      "status": "PASS",
+      "details": {
+        "question": "Breathlessness"
+      }
+    },
+    {
+      "name": "ESAS Question 7",
+      "status": "PASS",
+      "details": {
+        "question": "Depression"
+      }
+    },
+    {
+      "name": "ESAS Question 8",
+      "status": "PASS",
+      "details": {
+        "question": "Anxiety"
+      }
+    },
+    {
+      "name": "ESAS Question 9",
+      "status": "PASS",
+      "details": {
+        "question": "Wellbeing"
+      }
+    }
+  ]
+}

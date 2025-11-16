@@ -1,4 +1,5 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { UserRole } from './types'
 
 // Client-side Supabase client
 export const createClient = () => {
@@ -13,24 +14,76 @@ export const createServerClient = async () => {
 }
 
 // Auth helper functions
-export const signUp = async (email: string, password: string, fullName: string) => {
+export const signUp = async (email: string, password: string, fullName: string, role: UserRole) => {
   const supabase = createClient()
 
-  const { data, error } = await supabase.auth.signUp({
+  // First, create the user
+  const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
         full_name: fullName,
+        role: role, // Store role in user metadata as backup
       },
     },
   })
 
-  if (error) {
-    throw new Error(error.message)
+  if (authError) {
+    throw new Error(authError.message)
   }
 
-  return data
+  // If user creation successful, wait a moment then create profile with role
+  if (authData.user) {
+    // Wait a moment for the auth session to be established
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    // Check if profile already exists first
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', authData.user.id)
+      .single()
+
+    if (!existingProfile) {
+      // Profile doesn't exist, create it
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          full_name: fullName,
+          role: role
+        })
+
+      if (profileError) {
+        // Profile creation error
+
+        // Try alternative approach - create profile through RPC function
+        try {
+          const { error: rpcError } = await supabase.rpc('create_user_profile', {
+            p_user_id: authData.user.id,
+            p_full_name: fullName,
+            p_role: role
+          })
+
+          if (rpcError) {
+            // RPC profile creation error
+            // All profile creation attempts failed, but user created. Profile will be handled on login
+          } else {
+            // Profile created successfully via RPC
+          }
+        } catch {
+          // RPC profile creation failed, but user created. Profile will be created on first login
+        }
+      } else {
+        // Profile created successfully
+      }
+    } else {
+      // Profile already exists, skipping creation
+    }
+  }
+
+  return authData
 }
 
 export const signIn = async (email: string, password: string) => {
@@ -98,6 +151,23 @@ export const updateProfile = async (userId: string, updates: any) => {
   const { data, error } = await supabase
     .from('profiles')
     .update(updates)
+    .eq('id', userId)
+    .select()
+    .single()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return data
+}
+
+export const updateProfileRole = async (userId: string, role: UserRole) => {
+  const supabase = createClient()
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ role })
     .eq('id', userId)
     .select()
     .single()

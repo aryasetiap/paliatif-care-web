@@ -124,6 +124,18 @@ export default function HeaderNav() {
               {isAuthenticated ? 'Skrining' : 'Skrining'}
             </Link>
 
+            {/* Screening Tamu Link */}
+            <Link
+              href="/screening/guest"
+              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-green-50 ${
+                isScrolled
+                  ? 'text-green-700 hover:text-green-900 hover:bg-green-50'
+                  : 'text-green-700 hover:text-green-900 hover:bg-green-50/20'
+              }`}
+            >
+              Screening Tamu
+            </Link>
+
             {/* Edukasi Link */}
             <Link
               href="/edukasi"
@@ -267,6 +279,18 @@ export default function HeaderNav() {
                   <FileText className="h-4 w-4 text-amber-400" />
                 </div>
                 <span>{isAuthenticated ? 'Skrining' : 'Skrining'}</span>
+              </Link>
+
+              {/* Screening Tamu Link */}
+              <Link
+                href="/screening/guest"
+                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-green-700 hover:text-green-900 hover:bg-green-50 rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-green-500/20 border border-green-400/30">
+                  <FileText className="h-4 w-4 text-green-400" />
+                </div>
+                <span>Screening Tamu</span>
               </Link>
 
               {/* Edukasi Link */}

@@ -20,7 +20,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
-  const { login } = useAuthStore()
+  const { login, userRole } = useAuthStore()
 
   const {
     register,
@@ -34,6 +34,19 @@ export default function LoginPage() {
     },
   })
 
+  const getRoleBasedRedirect = (role: string | null) => {
+    switch (role) {
+      case 'admin':
+        return '/admin/dashboard'
+      case 'perawat':
+        return '/dashboard'
+      case 'pasien':
+        return '/pasien/dashboard'
+      default:
+        return '/dashboard' // fallback
+    }
+  }
+
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
 
@@ -43,11 +56,12 @@ export default function LoginPage() {
 
       toast({
         title: 'Login berhasil',
-        description: 'Selamat datang kembali!',
+        description: `Selamat datang kembali${userRole ? ` sebagai ${userRole}` : ''}!`,
       })
 
-      // Redirect ke dashboard setelah login berhasil
-      router.push('/dashboard')
+      // Redirect ke dashboard berdasarkan role setelah login berhasil
+      const redirectPath = getRoleBasedRedirect(userRole)
+      router.push(redirectPath)
     } catch (error) {
       toast({
         title: 'Login gagal',

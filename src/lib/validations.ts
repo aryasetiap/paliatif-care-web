@@ -22,6 +22,10 @@ export const registerSchema = z
         'Password harus mengandung huruf besar, huruf kecil, dan angka'
       ),
     confirmPassword: z.string().min(1, 'Konfirmasi password harus diisi'),
+    role: z.enum(['perawat', 'pasien'], {
+      required_error: 'Role harus dipilih',
+      message: 'Pilih salah satu role: Perawat atau Pasien'
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Konfirmasi password tidak cocok',
@@ -92,6 +96,11 @@ export const screeningPatientInfoSchema = z.object({
   screening_type: z.enum(['initial', 'follow_up'], {
     required_error: 'Tipe screening harus dipilih',
   }),
+  contact_info: z
+    .string()
+    .min(1, 'Informasi kontak harus diisi')
+    .max(100, 'Informasi kontak maksimal 100 karakter')
+    .optional(), // Required for guest mode, optional for authenticated users
 })
 
 // ESAS Question validation schema sesuai PERTANYAAN_SKRINING_ESAS.md
@@ -289,6 +298,11 @@ export const RISK_LEVEL_OPTIONS = [
   { value: 'low', label: 'Rendah' },
   { value: 'medium', label: 'Sedang' },
   { value: 'high', label: 'Tinggi' },
+] as const
+
+export const ROLE_OPTIONS = [
+  { value: 'perawat', label: 'Perawat', description: 'Dapat melakukan screening pasien' },
+  { value: 'pasien', label: 'Pasien', description: 'Dapat melakukan screening mandiri' },
 ] as const
 
 export const SORT_BY_OPTIONS = [
