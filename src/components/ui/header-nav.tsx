@@ -111,29 +111,16 @@ export default function HeaderNav() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-2 ml-auto">
-            {/* Skrining Link */}
+            {/* Skrining Link - Dynamic based on auth status */}
             <Link
-              href="/screening/new"
-              onClick={handleScreeningClick}
+              href={isAuthenticated ? "/screening/new" : "/screening/guest"}
               className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-blue-50 ${
                 isScrolled
                   ? 'text-gray-800 hover:text-gray-900 hover:bg-blue-50'
                   : 'text-gray-800 hover:text-gray-900 hover:bg-white/10'
               }`}
             >
-              {isAuthenticated ? 'Skrining' : 'Skrining'}
-            </Link>
-
-            {/* Screening Tamu Link */}
-            <Link
-              href="/screening/guest"
-              className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-green-50 ${
-                isScrolled
-                  ? 'text-green-700 hover:text-green-900 hover:bg-green-50'
-                  : 'text-green-700 hover:text-green-900 hover:bg-green-50/20'
-              }`}
-            >
-              Screening Tamu
+              {isAuthenticated ? 'Skrining' : 'Skrining Tamu'}
             </Link>
 
             {/* Edukasi Link */}
@@ -266,31 +253,34 @@ export default function HeaderNav() {
             }`}
           >
             <nav className="p-4 space-y-2">
-              {/* Skrining Link */}
+              {/* Skrining Link - Dynamic based on auth status */}
               <Link
-                href="/screening/new"
+                href={isAuthenticated ? "/screening/new" : "/screening/guest"}
                 onClick={(e) => {
-                  handleScreeningClick(e)
-                  setIsMenuOpen(false)
+                  if (!isAuthenticated) {
+                    // For guest, don't prevent default - allow navigation to guest screening
+                    setIsMenuOpen(false)
+                  } else {
+                    handleScreeningClick(e)
+                    setIsMenuOpen(false)
+                  }
                 }}
-                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-blue-50 rounded-lg transition-colors"
+                className={`flex items-center space-x-3 px-4 py-3 text-sm font-medium transition-colors rounded-lg ${
+                  isAuthenticated
+                    ? 'text-gray-700 hover:text-gray-900 hover:bg-blue-50'
+                    : 'text-green-700 hover:text-green-900 hover:bg-green-50'
+                }`}
               >
-                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-amber-500/20 border border-amber-400/30">
-                  <FileText className="h-4 w-4 text-amber-400" />
+                <div className={`w-8 h-8 flex items-center justify-center rounded-lg border ${
+                  isAuthenticated
+                    ? 'bg-amber-500/20 border-amber-400/30'
+                    : 'bg-green-500/20 border-green-400/30'
+                }`}>
+                  <FileText className={`h-4 w-4 ${
+                    isAuthenticated ? 'text-amber-400' : 'text-green-400'
+                  }`} />
                 </div>
-                <span>{isAuthenticated ? 'Skrining' : 'Skrining'}</span>
-              </Link>
-
-              {/* Screening Tamu Link */}
-              <Link
-                href="/screening/guest"
-                className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-green-700 hover:text-green-900 hover:bg-green-50 rounded-lg transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-green-500/20 border border-green-400/30">
-                  <FileText className="h-4 w-4 text-green-400" />
-                </div>
-                <span>Screening Tamu</span>
+                <span>{isAuthenticated ? 'Skrining' : 'Skrining Tamu'}</span>
               </Link>
 
               {/* Edukasi Link */}
