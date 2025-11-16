@@ -6,7 +6,6 @@ import {
   BookOpen,
   AlertTriangle,
   Users,
-  Activity,
   ArrowRight,
   Heart,
   ShieldCheck,
@@ -263,73 +262,7 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
               </p>
             </div>
 
-            {/* Enhanced Info Cards */}
-            <div className="grid md:grid-cols-3 gap-6 mb-12">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
-                viewport={{ once: true }}
-                className="group"
-              >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                  <div className="relative bg-white/85 backdrop-blur-lg border border-sky-300 rounded-xl p-6 hover:bg-white hover:shadow-lg hover:shadow-sky-500/20 transition-all duration-300">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Activity className="h-5 w-5 text-blue-400" />
-                      <h4 className="font-semibold text-sky-900">Kategori</h4>
-                    </div>
-                    <p className="text-sky-700 capitalize">{disease.category}</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
-                viewport={{ once: true }}
-                className="group"
-              >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                  <div className="relative bg-white/85 backdrop-blur-lg border border-sky-300 rounded-xl p-6 hover:bg-white hover:shadow-lg hover:shadow-sky-500/20 transition-all duration-300">
-                    <div className="flex items-center gap-3 mb-2">
-                      <AlertTriangle className="h-5 w-5 text-orange-400" />
-                      <h4 className="font-semibold text-sky-900">Total Gejala</h4>
-                    </div>
-                    <p className="text-sky-700">
-                      {formattedSymptoms.reduce((sum, group) => sum + group.items.length, 0)} gejala
-                      teridentifikasi
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
-                viewport={{ once: true }}
-                className="group"
-              >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                  <div className="relative bg-white/85 backdrop-blur-lg border border-sky-300 rounded-xl p-6 hover:bg-white hover:shadow-lg hover:shadow-sky-500/20 transition-all duration-300">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Users className="h-5 w-5 text-purple-400" />
-                      <h4 className="font-semibold text-sky-900">Faktor Risiko</h4>
-                    </div>
-                    <p className="text-sky-700">
-                      {formattedRiskFactors
-                        ? `${formattedRiskFactors.reduce((sum, group) => sum + group.items.length, 0)} faktor risiko`
-                        : 'Berbagai faktor risiko'}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-
+  
             {/* Key Information Summary */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
