@@ -29,7 +29,7 @@ import { esasScreeningFormSchema, type ESAScreeningFormData } from '@/lib/valida
 import { useToast } from '@/hooks/use-toast'
 import { motion } from 'framer-motion'
 import { ESASQuestionComponent, ESAS_QUESTIONS } from './esas-form-variants'
-import { InfoIcon, ShieldIcon, UserIcon } from 'lucide-react'
+import { InfoIcon, ShieldIcon } from 'lucide-react'
 
 interface ESASGuestFormProps {
   onSubmit?: (data: ESAScreeningFormData) => Promise<{ screeningId: string; guestId: string }>
@@ -49,9 +49,9 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
         patient_name: '',
         patient_age: 0,
         patient_gender: 'L',
-        facility_name: '',
-        screening_type: 'initial',
-        contact_info: '', // Required for guest mode
+        facility_name: '', // Will be empty for guest
+        screening_type: 'initial', // Default to initial screening
+        contact_info: '', // Not used in guest mode but kept for compatibility
       },
       questions: {
         '1': 0,
@@ -78,11 +78,11 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
     try {
       setIsSubmitting(true)
 
-      // Validate contact info for guest mode
-      if (!data.patient_info.contact_info?.trim()) {
+      // Validate required fields for guest mode
+      if (!data.patient_info.patient_name?.trim() || data.patient_info.patient_age <= 0) {
         toast({
           title: "Validasi Error",
-          description: "Informasi kontak wajib diisi untuk screening tamu",
+          description: "Nama dan usia wajib diisi untuk screening",
           variant: "destructive",
         })
         return
@@ -134,21 +134,21 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
       animate={{ opacity: 1, y: 0 }}
       className="max-w-4xl mx-auto p-6"
     >
-      {/* Header untuk Guest */}
+      {/* Header untuk Guest - Similar to Pasien Form */}
       <div className="mb-6 text-center">
         <motion.div
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-full px-4 py-2 mb-4"
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-full px-4 py-2 mb-4"
         >
-          <UserIcon className="w-4 h-4 text-purple-600" />
-          <span className="text-purple-700 font-medium">Mode Tamu - ESAS Screening</span>
+          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+          <span className="text-green-700 font-medium">Mode Tamu - Evaluasi Mandiri</span>
         </motion.div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-          Evaluasi Gejala Mandiri
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
+          ESAS Screening
         </h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Lakukan evaluasi gejala Anda tanpa perlu login. Hasil akan tersedia secara instan dan dapat Anda simpan.
+          Evaluasi gejala Anda tanpa perlu login. Hasil akan ditampilkan secara instan.
         </p>
       </div>
 
@@ -159,14 +159,14 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <Alert className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
-            <ShieldIcon className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-blue-800">
+          <Alert className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+            <ShieldIcon className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-800">
               <div className="flex justify-between items-start">
                 <div>
                   <strong>Informasi Penting:</strong>
                   <ul className="mt-2 text-sm space-y-1">
-                    <li>• Screening ini bersifat anonim dan tidak memerlukan akun</li>
+                    <li>• Screening ini bersifat anonim, hanya perlu nama, usia, dan jenis kelamin</li>
                     <li>• Hasil akan ditampilkan secara instan setelah selesai</li>
                     <li>• Simpan ID yang diberikan untuk melihat hasil kembali</li>
                     <li>• Data hanya untuk evaluasi dan bukan diagnosis medis</li>
@@ -176,7 +176,7 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowDisclaimer(false)}
-                  className="text-blue-600 hover:text-blue-800"
+                  className="text-green-600 hover:text-green-800"
                 >
                   ×
                 </Button>
@@ -188,26 +188,26 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          {/* Patient Info Section */}
-          <Card className="bg-gradient-to-br from-purple-50/50 to-pink-50/50 border-purple-200">
+          {/* Patient Info Section - Simplified for Guest */}
+          <Card className="bg-gradient-to-br from-blue-50/50 to-purple-50/50 border-sky-200">
             <CardHeader>
-              <CardTitle className="text-xl text-purple-900">Informasi Pasien</CardTitle>
+              <CardTitle className="text-xl text-sky-900">Informasi Dasar</CardTitle>
               <CardDescription>
-                Data yang diperlukan untuk evaluasi gejola dan hasil screening
+                Data yang diperlukan untuk evaluasi gejala
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="patient_info.patient_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-purple-700">Nama Lengkap *</FormLabel>
+                    <FormLabel className="text-sky-700">Nama Lengkap *</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Masukkan nama lengkap"
                         {...field}
-                        className="bg-white/90 border-purple-300"
+                        className="bg-white/90 border-sky-300"
                       />
                     </FormControl>
                     <FormMessage />
@@ -220,14 +220,14 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
                 name="patient_info.patient_age"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-purple-700">Usia *</FormLabel>
+                    <FormLabel className="text-sky-700">Usia *</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         placeholder="Masukkan usia"
                         {...field}
                         onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                        className="bg-white/90 border-purple-300"
+                        className="bg-white/90 border-sky-300"
                       />
                     </FormControl>
                     <FormMessage />
@@ -240,77 +240,16 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
                 name="patient_info.patient_gender"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-purple-700">Jenis Kelamin *</FormLabel>
+                    <FormLabel className="text-sky-700">Jenis Kelamin *</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger className="bg-white/90 border-purple-300">
+                        <SelectTrigger className="bg-white/90 border-sky-300">
                           <SelectValue placeholder="Pilih jenis kelamin" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="L">Laki-laki</SelectItem>
                         <SelectItem value="P">Perempuan</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="patient_info.contact_info"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-purple-700">
-                      Informasi Kontak (Email/No. HP) *
-                      <span className="text-xs text-purple-500 ml-1">Wajib untuk akses hasil</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Email atau nomor handphone"
-                        {...field}
-                        className="bg-white/90 border-purple-300"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="patient_info.facility_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-purple-700">Fasilitas Kesehatan (Opsional)</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Rumah sakit, klinik, atau dokter yang menangani"
-                        {...field}
-                        className="bg-white/90 border-purple-300"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="patient_info.screening_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-purple-700">Tipe Screening *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="bg-white/90 border-purple-300">
-                          <SelectValue placeholder="Pilih tipe screening" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="initial">Screening Awal</SelectItem>
-                        <SelectItem value="follow_up">Screening Follow-up</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -340,7 +279,7 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
 
           {/* ESAS Questions */}
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-purple-900 mb-4">Pertanyaan ESAS</h2>
+            <h2 className="text-2xl font-bold text-sky-900 mb-4">Pertanyaan ESAS</h2>
             <div className="grid gap-6">
               {/* @ts-expect-error TypeScript error with question indexing - fix later */}
               {ESAS_QUESTIONS.map((question) => (
