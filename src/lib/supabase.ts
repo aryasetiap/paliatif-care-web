@@ -33,53 +33,57 @@ export const signUp = async (email: string, password: string, fullName: string, 
     throw new Error(authError.message)
   }
 
-  // If user creation successful, wait a moment then create profile with role
+  // If user creation successful, create profile with role immediately using RPC
   if (authData.user) {
-    // Wait a moment for the auth session to be established
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // Try to create profile using RPC function first (more reliable)
+    try {
+      const { error: rpcError } = await supabase.rpc('create_user_profile', {
+        p_user_id: authData.user.id,
+        p_full_name: fullName,
+        p_role: role
+      })
 
-    // Check if profile already exists first
-    const { data: existingProfile } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', authData.user.id)
-      .single()
+      if (rpcError) {
+        // Fallback: Try direct insert with session
+        // Wait a moment for the auth session to be established
+        await new Promise(resolve => setTimeout(resolve, 1000))
 
-    if (!existingProfile) {
-      // Profile doesn't exist, create it
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          full_name: fullName,
-          role: role
-        })
+        // Check if profile already exists first
+        const { data: existingProfile } = await supabase
+          .from('profiles')
+          .select('id, role')
+          .eq('id', authData.user.id)
+          .single()
 
-      if (profileError) {
-        // Profile creation error
+        if (!existingProfile) {
+          // Profile doesn't exist, create it
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              id: authData.user.id,
+              full_name: fullName,
+              role: role
+            })
 
-        // Try alternative approach - create profile through RPC function
-        try {
-          const { error: rpcError } = await supabase.rpc('create_user_profile', {
-            p_user_id: authData.user.id,
-            p_full_name: fullName,
-            p_role: role
-          })
-
-          if (rpcError) {
-            // RPC profile creation error
-            // All profile creation attempts failed, but user created. Profile will be handled on login
-          } else {
-            // Profile created successfully via RPC
+          if (profileError) {
+            throw new Error(`Profile creation failed: ${profileError.message}`)
           }
-        } catch {
-          // RPC profile creation failed, but user created. Profile will be created on first login
+        } else {
+          // Update role if it's incorrect
+          if (existingProfile.role !== role) {
+            const { error: updateError } = await supabase
+              .from('profiles')
+              .update({ role: role })
+              .eq('id', authData.user.id)
+
+            if (updateError) {
+              throw new Error(`Role update failed: ${updateError.message}`)
+            }
+          }
         }
-      } else {
-        // Profile created successfully
       }
-    } else {
-      // Profile already exists, skipping creation
+    } catch (error) {
+      throw new Error(`Profile creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 
