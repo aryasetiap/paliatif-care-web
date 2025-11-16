@@ -498,7 +498,8 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
                   question={question}
                   value={form.watch(`questions.${question.number}` as any) || 0}
                   onChange={(value) => handleQuestionChange(question.number, value)}
-                  error={form.formState.errors.questions?.[question.number as keyof typeof form.formState.errors.questions]?.message}
+                  {/* @ts-ignore */}
+                  error={form.formState.errors.questions?.[question.number]?.message}
                   disabled={isSubmitting}
                 />
               ))}

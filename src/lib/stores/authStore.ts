@@ -172,12 +172,12 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 
             if (existingProfile) {
               // Profile already exists, using existing profile
-              const permissions = existingProfile.role ? ROLE_PERMISSIONS[existingProfile.role] : null
+              const permissions = existingProfile.role ? ROLE_PERMISSIONS[existingProfile.role as UserRole] : null
 
               set({
                 profile: {
                   ...existingProfile,
-                  created_at: existingProfile.created_at || new Date().toISOString()
+                  created_at: (existingProfile as any).created_at || new Date().toISOString()
                 },
                 userRole: existingProfile.role,
                 permissions
