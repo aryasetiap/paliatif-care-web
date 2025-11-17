@@ -33,8 +33,8 @@ export function Header({ user }: HeaderProps) {
 
   const handleLogout = () => {
     toast({
-      title: "Berhasil keluar",
-      description: "Anda telah keluar dari sistem.",
+      title: 'Berhasil keluar',
+      description: 'Anda telah keluar dari sistem.',
     })
     // Implement logout logic here
   }
@@ -68,12 +68,9 @@ export function Header({ user }: HeaderProps) {
           </Sheet>
 
           <Link href="/dashboard" className="flex items-center space-x-3 group">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Image
-                src="/assets/logo_poltekes.png"
+                src="/assets/logo_poltekes_2.png"
                 alt="Poltekes"
                 width="180"
                 height="48"
@@ -86,9 +83,7 @@ export function Header({ user }: HeaderProps) {
               <span className="font-bold text-lg text-gradient-primary block leading-tight">
                 PelitaCare
               </span>
-              <span className="text-xs text-muted-foreground">
-                Sistem Paliatif Terpadu
-              </span>
+              <span className="text-xs text-muted-foreground">Sistem Paliatif Terpadu</span>
             </div>
           </Link>
         </div>
@@ -108,24 +103,26 @@ export function Header({ user }: HeaderProps) {
                 <Link
                   href={item.href}
                   className={cn(
-                    "group relative flex items-center space-x-3 px-4 py-2.5 rounded-xl transition-all duration-200 mx-0.5",
+                    'group relative flex items-center space-x-3 px-4 py-2.5 rounded-xl transition-all duration-200 mx-0.5',
                     isActive
-                      ? "bg-primary/10 text-primary shadow-sm"
-                      : "text-foreground/70 hover:text-foreground hover:bg-gray-50/80"
+                      ? 'bg-primary/10 text-primary shadow-sm'
+                      : 'text-foreground/70 hover:text-foreground hover:bg-gray-50/80'
                   )}
                 >
                   <motion.div
                     animate={{
                       scale: isActive ? 1.1 : 1,
                     }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                     className="flex-shrink-0"
                   >
                     <Icon className="h-4 w-4" />
                   </motion.div>
                   <div className="flex flex-col leading-tight">
                     <span className="font-medium">{item.name}</span>
-                    <span className="text-xs text-muted-foreground leading-tight">{item.description}</span>
+                    <span className="text-xs text-muted-foreground leading-tight">
+                      {item.description}
+                    </span>
                   </div>
                 </Link>
                 {/* Active indicator */}
@@ -133,7 +130,7 @@ export function Header({ user }: HeaderProps) {
                   <motion.div
                     layoutId="activeNav"
                     className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-primary rounded-full"
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                   />
                 )}
               </motion.div>
@@ -169,20 +166,24 @@ export function Header({ user }: HeaderProps) {
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1.5">
                     <p className="text-sm font-semibold leading-none">{user.name}</p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {user.email}
-                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/profile" className="flex items-center cursor-pointer p-2 hover:bg-gray-50 rounded-md transition-colors">
+                  <Link
+                    href="/profile"
+                    className="flex items-center cursor-pointer p-2 hover:bg-gray-50 rounded-md transition-colors"
+                  >
                     <User className="mr-3 h-4 w-4" />
                     <span>Profil Saya</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/settings" className="flex items-center cursor-pointer p-2 hover:bg-gray-50 rounded-md transition-colors">
+                  <Link
+                    href="/settings"
+                    className="flex items-center cursor-pointer p-2 hover:bg-gray-50 rounded-md transition-colors"
+                  >
                     <Settings className="mr-3 h-4 w-4" />
                     <span>Pengaturan</span>
                   </Link>
@@ -252,17 +253,15 @@ function MobileNav({ navigation }: MobileNavProps) {
           decoding="async"
           data-nimg="1"
           className="object-contain"
-          style={{color: 'transparent', height: 'auto', maxHeight: '2.5rem'}}
-          srcSet="/_next/image?url=%2Fassets%2Flogo_poltekes.png&amp;w=48&amp;q=75 1x, /_next/image?url=%2Fassets%2Flogo_poltekes.png&amp;w=96&amp;q=75 2x"
-          src="/_next/image?url=%2Fassets%2Flogo_poltekes.png&amp;w=96&amp;q=75"
+          style={{ color: 'transparent', height: 'auto', maxHeight: '2.5rem' }}
+          srcSet="/_next/image?url=%2Fassets%2Flogo_poltekes_2.png&amp;w=48&amp;q=75 1x, /_next/image?url=%2Fassets%2Flogo_poltekes_2.png&amp;w=96&amp;q=75 2x"
+          src="/_next/image?url=%2Fassets%2Flogo_poltekes_2.png&amp;w=96&amp;q=75"
         />
         <div>
           <span className="font-bold text-lg text-gradient-primary block leading-tight">
             PelitaCare
           </span>
-          <span className="text-xs text-muted-foreground">
-            Sistem Paliatif Terpadu
-          </span>
+          <span className="text-xs text-muted-foreground">Sistem Paliatif Terpadu</span>
         </div>
       </motion.div>
 
@@ -281,33 +280,37 @@ function MobileNav({ navigation }: MobileNavProps) {
               <Link
                 href={item.href}
                 className={cn(
-                  "flex items-center space-x-4 rounded-xl px-4 py-4 text-sm font-medium transition-all duration-200 group",
+                  'flex items-center space-x-4 rounded-xl px-4 py-4 text-sm font-medium transition-all duration-200 group',
                   isActive
-                    ? "bg-primary/10 text-primary shadow-sm border border-primary/20"
-                    : "text-foreground/70 hover:text-foreground hover:bg-gray-50/80"
+                    ? 'bg-primary/10 text-primary shadow-sm border border-primary/20'
+                    : 'text-foreground/70 hover:text-foreground hover:bg-gray-50/80'
                 )}
               >
                 <motion.div
                   animate={{
                     scale: isActive ? 1.1 : 1,
                   }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                   className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-lg transition-colors",
-                    isActive ? "bg-primary text-white" : "bg-gray-100 text-gray-600 group-hover:bg-gray-200"
+                    'flex h-10 w-10 items-center justify-center rounded-lg transition-colors',
+                    isActive
+                      ? 'bg-primary text-white'
+                      : 'bg-gray-100 text-gray-600 group-hover:bg-gray-200'
                   )}
                 >
                   <Icon className="h-5 w-5" />
                 </motion.div>
                 <div className="flex flex-col leading-tight flex-1">
                   <span className="font-medium">{item.name}</span>
-                  <span className="text-xs text-muted-foreground leading-tight">{item.description}</span>
+                  <span className="text-xs text-muted-foreground leading-tight">
+                    {item.description}
+                  </span>
                 </div>
                 {isActive && (
                   <motion.div
                     layoutId="mobileActiveNav"
                     className="w-2 h-2 bg-primary rounded-full"
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                   />
                 )}
               </Link>

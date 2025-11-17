@@ -98,7 +98,7 @@ export default function HeaderNav() {
               className="flex items-center justify-center"
             >
               <Image
-                src="/assets/logo_poltekes.png"
+                src="/assets/logo_poltekes_2.png"
                 alt="Poltekes"
                 width="180"
                 height="48"
