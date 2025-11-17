@@ -27,7 +27,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 
 import { useAuthStore } from '@/lib/stores/authStore'
 import { createClient } from '@/lib/supabase'
-import { useToast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
@@ -83,7 +83,6 @@ interface PatientProfileData {
 
 export default function PatientProfilePage() {
   const router = useRouter()
-  const { toast } = useToast()
   const { user, profile, userRole } = useAuthStore()
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -177,6 +176,8 @@ export default function PatientProfilePage() {
       // Set form values
       form.reset(profileData)
       setProfileCompleteness(calculateCompleteness(profileData))
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Gagal memuat profil')
     } finally {
       setIsLoading(false)
     }
@@ -193,11 +194,7 @@ export default function PatientProfilePage() {
       const supabase = createClient()
 
       if (!user) {
-        toast({
-          title: 'Error',
-          description: 'User tidak ditemukan',
-          variant: 'destructive'
-        })
+        toast.error('User tidak ditemukan')
         return
       }
 
@@ -249,11 +246,10 @@ export default function PatientProfilePage() {
       setPatientData(result.data)
       setProfileCompleteness(calculateCompleteness(data))
 
-      toast({
-        title: 'Berhasil',
-        description: 'Profil pasien berhasil diperbarui',
-      })
+      toast.success('Profil pasien berhasil diperbarui')
 
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Gagal memperbarui profil')
     } finally {
       setIsSubmitting(false)
     }

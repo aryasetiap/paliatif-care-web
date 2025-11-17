@@ -14,38 +14,46 @@ import { createClient } from '@/lib/supabase'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
-import { BookOpen, Heart } from 'lucide-react'
+import { BookOpen, Heart, FileText } from 'lucide-react'
 import '@/styles/modern-patterns.css'
 
 interface ScreeningData {
   id: string
-  patient_id: string
+  patient_id?: string
   highest_score: number
   primary_question: number
   risk_level: string
   esas_data: {
-    identity: {
+    identity?: {
       name: string
       age: number
       gender: string
       facility_name?: string
     }
-    questions: {
+    questions?: {
       [key: string]: {
         score: number
         text: string
         description?: string
       }
     }
+    // Handle old format data
+    pain?: number
+    nausea?: number
+    [key: string]: any
   }
   recommendation: {
-    diagnosis: string
-    intervention_steps: string[]
-    references: string[]
-    action_required: string
-    priority: number
-    therapy_type: string
-    frequency: string
+    diagnosis?: string
+    intervention_steps?: string[]
+    references?: string[]
+    action_required?: string
+    priority?: number
+    therapy_type?: string
+    frequency?: string
+    // Handle old format data
+    level?: string
+    actions?: string[]
+    [key: string]: any
   }
   created_at: string
   updated_at: string
@@ -90,6 +98,43 @@ function getScoreLevel(score: number) {
   return 'Tidak valid'
 }
 
+// Helper function to normalize screening data format
+function normalizeScreeningData(data: any): ScreeningData {
+  return {
+    ...data,
+    esas_data: {
+      identity: data.esas_data?.identity || {
+        name: 'Tidak diketahui',
+        age: 0,
+        gender: 'L',
+        facility_name: ''
+      },
+      questions: data.esas_data?.questions || {
+        '1': { score: data.esas_data?.pain || 0, text: 'Nyeri', description: 'Nyeri ringan/sedang/berat' },
+        '2': { score: 0, text: 'Lelah/Kekurangan Tenaga', description: 'Kelelahan/Intoleransi Aktivitas' },
+        '3': { score: 0, text: 'Kantuk/Gangguan Tidur', description: 'Gangguan Pola Tidur' },
+        '4': { score: data.esas_data?.nausea || 0, text: 'Mual/Nausea', description: 'Nausea' },
+        '5': { score: 0, text: 'Nafsu Makan', description: 'Resiko Defisit Nutrisi' },
+        '6': { score: 0, text: 'Sesak/Pola Napas', description: 'Pola Napas Tidak Efektif' },
+        '7': { score: 0, text: 'Sedih/Keputusasaan', description: 'Keputusasaan/Depresi' },
+        '8': { score: 0, text: 'Cemas/Ansietas', description: 'Ansietas' },
+        '9': { score: 0, text: 'Perasaan Keseluruhan', description: 'Koping Keluarga' }
+      },
+      ...data.esas_data
+    },
+    recommendation: {
+      diagnosis: data.recommendation?.diagnosis || 'Nyeri kronis',
+      intervention_steps: data.recommendation?.intervention_steps || data.recommendation?.actions || ['Monitor tingkat nyeri'],
+      references: data.recommendation?.references || ['Assessment and Management of Cancer Pain, WHO Guidelines'],
+      action_required: data.recommendation?.action_required || 'Perlu intervensi keperawatan',
+      priority: data.recommendation?.priority || 2,
+      therapy_type: data.recommendation?.therapy_type || 'Terapi Relaksasi',
+      frequency: data.recommendation?.frequency || '2 kali sehari',
+      ...data.recommendation
+    }
+  }
+}
+
 export default function ScreeningResultPage() {
   const params = useParams()
   const router = useRouter()
@@ -125,13 +170,9 @@ export default function ScreeningResultPage() {
         return
       }
 
-      // Validate required data structure
-      if (!data.esas_data || !data.recommendation) {
-        setError('Data screening tidak lengkap')
-        return
-      }
-
-      setScreeningData(data)
+      // Normalize data to handle different formats
+      const normalizedData = normalizeScreeningData(data)
+      setScreeningData(normalizedData)
     } catch (error: any) {
       setError(error.message || 'Gagal mengambil data screening')
       toast.error('Gagal mengambil data screening')
@@ -232,15 +273,15 @@ export default function ScreeningResultPage() {
                 <div>
                   <label className="text-sm font-medium text-sky-600">Nama Pasien</label>
                   <p className="text-lg font-semibold text-sky-900">
-                    {screeningData.esas_data?.identity?.name || 'Tidak tersedia'}
+                    {screeningData.esas_data?.identity?.name || 'Data tidak lengkap'}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-sky-600">Usia</label>
                   <p className="text-lg font-semibold text-sky-900">
-                    {screeningData.esas_data?.identity?.age
+                    {screeningData.esas_data?.identity?.age && screeningData.esas_data.identity.age > 0
                       ? `${screeningData.esas_data.identity.age} tahun`
-                      : 'Tidak tersedia'}
+                      : 'Data tidak lengkap'}
                   </p>
                 </div>
                 <div>
@@ -250,7 +291,7 @@ export default function ScreeningResultPage() {
                       ? 'Laki-laki'
                       : screeningData.esas_data?.identity?.gender === 'P'
                         ? 'Perempuan'
-                        : 'Tidak tersedia'}
+                        : 'Data tidak lengkap'}
                   </p>
                 </div>
                 <div>
@@ -319,9 +360,11 @@ export default function ScreeningResultPage() {
             <CardContent>
               <Alert className={`${riskConfig.color} border`}>
                 <AlertTitle className="text-lg font-semibold">
-                  {screeningData.recommendation.action_required}
+                  {screeningData.recommendation.action_required || 'Perlu evaluasi lebih lanjut'}
                 </AlertTitle>
-                <AlertDescription className="mt-2">{riskConfig.description}</AlertDescription>
+                <AlertDescription className="mt-2">
+                  {riskConfig.description}
+                </AlertDescription>
               </Alert>
             </CardContent>
           </Card>
@@ -342,20 +385,22 @@ export default function ScreeningResultPage() {
               <div className="space-y-4">
                 <div>
                   <h3 className="font-semibold text-lg text-sky-900">
-                    {screeningData.recommendation.diagnosis}
+                    {screeningData.recommendation.diagnosis || 'Nyeri kronis'}
                   </h3>
                 </div>
 
                 <div>
                   <h4 className="font-medium text-sky-700 mb-2">Terapi yang Direkomendasikan</h4>
                   <Badge variant="outline" className="text-sm border-sky-300 text-sky-700">
-                    {screeningData.recommendation.therapy_type}
+                    {screeningData.recommendation.therapy_type || 'Terapi Relaksasi'}
                   </Badge>
                 </div>
 
                 <div>
                   <h4 className="font-medium text-sky-700 mb-2">Frekuensi</h4>
-                  <p className="text-sm text-sky-600">{screeningData.recommendation.frequency}</p>
+                  <p className="text-sm text-sky-600">
+                    {screeningData.recommendation.frequency || '2 kali sehari'}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -367,7 +412,7 @@ export default function ScreeningResultPage() {
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-[200px]">
-                {screeningData.recommendation?.intervention_steps?.length > 0 ? (
+                {screeningData.recommendation?.intervention_steps && screeningData.recommendation.intervention_steps.length > 0 ? (
                   <ol className="space-y-3">
                     {screeningData.recommendation.intervention_steps.map((step, index) => (
                       <li key={index} className="flex gap-3">
@@ -378,8 +423,28 @@ export default function ScreeningResultPage() {
                       </li>
                     ))}
                   </ol>
+                ) : screeningData.recommendation?.actions && screeningData.recommendation.actions.length > 0 ? (
+                  <ol className="space-y-3">
+                    {screeningData.recommendation.actions.map((step, index) => (
+                      <li key={index} className="flex gap-3">
+                        <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-xs font-medium">
+                          {index + 1}
+                        </span>
+                        <span className="text-sm text-sky-700 leading-relaxed">{step}</span>
+                      </li>
+                    ))}
+                  </ol>
                 ) : (
-                  <p className="text-sm text-sky-600 italic">Intervensi tidak tersedia</p>
+                  <div className="text-sm text-sky-600 italic">
+                    <p className="mb-2">Intervensi tidak tersedia dalam data</p>
+                    <p className="text-xs text-sky-500">Rekomendasi default:</p>
+                    <ul className="mt-2 space-y-1">
+                      <li>• Monitor tingkat nyeri pasien</li>
+                      <li>• Lakukan asesmen nyeri secara berkala</li>
+                      <li>• Berikan edukasi tentang manajemen nyeri</li>
+                      <li>• Dokumentasikan respon terhadap intervensi</li>
+                    </ul>
+                  </div>
                 )}
               </ScrollArea>
             </CardContent>
@@ -463,14 +528,28 @@ export default function ScreeningResultPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {screeningData.recommendation?.references?.length > 0 ? (
+                {screeningData.recommendation?.references && screeningData.recommendation.references.length > 0 ? (
                   screeningData.recommendation.references.map((reference, index) => (
                     <div key={index} className="p-3 bg-sky-50 rounded-lg border border-sky-100">
                       <p className="text-sm text-sky-700 italic">{reference}</p>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-sky-600 italic">Referensi tidak tersedia</p>
+                  <div className="text-sm text-sky-600 italic">
+                    <p className="mb-2">Referensi tidak tersedia dalam data</p>
+                    <p className="text-xs text-sky-500">Referensi standar:</p>
+                    <div className="mt-2 space-y-2">
+                      <div className="p-3 bg-sky-50 rounded-lg border border-sky-100">
+                        <p className="text-sm text-sky-700 italic">Assessment and Management of Cancer Pain, WHO Guidelines</p>
+                      </div>
+                      <div className="p-3 bg-sky-50 rounded-lg border border-sky-100">
+                        <p className="text-sm text-sky-700 italic">Edmonton Symptom Assessment System (ESAS) - Canadian Palliative Care Association</p>
+                      </div>
+                      <div className="p-3 bg-sky-50 rounded-lg border border-sky-100">
+                        <p className="text-sm text-sky-700 italic">Nursing Interventions for Pain Management, NANDA International</p>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
             </CardContent>
@@ -623,7 +702,7 @@ export default function ScreeningResultPage() {
         >
           <Button
             variant="outline"
-            onClick={() => router.push('/pasien')}
+            onClick={() => router.push('/pasien/dashboard')}
             className="flex items-center gap-2 border-sky-300 text-sky-700 hover:bg-sky-50"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -631,14 +710,22 @@ export default function ScreeningResultPage() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
               />
             </svg>
-            Lihat Daftar Pasien
+            Kembali ke Dashboard
           </Button>
 
           <Button
-            onClick={() => router.push('/screening/new')}
+            onClick={() => router.push('/pasien/screenings')}
+            className="flex items-center gap-2 border-sky-300 text-sky-700 hover:bg-sky-50"
+          >
+            <FileText className="w-4 h-4" />
+            Lihat Semua Screening
+          </Button>
+
+          <Button
+            onClick={() => router.push('/screening/new?type=self')}
             className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

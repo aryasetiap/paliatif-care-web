@@ -308,9 +308,23 @@ export default function PatientDashboardPage() {
                 <FileText className="mr-2 h-5 w-5 text-sky-600" />
                 Riwayat Screening Saya
               </CardTitle>
-              <CardDescription>Daftar semua screening yang telah Anda lakukan</CardDescription>
+              <CardDescription>Daftar semua screening yang telah Anda lakukan. Klik pada item untuk melihat detail hasil.</CardDescription>
             </CardHeader>
             <CardContent>
+              {screenings.length > 0 && (
+                <div className="flex justify-end mb-4">
+                  <Button
+                    variant="outline"
+                    asChild
+                    className="border-sky-300 text-sky-700 hover:bg-sky-50"
+                  >
+                    <Link href="/pasien/screenings">
+                      <FileText className="mr-2 h-4 w-4" />
+                      Lihat Semua Hasil
+                    </Link>
+                  </Button>
+                </div>
+              )}
               <div className="space-y-4">
                 {screenings.length === 0 ? (
                   <div className="text-center py-8">
@@ -325,37 +339,44 @@ export default function PatientDashboardPage() {
                   </div>
                 ) : (
                   screenings.map((screening) => (
-                    <div key={screening.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-3 h-3 bg-blue-600 rounded-full flex-shrink-0"></div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-sky-900">
-                            {screening.screening_type === 'initial' ? 'Screening Awal' : 'Screening Follow-up'}
-                          </p>
-                          <p className="text-xs text-sky-600">
-                            {new Date(screening.created_at).toLocaleString('id-ID', {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </p>
+                    <Link
+                      key={screening.id}
+                      href={`/screening/${screening.id}/result`}
+                      className="block"
+                    >
+                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all duration-200 hover:shadow-md group cursor-pointer">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-3 h-3 bg-blue-600 rounded-full flex-shrink-0 group-hover:bg-blue-700 transition-colors"></div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-sky-900 group-hover:text-blue-800 transition-colors">
+                              {screening.screening_type === 'initial' ? 'Screening Awal' : 'Screening Follow-up'}
+                            </p>
+                            <p className="text-xs text-sky-600">
+                              {new Date(screening.created_at).toLocaleString('id-ID', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          {screening.risk_level && (
+                            <Badge className={getRiskLevelColor(screening.risk_level)}>
+                              {getRiskLevelText(screening.risk_level)}
+                            </Badge>
+                          )}
+                          {screening.highest_score && (
+                            <span className="text-sm font-medium text-gray-600">
+                              Skor: {screening.highest_score}/10
+                            </span>
+                          )}
+                          <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
                         </div>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        {screening.risk_level && (
-                          <Badge className={getRiskLevelColor(screening.risk_level)}>
-                            {getRiskLevelText(screening.risk_level)}
-                          </Badge>
-                        )}
-                        {screening.highest_score && (
-                          <span className="text-sm font-medium text-gray-600">
-                            Skor: {screening.highest_score}/10
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                    </Link>
                   ))
                 )}
               </div>
