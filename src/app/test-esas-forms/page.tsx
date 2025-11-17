@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import ESASFormRouter from '@/components/esas-form-router'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
@@ -18,7 +19,9 @@ export default function TestESASFormsPage() {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-xl font-semibold mb-4 text-blue-600">Guest Mode Form</h2>
               <div className="border-2 border-blue-200 rounded-lg p-4">
-                <ESASFormRouter isGuestMode={true} />
+                <Suspense fallback={<div className="animate-pulse">Loading form...</div>}>
+                  <ESASFormRouter isGuestMode={true} />
+                </Suspense>
               </div>
             </div>
           </div>
