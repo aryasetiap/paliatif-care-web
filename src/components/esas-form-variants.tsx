@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -29,25 +28,19 @@ import { useAuthStore } from '@/lib/stores/authStore'
 import '@/styles/modern-patterns.css'
 
 interface ESAScreeningFormData {
-  identity: {
-    name: string
-    age: number
-    gender: string
+  patient_info: {
+    patient_name: string
+    patient_age: number
+    patient_gender: string
     contact_info?: string
     facility_name?: string
+    screening_type?: string
   }
   questions: {
-    [key: string]: {
-      score: number
-      text: string
-      description?: string
-    }
+    [key: string]: number
   }
 }
 
-const esasScreeningFormSchema = {
-  // Define schema structure here
-}
 
 // ESAS Questions (dipindahkan dari file utama untuk organisasi yang lebih baik)
 const ESAS_QUESTIONS = [
@@ -249,7 +242,6 @@ function ESASPasienForm({ userRole: _userRole, onSubmit, onCancel }: ESASFormVar
   const { profile } = useAuthStore()
 
   const form = useForm<ESAScreeningFormData>({
-    resolver: zodResolver(esasScreeningFormSchema),
     defaultValues: {
       patient_info: {
         patient_name: profile?.full_name || '',

@@ -105,9 +105,9 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
 
         if (error) {
           toast({
-            title: "Error",
-            description: "Gagal mencari data pasien",
-            variant: "destructive",
+            title: 'Error',
+            description: 'Gagal mencari data pasien',
+            variant: 'destructive',
           })
           return
         }
@@ -188,6 +188,16 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
     try {
       setIsSubmitting(true)
 
+      // Validate required fields for perawat mode
+      if (!data.patient_info.patient_name?.trim() || data.patient_info.patient_age <= 0) {
+        toast({
+          title: 'Validasi Error',
+          description: 'Nama dan usia pasien wajib diisi untuk screening',
+          variant: 'destructive',
+        })
+        return
+      }
+
       let patientId: string
 
       if (activeTab === 'existing' && selectedPatient) {
@@ -202,9 +212,9 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
       await onSubmit(data, patientId)
     } catch (error) {
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Gagal menyimpan screening",
-        variant: "destructive",
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Gagal menyimpan screening',
+        variant: 'destructive',
       })
     } finally {
       setIsSubmitting(false)
@@ -242,7 +252,8 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
           Evaluasi Gejala Pasien
         </h1>
         <p className="text-gray-600">
-          Lakukan screening ESAS untuk pasien yang Anda tangani. Pilih pasien yang sudah ada atau buat data baru.
+          Lakukan screening ESAS untuk pasien yang Anda tangani. Pilih pasien yang sudah ada atau
+          buat data baru.
         </p>
       </div>
 
@@ -257,7 +268,10 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'existing' | 'new')}>
+              <Tabs
+                value={activeTab}
+                onValueChange={(value) => setActiveTab(value as 'existing' | 'new')}
+              >
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="existing">Pasien Terdaftar</TabsTrigger>
                   <TabsTrigger value="new">Pasien Baru</TabsTrigger>
@@ -313,10 +327,13 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
                                 <div>
                                   <div className="font-medium text-green-900">{patient.name}</div>
                                   <div className="text-sm text-green-600">
-                                    {patient.age} tahun • {patient.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
+                                    {patient.age} tahun •{' '}
+                                    {patient.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
                                   </div>
                                   {patient.facility_name && (
-                                    <div className="text-xs text-green-500">{patient.facility_name}</div>
+                                    <div className="text-xs text-green-500">
+                                      {patient.facility_name}
+                                    </div>
                                   )}
                                 </div>
                                 <div className="flex flex-col items-end gap-1">
@@ -335,8 +352,12 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
                           ))
                         ) : (
                           <div className="px-4 py-3 text-center text-green-600">
-                            <div className="text-sm">Tidak ada pasien dengan nama &ldquo;{searchQuery}&rdquo;</div>
-                            <div className="text-xs mt-1">Coba kata kunci lain atau buat pasien baru</div>
+                            <div className="text-sm">
+                              Tidak ada pasien dengan nama &ldquo;{searchQuery}&rdquo;
+                            </div>
+                            <div className="text-xs mt-1">
+                              Coba kata kunci lain atau buat pasien baru
+                            </div>
                           </div>
                         )}
                       </div>
@@ -355,12 +376,17 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
                           <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                           <div>
                             <span className="font-medium text-green-900">Pasien Terpilih:</span>
-                            <div className="font-bold text-lg text-green-800">{selectedPatient.name}</div>
+                            <div className="font-bold text-lg text-green-800">
+                              {selectedPatient.name}
+                            </div>
                             <div className="text-sm text-green-600">
-                              {selectedPatient.age} tahun • {selectedPatient.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
+                              {selectedPatient.age} tahun •{' '}
+                              {selectedPatient.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
                             </div>
                             {selectedPatient.facility_name && (
-                              <div className="text-xs text-green-500">{selectedPatient.facility_name}</div>
+                              <div className="text-xs text-green-500">
+                                {selectedPatient.facility_name}
+                              </div>
                             )}
                           </div>
                         </div>
@@ -491,7 +517,6 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
           {/* ESAS Questions */}
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-green-900 mb-4">Pertanyaan ESAS</h2>
-            {/* @ts-expect-error TypeScript error with question indexing - fix later */}
             <div className="grid gap-6">
               {ESAS_QUESTIONS.map((question) => (
                 <ESASQuestionComponent
@@ -499,7 +524,25 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
                   question={question}
                   value={form.watch(`questions.${question.number}` as any) || 0}
                   onChange={(value) => handleQuestionChange(question.number, value)}
-                  error={form.formState.errors.questions?.[question.number]?.message as string}
+                  error={
+                    form.formState.errors.questions &&
+                    typeof form.formState.errors.questions[
+                      question.number as keyof typeof form.formState.errors.questions
+                    ] === 'object' &&
+                    form.formState.errors.questions[
+                      question.number as keyof typeof form.formState.errors.questions
+                    ] !== null &&
+                    'message' in
+                      (form.formState.errors.questions[
+                        question.number as keyof typeof form.formState.errors.questions
+                      ] as object)
+                      ? (
+                          form.formState.errors.questions[
+                            question.number as keyof typeof form.formState.errors.questions
+                          ] as { message?: string }
+                        ).message
+                      : undefined
+                  }
                   disabled={isSubmitting}
                 />
               ))}

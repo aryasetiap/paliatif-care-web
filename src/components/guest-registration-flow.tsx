@@ -27,6 +27,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 
 import { createClient } from '@/lib/supabase'
 import { useToast } from '@/hooks/use-toast'
+import { useAuthStore } from '@/lib/stores/authStore'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2Icon, UserIcon, InfoIcon, ArrowRightIcon } from 'lucide-react'
 
@@ -89,13 +90,15 @@ export default function GuestRegistrationFlow({
   const router = useRouter()
   const searchParams = useSearchParams()
   const { toast } = useToast()
+  const { register: registerUser, user } = useAuthStore()
 
+      
   const form = useForm<RegistrationFormData>({
     defaultValues: {
       email: '',
       password: '',
       confirmPassword: '',
-      fullName: screeningData?.patient_info?.patient_name || '',
+      fullName: screeningData?.identity?.name || screeningData?.patient_info?.patient_name || '',
       role: 'pasien' // Default to pasien for guest conversion
     },
     mode: 'onChange'
@@ -113,12 +116,12 @@ export default function GuestRegistrationFlow({
     return password === confirmPassword || 'Password tidak cocok'
   }
 
+  
   const linkGuestScreeningToUser = async (userId: string) => {
     if (!guestIdentifier) {
       // No guest identifier provided, skipping data linking
       return 0
     }
-
     setIsLinkingData(true)
     try {
       const supabase = createClient()
@@ -131,24 +134,22 @@ export default function GuestRegistrationFlow({
         .eq('is_guest', true)
 
       if (fetchError) {
-        // Error fetching guest screenings
-        return 0
+        throw new Error(`Gagal mengambil data screening: ${fetchError.message}`)
       }
 
       if (!guestScreenings || guestScreenings.length === 0) {
-        // No guest screenings found for this identifier
         return 0
       }
 
       // Create patient record if not exists
       let patientId: string | null = null
-      if (screeningData?.patient_info) {
+      if (screeningData?.identity) {
         const patientData = {
           user_id: userId,
-          name: screeningData.patient_info.patient_name,
-          age: screeningData.patient_info.patient_age,
-          gender: screeningData.patient_info.patient_gender,
-          facility_name: screeningData.patient_info.facility_name || null
+          name: screeningData.identity.name,
+          age: screeningData.identity.age,
+          gender: screeningData.identity.gender,
+          facility_name: screeningData.identity.facility_name || null
         }
 
         const { data: newPatient, error: patientError } = await supabase
@@ -157,7 +158,9 @@ export default function GuestRegistrationFlow({
           .select()
           .single()
 
-        if (!patientError && newPatient) {
+        if (patientError) {
+          // Handle patient creation error
+        } else if (newPatient) {
           patientId = newPatient.id
         }
       }
@@ -188,7 +191,6 @@ export default function GuestRegistrationFlow({
       return linkedCount
 
     } catch {
-      // Error linking guest data
       return 0
     } finally {
       setIsLinkingData(false)
@@ -204,76 +206,34 @@ export default function GuestRegistrationFlow({
 
     setIsSubmitting(true)
     try {
-      const supabase = createClient()
+      // 1. Register user using authStore (same as normal registration)
+      await registerUser(data.email, data.password, data.fullName, data.role)
 
-      // 1. Register user
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            full_name: data.fullName,
-            role: data.role
-          }
-        }
-      })
-
-      if (signUpError) {
-        if (signUpError.message.includes('already registered')) {
-          throw new Error('Email sudah terdaftar. Silakan login dengan email tersebut.')
-        }
-        throw new Error(signUpError.message)
+      // Get the user after successful registration
+      const currentUser = user
+      if (!currentUser) {
+        throw new Error('User not found after registration')
       }
 
-      if (!authData.user) {
-        throw new Error('Gagal membuat akun. Silakan coba lagi.')
-      }
+      setCreatedUserId(currentUser.id)
 
-      const userId = authData.user.id
-
-      // 2. Create user profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: userId,
-          full_name: data.fullName,
-          role: data.role
-        })
-
-      if (profileError) {
-        throw new Error('Gagal membuat profil pengguna.')
-      }
-
-      setCreatedUserId(userId)
-
-      // 3. Link guest screening data if available
-      const linkedCount = await linkGuestScreeningToUser(userId)
+      // 2. Link guest screening data if available
+      const linkedCount = await linkGuestScreeningToUser(currentUser.id)
       setLinkedScreenings(linkedCount)
 
-      // 4. Show success state
+      // 3. Show success state
       setRegistrationStep('success')
-
-      // 5. Auto-login user
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password
-      })
-
-      if (signInError) {
-        // Auto-login failed
-      }
 
       toast({
         title: "Registrasi Berhasil!",
-        description: `Akun Anda telah dibuat${linkedCount > 0 ? ` dan ${linkedCount} data screening telah ditautkan` : ''}`,
+        description: `Akun Anda sebagai ${data.role === 'perawat' ? 'Perawat' : 'Pasien'} telah dibuat${linkedCount > 0 ? ` dan ${linkedCount} data screening telah ditautkan` : ''}`,
       })
 
       if (onComplete) {
-        onComplete(userId)
+        onComplete(currentUser.id)
       }
 
     } catch (error) {
-      // Registration error
       toast({
         title: "Registrasi Gagal",
         description: error instanceof Error ? error.message : 'Terjadi kesalahan. Silakan coba lagi.',

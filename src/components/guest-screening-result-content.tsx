@@ -20,9 +20,33 @@ interface ESASScreeningResultContentProps {
   guestId: string
 }
 
+// Helper functions for ESAS questions
+const getESASQuestionText = (questionNumber: string): string => {
+  const questionTexts: Record<string, string> = {
+    '1': 'Nyeri (Pain)',
+    '2': 'Lelah (Tiredness)',
+    '3': 'Mual (Nausea)',
+    '4': 'Depresi (Depression)',
+    '5': 'Cemas (Anxiety)',
+    '6': 'Mengantuk (Drowsiness)',
+    '7': 'Nafsu Makan (Appetite)',
+    '8': 'Kesejahteraan (Well-being)',
+    '9': 'Napas Pendek (Shortness of Breath)',
+  }
+  return questionTexts[questionNumber] || `Pertanyaan ${questionNumber}`
+}
+
+const getESASQuestionDescription = (_questionNumber: string, score: number): string => {
+  if (score === 0) return 'Tidak ada keluhan'
+  if (score <= 3) return 'Keluhan ringan'
+  if (score <= 6) return 'Keluhan sedang'
+  if (score <= 8) return 'Keluhan berat'
+  return 'Keluhan sangat berat'
+}
+
 export default function ESASScreeningResultContent({
   screeningId,
-  guestId
+  guestId,
 }: ESASScreeningResultContentProps) {
   const router = useRouter()
   const { toast } = useToast()
@@ -49,8 +73,12 @@ export default function ESASScreeningResultContent({
         .eq('is_guest', true)
         .single()
 
-      if (screeningError || !screeningData) {
-        throw new Error('Data screening tidak ditemukan atau tidak valid')
+      if (screeningError) {
+        throw new Error(`Data screening tidak ditemukan: ${screeningError.message}`)
+      }
+
+      if (!screeningData) {
+        throw new Error('Data screening tidak ditemukan')
       }
 
       setScreening(screeningData)
@@ -58,7 +86,7 @@ export default function ESASScreeningResultContent({
       setError(error instanceof Error ? error.message : 'Terjadi kesalahan')
       toast({
         title: 'Error',
-        description: 'Gagal memuat data screening',
+        description: error instanceof Error ? error.message : 'Gagal memuat data screening',
         variant: 'destructive',
       })
     } finally {
@@ -76,20 +104,53 @@ export default function ESASScreeningResultContent({
       // Show loading toast
       toast({
         title: 'Membuat PDF',
-        description: 'Sedang membuat dokumen PDF, mohon tunggu...',
+        description: 'Sedang membuat dokumen PDF yang dioptimasi, mohon tunggu...',
       })
 
-      // Create canvas from the content
+      // Create canvas with optimized settings for smaller PDF size
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 1.2, // Further reduced for better optimization
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        logging: false,
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        // Optimize for smaller file size
+        removeContainer: true,
+        imageTimeout: 0,
+        foreignObjectRendering: false, // Disable for better compatibility
+        onclone: (clonedDoc) => {
+          // Remove print:hidden elements and optimize for PDF
+          const printElements = clonedDoc.querySelectorAll('.print\\:hidden')
+          printElements.forEach(el => el.remove())
+
+          // Optimize styles for PDF
+          const body = clonedDoc.body
+          if (body) {
+            body.style.background = '#ffffff'
+            body.style.color = '#000000'
+            body.style.fontFamily = 'Arial, sans-serif'
+          }
+
+          // Remove animations and transitions
+          const style = clonedDoc.createElement('style')
+          style.textContent = `
+            * { animation: none !important; transition: none !important; }
+            .motion-div { transform: none !important; opacity: 1 !important; }
+          `
+          clonedDoc.head.appendChild(style)
+        }
       })
 
-      // Create PDF
-      const imgData = canvas.toDataURL('image/png')
-      const pdf = new jsPDF('p', 'mm', 'a4')
+      // Create PDF with optimized image settings
+      const imgData = canvas.toDataURL('image/jpeg', 0.8) // Use JPEG with 80% quality
+      const pdf = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4',
+        compress: true // Enable compression
+      })
 
       const imgWidth = 210 // A4 width in mm
       const pageHeight = 297 // A4 height in mm
@@ -99,14 +160,14 @@ export default function ESASScreeningResultContent({
       let position = 0
 
       // Add image to PDF
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
       heightLeft -= pageHeight
 
       // Add new pages if needed
       while (heightLeft >= 0) {
         position = heightLeft - imgHeight
         pdf.addPage()
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
         heightLeft -= pageHeight
       }
 
@@ -118,15 +179,18 @@ export default function ESASScreeningResultContent({
       // Save PDF
       pdf.save(filename)
 
-      // Show success toast
+      // Show success toast with optimization info
       toast({
         title: 'PDF Berhasil Diunduh',
-        description: 'File PDF telah berhasil dibuat dan diunduh',
+        description: 'File PDF yang dioptimasi telah berhasil dibuat (ukuran lebih kecil)',
       })
-    } catch {
+    } catch (error) {
       toast({
         title: 'Gagal Membuat PDF',
-        description: 'Terjadi kesalahan saat membuat file PDF. Silakan coba lagi.',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Terjadi kesalahan saat membuat file PDF. Silakan coba lagi.',
         variant: 'destructive',
       })
     }
@@ -141,7 +205,7 @@ export default function ESASScreeningResultContent({
       try {
         await navigator.share({
           title: 'Hasil Screening ESAS',
-          text: `Hasil screening ESAS untuk ${screening?.esas_data?.identity?.name}`,
+          text: `Hasil screening ESAS untuk ${identity.name || 'Pasien'}`,
           url: window.location.href,
         })
       } catch {
@@ -213,10 +277,7 @@ export default function ESASScreeningResultContent({
             <CardDescription>{error || 'Data screening tidak ditemukan'}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button
-              onClick={() => router.push('/screening/guest')}
-              className="w-full"
-            >
+            <Button onClick={() => router.push('/screening/guest')} className="w-full">
               Kembali ke Form Screening
             </Button>
           </CardContent>
@@ -232,7 +293,10 @@ export default function ESASScreeningResultContent({
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-      <div id="screening-result-content" className="relative z-10 container mx-auto px-4 py-8 max-w-4xl mt-16 print:mt-0">
+      <div
+        id="screening-result-content"
+        className="relative z-10 container mx-auto px-4 py-8 max-w-4xl print:mt-0"
+      >
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -283,7 +347,11 @@ export default function ESASScreeningResultContent({
               </div>
               <Button
                 size="sm"
-                onClick={() => router.push(`/register/from-guest?guest_id=${guestId}&screening_id=${screeningId}`)}
+                onClick={() =>
+                  router.push(
+                    `/register/from-guest?guest_id=${guestId}&screening_id=${screeningId}`
+                  )
+                }
                 className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
               >
                 <span className="hidden sm:inline">💾</span>
@@ -293,14 +361,18 @@ export default function ESASScreeningResultContent({
           </div>
 
           <div className="text-center mb-6">
-            <h1 className="text-4xl font-bold text-sky-900 mb-2">
-              Hasil Screening ESAS
-            </h1>
-            <p className="text-sky-600 text-lg">
-              Edmonton Symptom Assessment System
-            </p>
+            <h1 className="text-4xl font-bold text-sky-900 mb-2">Hasil Screening ESAS</h1>
+            <p className="text-sky-600 text-lg">Edmonton Symptom Assessment System</p>
             <p className="text-sky-500 text-sm mt-2">
-              Screening Tamu • {new Date(screening.created_at).toLocaleDateString('id-ID')}
+              Screening Tamu •{' '}
+              {new Date(screening.created_at).toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
             </p>
           </div>
         </motion.div>
@@ -328,11 +400,13 @@ export default function ESASScreeningResultContent({
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Jenis Kelamin</p>
-                  <p className="font-semibold">{identity.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
+                  <p className="font-semibold">
+                    {identity.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Informasi Kontak</p>
-                  <p className="font-semibold">{identity.contact_info || '-'}</p>
+                  <p className="text-sm text-gray-600">ID Screening</p>
+                  <p className="font-semibold text-xs">{screeningId.substring(0, 8)}...</p>
                 </div>
                 {identity.facility_name && (
                   <div className="md:col-span-2">
@@ -375,9 +449,7 @@ export default function ESASScreeningResultContent({
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-gray-600 mb-2">Diagnosis Utama</p>
-                  <p className="font-semibold text-sky-700">
-                    {recommendation.diagnosis || '-'}
-                  </p>
+                  <p className="font-semibold text-sky-700">{recommendation.summary || '-'}</p>
                 </div>
               </div>
             </CardContent>
@@ -400,25 +472,26 @@ export default function ESASScreeningResultContent({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {Object.entries(questions).map(([key, questionData]: [string, any]) => (
-                  <div key={key} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-800">
-                        {key}. {questionData.text || `Pertanyaan ${key}`}
-                      </h4>
-                      <div className="flex items-center gap-2">
-                        <Badge className={`${getScoreColor(questionData.score)} border`}>
-                          {questionData.score} - {getScoreLevel(questionData.score)}
-                        </Badge>
+                {Object.entries(questions).map(([key, score]: [string, unknown]) => {
+                  const numericScore = typeof score === 'number' ? score : Number(score) || 0
+                  return (
+                    <div key={key} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-gray-800">
+                          {key}. {getESASQuestionText(key)}
+                        </h4>
+                        <div className="flex items-center gap-2">
+                          <Badge className={`${getScoreColor(numericScore)} border`}>
+                            {numericScore} - {getScoreLevel(numericScore)}
+                          </Badge>
+                        </div>
                       </div>
-                    </div>
-                    {questionData.description && (
                       <p className="text-sm text-gray-600">
-                        Tingkat keparahan: {questionData.description}
+                        Tingkat keparahan: {getESASQuestionDescription(key, numericScore)}
                       </p>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  )
+                })}
               </div>
             </CardContent>
           </Card>
@@ -440,19 +513,26 @@ export default function ESASScreeningResultContent({
                 <div className="space-y-4">
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-2">Diagnosis Keperawatan</h4>
-                    <p className="text-gray-700">{recommendation.diagnosis || '-'}</p>
+                    <p className="text-gray-700">{recommendation.summary || '-'}</p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-2">Tipe Terapi</h4>
+                    <p className="text-gray-700">{recommendation.therapy_type || '-'}</p>
                   </div>
 
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-2">Langkah Intervensi</h4>
-                    {recommendation.intervention_steps && recommendation.intervention_steps.length > 0 ? (
-                      <ol className="list-decimal list-inside space-y-1 text-gray-700">
-                        {recommendation.intervention_steps.map((step: string, index: number) => (
+                    {recommendation.interventions && recommendation.interventions.length > 0 ? (
+                      <ol className="list-decimal list-inside space-y-2 text-gray-700">
+                        {recommendation.interventions.map((step: string, index: number) => (
                           <li key={index}>{step}</li>
                         ))}
                       </ol>
                     ) : (
-                      <p className="text-gray-600">Tidak ada intervensi khusus yang direkomendasikan</p>
+                      <p className="text-gray-600">
+                        Tidak ada intervensi khusus yang direkomendasikan
+                      </p>
                     )}
                   </div>
 
@@ -460,18 +540,6 @@ export default function ESASScreeningResultContent({
                     <h4 className="font-semibold text-gray-800 mb-2">Tindakan yang Diperlukan</h4>
                     <p className="text-gray-700">{recommendation.action_required || '-'}</p>
                   </div>
-
-                  {recommendation.therapy_type && (
-                    <div>
-                      <h4 className="font-semibold text-gray-800 mb-2">Terapi Komplementer</h4>
-                      <p className="text-gray-700">{recommendation.therapy_type}</p>
-                      {recommendation.frequency && (
-                        <p className="text-sm text-gray-600 mt-1">
-                          Frekuensi: {recommendation.frequency}
-                        </p>
-                      )}
-                    </div>
-                  )}
                 </div>
               </CardContent>
             </Card>
@@ -488,11 +556,20 @@ export default function ESASScreeningResultContent({
           <Card className="bg-yellow-50 border-yellow-200">
             <CardContent className="pt-6">
               <div className="text-center">
-                <h4 className="font-semibold text-yellow-800 mb-2">Penting Diperhatikan</h4>
-                <p className="text-yellow-700 text-sm">
-                  Hasil screening ini merupakan alat bantu penilaian awal dan bukan pengganti diagnosis medis profesional.
-                  Untuk kondisi gejala yang berat atau kritis, segera konsultasikan dengan tenaga kesehatan profesional.
-                </p>
+                <h4 className="font-semibold text-yellow-800 mb-2">🏥 PENTING DIPERHATIKAN</h4>
+                <div className="text-yellow-700 text-sm space-y-2">
+                  <p>
+                    Hasil screening ini merupakan alat bantu penilaian awal dan{' '}
+                    <strong>bukan pengganti diagnosis medis profesional</strong>.
+                  </p>
+                  <p className="font-medium">⚠️ Segera hubungi fasilitas kesehatan jika:</p>
+                  <ul className="text-left max-w-md mx-auto space-y-1">
+                    <li>• Skor gejala ≥ 7 (keluhan berat)</li>
+                    <li>• Mengalami sesak napas yang berat</li>
+                    <li>• Nyeri yang tidak tertolong dengan obat</li>
+                    <li>• Perubahan kondisi yang mendadak</li>
+                  </ul>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -513,10 +590,7 @@ export default function ESASScreeningResultContent({
             <ArrowLeft className="w-4 h-4" />
             Screening Baru
           </Button>
-          <Button
-            onClick={handleDownloadPDF}
-            className="flex items-center gap-2"
-          >
+          <Button onClick={handleDownloadPDF} className="flex items-center gap-2">
             <Download className="w-4 h-4" />
             Unduh Hasil (PDF)
           </Button>

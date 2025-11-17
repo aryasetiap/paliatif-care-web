@@ -5,14 +5,14 @@ import { createClient } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     guest_id?: string
     screening_id?: string
-  }
+  }>
 }
 
 export default async function GuestRegistrationPage({ searchParams }: PageProps) {
-  const { guest_id, screening_id } = searchParams
+  const { guest_id, screening_id } = await searchParams
 
   // Validate guest identifier
   if (!guest_id) {

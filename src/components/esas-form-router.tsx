@@ -9,22 +9,6 @@ import { ESASPasienForm } from './esas-form-variants'
 import { ESASPerawatForm } from './esas-form-perawat'
 import { ESASGuestForm } from './esas-form-guest'
 
-interface ESAScreeningFormData {
-  identity: {
-    name: string
-    age: number
-    gender: string
-    contact_info?: string
-    facility_name?: string
-  }
-  questions: {
-    [key: string]: {
-      score: number
-      text: string
-      description?: string
-    }
-  }
-}
 
 interface ESASFormRouterProps {
   isGuestMode?: boolean
@@ -62,7 +46,7 @@ export default function ESASFormRouter({ isGuestMode = false }: ESASFormRouterPr
 
   const formVariant = getFormVariant()
 
-  const handlePasienSubmit = async (data: ESAScreeningFormData) => {
+  const handlePasienSubmit = async (data: any) => {
     try {
       if (!user || !profile) {
         throw new Error('User tidak terautentikasi')
@@ -71,7 +55,7 @@ export default function ESASFormRouter({ isGuestMode = false }: ESASFormRouterPr
       const supabase = createClient()
 
       // Process ESAS data with rule engine
-      const esasResult = ESASRuleEngine.processESASScreening(data.questions)
+      const esasResult = ESASRuleEngine.processESASScreening(data.questions as any)
 
       // Determine if this is self-screening (pasien screening for themselves)
       const isSelfScreening = searchParams.get('type') === 'self'
@@ -136,7 +120,14 @@ export default function ESASFormRouter({ isGuestMode = false }: ESASFormRouterPr
           user_role: userRole,
           screening_mode: 'pasien-self'
         },
-        recommendation: esasResult.recommendation,
+        recommendation: {
+          summary: esasResult.diagnosis,
+          interventions: esasResult.interventionSteps,
+          recommendations: esasResult.interventionSteps,
+          therapy_type: esasResult.therapyType,
+          action_required: esasResult.actionRequired,
+          risk_level: esasResult.riskLevel
+        },
         highest_score: esasResult.highestScore,
         primary_question: esasResult.primaryQuestion,
         risk_level: esasResult.riskLevel,
@@ -166,7 +157,7 @@ export default function ESASFormRouter({ isGuestMode = false }: ESASFormRouterPr
     }
   }
 
-  const handlePerawatSubmit = async (data: ESAScreeningFormData, patientId: string) => {
+  const handlePerawatSubmit = async (data: any, patientId: string) => {
     try {
       if (!user || !profile) {
         throw new Error('User tidak terautentikasi')
@@ -175,7 +166,7 @@ export default function ESASFormRouter({ isGuestMode = false }: ESASFormRouterPr
       const supabase = createClient()
 
       // Process ESAS data with rule engine
-      const esasResult = ESASRuleEngine.processESASScreening(data.questions)
+      const esasResult = ESASRuleEngine.processESASScreening(data.questions as any)
 
       // Create screening record
       const screeningData = {
@@ -189,7 +180,14 @@ export default function ESASFormRouter({ isGuestMode = false }: ESASFormRouterPr
           user_role: userRole,
           screening_mode: 'perawat-assisted'
         },
-        recommendation: esasResult.recommendation,
+        recommendation: {
+          summary: esasResult.diagnosis,
+          interventions: esasResult.interventionSteps,
+          recommendations: esasResult.interventionSteps,
+          therapy_type: esasResult.therapyType,
+          action_required: esasResult.actionRequired,
+          risk_level: esasResult.riskLevel
+        },
         highest_score: esasResult.highestScore,
         primary_question: esasResult.primaryQuestion,
         risk_level: esasResult.riskLevel,
@@ -219,7 +217,7 @@ export default function ESASFormRouter({ isGuestMode = false }: ESASFormRouterPr
     }
   }
 
-  const handleGuestSubmit = async (data: ESAScreeningFormData) => {
+  const handleGuestSubmit = async (data: any) => {
     try {
       const supabase = createClient()
 
@@ -227,17 +225,30 @@ export default function ESASFormRouter({ isGuestMode = false }: ESASFormRouterPr
       const guestIdentifier = crypto.randomUUID()
 
       // Process ESAS data with rule engine
-      const esasResult = ESASRuleEngine.processESASScreening(data.questions)
+      const esasResult = ESASRuleEngine.processESASScreening(data.questions as any)
 
       // Create screening record for guest
       const screeningData = {
         esas_data: {
-          ...data,
+          identity: {
+            name: data.patient_info.patient_name.trim(),
+            age: data.patient_info.patient_age,
+            gender: data.patient_info.patient_gender,
+            facility_name: data.patient_info.facility_name || null,
+          },
+          questions: data.questions,
           timestamp: new Date().toISOString(),
           user_role: 'guest',
           screening_mode: 'guest-self'
         },
-        recommendation: esasResult.recommendation,
+        recommendation: {
+          summary: esasResult.diagnosis,
+          interventions: esasResult.interventionSteps,
+          recommendations: esasResult.interventionSteps,
+          therapy_type: esasResult.therapyType,
+          action_required: esasResult.actionRequired,
+          risk_level: esasResult.riskLevel
+        },
         screening_type: data.patient_info.screening_type,
         status: 'completed',
         highest_score: esasResult.highestScore,
@@ -265,7 +276,14 @@ export default function ESASFormRouter({ isGuestMode = false }: ESASFormRouterPr
       })
 
       // Redirect to guest results page with guest identifier
-      router.push(`/screening/guest/${screening.id}/result?guest_id=${guestIdentifier}`)
+      const redirectUrl = `/screening/guest/${screening.id}/result?guest_id=${guestIdentifier}`
+
+      toast({
+        title: "Berhasil",
+        description: "Screening ESAS berhasil disimpan. Mengarahkan ke hasil...",
+      })
+
+      router.push(redirectUrl)
 
       return {
         screeningId: screening.id,
@@ -299,6 +317,7 @@ export default function ESASFormRouter({ isGuestMode = false }: ESASFormRouterPr
           <ESASPasienForm
             onSubmit={handlePasienSubmit}
             onCancel={handleCancel}
+            userRole={userRole}
           />
         )
 

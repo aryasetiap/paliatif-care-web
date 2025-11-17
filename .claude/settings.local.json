@@ -38,7 +38,8 @@
       "mcp__supabase__execute_sql",
       "mcp__supabase__apply_migration",
       "Bash(node:*)",
-      "mcp__supabase__generate_typescript_types"
+      "mcp__supabase__generate_typescript_types",
+      "Bash(npx tsc:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

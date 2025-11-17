@@ -166,7 +166,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             // First check if profile exists (avoid duplicate creation)
             const { data: existingProfile } = await supabase
               .from('profiles')
-              .select('id, full_name, role')
+              .select('id, full_name, role, created_at')
               .eq('id', user.id)
               .single()
 
@@ -175,10 +175,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
               const permissions = existingProfile.role ? ROLE_PERMISSIONS[existingProfile.role as UserRole] : null
 
               set({
-                profile: {
-                  ...existingProfile,
-                  created_at: (existingProfile as any).created_at || new Date().toISOString()
-                },
+                profile: existingProfile,
                 userRole: existingProfile.role,
                 permissions
               })

@@ -178,7 +178,7 @@ export default function UserManagementContent() {
     }
 
     fetchUsers()
-  }, [user, userRole, router])
+  }, [user, userRole, router, fetchUsers])
 
   useEffect(() => {
     const delayedSearch = setTimeout(() => {
@@ -194,7 +194,7 @@ export default function UserManagementContent() {
 
   useEffect(() => {
     fetchUsers()
-  }, [pagination.currentPage])
+  }, [pagination.currentPage, fetchUsers])
 
   
   const handleAddUser = async (data: UserFormData) => {

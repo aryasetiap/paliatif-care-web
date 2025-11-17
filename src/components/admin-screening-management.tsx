@@ -190,7 +190,7 @@ export default function ScreeningManagementContent() {
     }
 
     fetchScreenings()
-  }, [user, userRole, router])
+  }, [user, userRole, router, fetchScreenings])
 
   useEffect(() => {
     const delayedSearch = setTimeout(() => {
@@ -206,7 +206,7 @@ export default function ScreeningManagementContent() {
 
   useEffect(() => {
     fetchScreenings()
-  }, [pagination.currentPage])
+  }, [pagination.currentPage, fetchScreenings])
 
   
   const handleViewDetails = (screeningId: string) => {
