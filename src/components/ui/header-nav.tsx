@@ -113,14 +113,14 @@ export default function HeaderNav() {
           <nav className="hidden md:flex items-center space-x-2 ml-auto">
             {/* Skrining Link - Dynamic based on auth status */}
             <Link
-              href={isAuthenticated ? "/screening/new" : "/screening/guest"}
+              href={isAuthenticated ? '/screening/new' : '/screening/guest'}
               className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-blue-50 ${
                 isScrolled
                   ? 'text-gray-800 hover:text-gray-900 hover:bg-blue-50'
                   : 'text-gray-800 hover:text-gray-900 hover:bg-white/10'
               }`}
             >
-              {isAuthenticated ? 'Skrining' : 'Skrining Tamu'}
+              {isAuthenticated ? 'Skrining' : 'Skrining'}
             </Link>
 
             {/* Edukasi Link */}
@@ -255,7 +255,7 @@ export default function HeaderNav() {
             <nav className="p-4 space-y-2">
               {/* Skrining Link - Dynamic based on auth status */}
               <Link
-                href={isAuthenticated ? "/screening/new" : "/screening/guest"}
+                href={isAuthenticated ? '/screening/new' : '/screening/guest'}
                 onClick={(e) => {
                   if (!isAuthenticated) {
                     // For guest, don't prevent default - allow navigation to guest screening
@@ -271,16 +271,18 @@ export default function HeaderNav() {
                     : 'text-green-700 hover:text-green-900 hover:bg-green-50'
                 }`}
               >
-                <div className={`w-8 h-8 flex items-center justify-center rounded-lg border ${
-                  isAuthenticated
-                    ? 'bg-amber-500/20 border-amber-400/30'
-                    : 'bg-green-500/20 border-green-400/30'
-                }`}>
-                  <FileText className={`h-4 w-4 ${
-                    isAuthenticated ? 'text-amber-400' : 'text-green-400'
-                  }`} />
+                <div
+                  className={`w-8 h-8 flex items-center justify-center rounded-lg border ${
+                    isAuthenticated
+                      ? 'bg-amber-500/20 border-amber-400/30'
+                      : 'bg-green-500/20 border-green-400/30'
+                  }`}
+                >
+                  <FileText
+                    className={`h-4 w-4 ${isAuthenticated ? 'text-amber-400' : 'text-green-400'}`}
+                  />
                 </div>
-                <span>{isAuthenticated ? 'Skrining' : 'Skrining Tamu'}</span>
+                <span>{isAuthenticated ? 'Skrining' : 'Skrining'}</span>
               </Link>
 
               {/* Edukasi Link */}
