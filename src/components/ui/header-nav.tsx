@@ -14,20 +14,48 @@ export default function HeaderNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const router = useRouter()
-  const { isAuthenticated, logout, loading } = useAuthStore()
+  const { isAuthenticated, logout, userRole } = useAuthStore()
 
-  // Load user on component mount
-  useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      useAuthStore.getState().loadUser()
+  // Get role-based dashboard URL
+  const getDashboardUrl = () => {
+    switch (userRole) {
+      case 'admin':
+        return '/admin/dashboard'
+      case 'perawat':
+        return '/dashboard'
+      case 'pasien':
+        return '/pasien/dashboard'
+      default:
+        return '/dashboard' // fallback
     }
-  }, [loading, isAuthenticated])
+  }
+
+  // Load user on component mount only once
+  useEffect(() => {
+    // Only load user if we're not loading and not authenticated
+    // This prevents infinite loops from auth state changes
+    const checkAndLoadUser = async () => {
+      const currentState = useAuthStore.getState()
+
+      // Only attempt to load user if we're completely sure user is not authenticated
+      if (!currentState.loading && !currentState.isAuthenticated && !currentState.user) {
+        try {
+          await currentState.loadUser()
+        } catch {
+          // Silently handle loadUser errors - the auth store will handle state cleanup
+        }
+      }
+    }
+
+    checkAndLoadUser()
+  }, []) // Empty dependency array - only run once on mount
 
   // Handle logout
   const handleLogout = async () => {
     try {
       await logout()
-      router.push('/')
+      // Redirect to home page after logout
+      window.location.href = '/'
     } catch (error) {
       // Log error for debugging while avoiding console statement in production
       // Consider using a proper logging service in production
@@ -175,7 +203,7 @@ export default function HeaderNav() {
                   }`}
                   asChild
                 >
-                  <Link href="/dashboard">
+                  <Link href={getDashboardUrl()}>
                     <User className="h-4 w-4 mr-2" />
                     Dashboard
                   </Link>
@@ -332,7 +360,7 @@ export default function HeaderNav() {
                   <>
                     {/* User Dashboard */}
                     <Link
-                      href="/dashboard"
+                      href={getDashboardUrl()}
                       className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors border border-gray-300"
                       onClick={() => setIsMenuOpen(false)}
                     >

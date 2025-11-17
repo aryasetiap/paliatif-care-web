@@ -92,7 +92,8 @@ const ESAS_QUESTIONS = [
     number: '5',
     text: 'Seberapa berkurang nafsu makan yang Anda alami saat ini? (Resiko defisit nutrisi)',
     descriptions: {
-      '0-3':
+      '0': 'Nafsu makan normal',
+      '1-3':
         'Nafsu makan normal / sedikit berkurangMasih mampu makan dengan baik, hanya sedikit penurunan selera makan',
       '4-6':
         'Nafsu makan menurun sedang - Mulai sulit makan, porsi berkurang dari biasanya, sering menolak makanan tertentu',
@@ -140,7 +141,8 @@ const ESAS_QUESTIONS = [
     number: '9',
     text: 'Secara keseluruhan, bagaimana perasaan Anda saat ini? (kesiapan koping keluarga)',
     descriptions: {
-      '0-3':
+      '0': 'Merasa sangat baik - Pasien merasa sehat dan bugar',
+      '1-3':
         'Merasa sangat baik / ringan - Pasien merasa tenang, nyaman, dan positif terhadap kondisi tubuhnya',
       '4-6':
         'Perasaan sedang / tidak nyaman - Pasien merasa kurang bersemangat, cepat lelah, atau kehilangan motivasi',
@@ -274,7 +276,8 @@ export default function ESASScreeningContent({ isGuestMode = false }: ESASScreen
   const [isLoadingPatient, setIsLoadingPatient] = useState(false)
 
   // Check if this is self-screening mode
-  const isSelfScreening = searchParams.get('type') === 'self' && userRole === 'pasien' && !isGuestMode
+  const isSelfScreening =
+    searchParams.get('type') === 'self' && userRole === 'pasien' && !isGuestMode
 
   const form = useForm<ESAScreeningFormData>({
     resolver: zodResolver(esasScreeningFormSchema),
@@ -416,11 +419,11 @@ export default function ESASScreeningContent({ isGuestMode = false }: ESASScreen
           }
         }
       } catch (error) {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Gagal memuat data pasien',
-        variant: 'destructive',
-      })
+        toast({
+          title: 'Error',
+          description: error instanceof Error ? error.message : 'Gagal memuat data pasien',
+          variant: 'destructive',
+        })
       } finally {
         setIsLoadingPatient(false)
       }
@@ -749,10 +752,9 @@ export default function ESASScreeningContent({ isGuestMode = false }: ESASScreen
         // Store temporary patient data for submission
         setSelectedPatient({
           ...patientData,
-          isNew: true
+          isNew: true,
         })
       }
-
     } catch {
       // Silently handle errors in auto-fill
     }
@@ -774,7 +776,8 @@ export default function ESASScreeningContent({ isGuestMode = false }: ESASScreen
     }
 
     const savedDraft = localStorage.getItem('esas_screening_draft')
-    if (savedDraft && !patientId && !isSelfScreening && !isGuestMode) { // Only load draft if no patient is pre-selected and not self-screening and not guest mode
+    if (savedDraft && !patientId && !isSelfScreening && !isGuestMode) {
+      // Only load draft if no patient is pre-selected and not self-screening and not guest mode
       try {
         const draftData = JSON.parse(savedDraft)
         // Reset form with draft data (excluding patient info if user wants to start fresh)
@@ -798,7 +801,15 @@ export default function ESASScreeningContent({ isGuestMode = false }: ESASScreen
         // Silently handle draft loading error
       }
     }
-  }, [searchParams, isSelfScreening, isGuestMode, autoFillPatientData, loadPatientById, form, toast])
+  }, [
+    searchParams,
+    isSelfScreening,
+    isGuestMode,
+    autoFillPatientData,
+    loadPatientById,
+    form,
+    toast,
+  ])
 
   return (
     <div className="relative min-h-screen">
@@ -816,24 +827,21 @@ export default function ESASScreeningContent({ isGuestMode = false }: ESASScreen
                 ? 'Screening Tamu ESAS'
                 : isSelfScreening
                   ? 'Screening Mandiri ESAS'
-                  : 'Form Skrining ESAS'
-              }
+                  : 'Form Skrining ESAS'}
             </h1>
             <p className="text-sky-600 text-lg">
               {isGuestMode
                 ? 'Edmonton Symptom Assessment System - Evaluasi gejala tanpa perlu login'
                 : isSelfScreening
                   ? 'Edmonton Symptom Assessment System - Evaluasi gejala Anda sendiri'
-                  : 'Edmonton Symptom Assessment System - Penilaian Gejala Pasien Paliatif'
-              }
+                  : 'Edmonton Symptom Assessment System - Penilaian Gejala Pasien Paliatif'}
             </p>
             <p className="text-sky-500 text-sm mt-2">
               {isGuestMode
                 ? 'Isi data pasien dan nilai gejala dengan skala 0-10. Has akan langsung ditampilkan.'
                 : isSelfScreening
                   ? 'Nilai gejala yang Anda alami saat ini dengan skala 0-10'
-                  : 'Evaluasi komprehensif 9 gejala paliatif dengan skala 0-10'
-              }
+                  : 'Evaluasi komprehensif 9 gejala paliatif dengan skala 0-10'}
             </p>
           </div>
 
@@ -896,268 +904,308 @@ export default function ESASScreeningContent({ isGuestMode = false }: ESASScreen
                     <CardDescription className="text-sky-600">
                       {isGuestMode
                         ? 'Masukkan data pasien untuk screening tanpa perlu login'
-                        : 'Masukkan data identitas pasien yang akan discreening'
-                      }
+                        : 'Masukkan data identitas pasien yang akan discreening'}
                     </CardDescription>
                   </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="patient_info.patient_name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sky-700">
-                            Nama Pasien * {selectedPatient && !isGuestMode && <span className="text-xs text-gray-500">(Tidak dapat diubah)</span>}
-                          </FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Input
-                                placeholder="Masukkan nama pasien"
-                                {...field}
-                                disabled={(!isGuestMode && !!selectedPatient) || (!isGuestMode && isLoadingPatient)}
-                                className={`bg-white/90 border-sky-300 focus:border-blue-500 ${
-                                  !isGuestMode && selectedPatient ? 'bg-gray-50 text-gray-700 cursor-not-allowed' : ''
-                                }`}
-                                onChange={(e) => {
-                                  field.onChange(e)
-                                  if (!isGuestMode && !selectedPatient) {
-                                    handleSearchChange(e.target.value)
-                                    setShowExistingPatients(true)
-                                  }
-                                }}
-                                onFocus={() => !isGuestMode && !selectedPatient && setShowExistingPatients(true)}
-                              />
-                              {!isGuestMode && isSearching && (
-                                <div className="absolute right-3 top-3">
-                                  <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                                </div>
-                              )}
-                              {!isGuestMode && selectedPatient && (
-                                <div className="absolute right-3 top-3">
-                                  <div className="text-xs text-green-600 font-medium">✓ Terpilih</div>
-                                </div>
-                              )}
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-
-                          {/* Show existing patients dropdown - Only for non-guest mode */}
-                          {!isGuestMode && !selectedPatient && showExistingPatients &&
-                            searchQuery.trim() &&
-                            existingPatients.length > 0 && (
-                              <div className="absolute z-10 w-full mt-1 bg-white/90 backdrop-blur-md border-sky-200 rounded-md shadow-lg max-h-40 overflow-y-auto">
-                                {existingPatients.map((patient) => (
-                                  <button
-                                    key={patient.id}
-                                    type="button"
-                                    className="w-full text-left px-3 py-2 hover:bg-sky-50 border-b border-sky-100 last:border-b-0 transition-colors"
-                                    onClick={() => selectPatient(patient)}
-                                  >
-                                    <div className="font-medium text-sm text-sky-900">
-                                      {patient.name}
-                                    </div>
-                                    <div className="text-xs text-sky-600">
-                                      {patient.age} tahun •{' '}
-                                      {patient.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
-                                    </div>
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="patient_info.patient_age"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sky-700">
-                            Usia * {selectedPatient && !isGuestMode && <span className="text-xs text-gray-500">(Tidak dapat diubah)</span>}
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="Masukkan usia"
-                              disabled={(!isGuestMode && !!selectedPatient) || (!isGuestMode && isLoadingPatient)}
-                              className={`bg-white/90 border-sky-300 focus:border-blue-500 ${
-                                !isGuestMode && selectedPatient ? 'bg-gray-50 text-gray-700 cursor-not-allowed' : ''
-                              }`}
-                              {...field}
-                              onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="patient_info.patient_gender"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sky-700">
-                            Jenis Kelamin * {selectedPatient && !isGuestMode && <span className="text-xs text-gray-500">(Tidak dapat diubah)</span>}
-                          </FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            disabled={(!isGuestMode && !!selectedPatient) || (!isGuestMode && isLoadingPatient)}
-                          >
-                            <FormControl>
-                              <SelectTrigger className={`bg-white/90 border-sky-300 focus:border-blue-500 ${
-                                !isGuestMode && selectedPatient ? 'bg-gray-50 text-gray-700 cursor-not-allowed' : ''
-                              }`}>
-                                <SelectValue placeholder="Pilih jenis kelamin" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="L">Laki-laki</SelectItem>
-                              <SelectItem value="P">Perempuan</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="patient_info.facility_name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sky-700">Nama Fasilitas (Opsional)</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Masukkan nama fasilitas kesehatan"
-                              className="bg-white/90 border-sky-300 focus:border-blue-500"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Contact Information Field - Only show in guest mode */}
-                    {isGuestMode && (
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
-                        name="patient_info.contact_info"
+                        name="patient_info.patient_name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-sky-700">Informasi Kontak *</FormLabel>
+                            <FormLabel className="text-sky-700">
+                              Nama Pasien *{' '}
+                              {selectedPatient && !isGuestMode && (
+                                <span className="text-xs text-gray-500">(Tidak dapat diubah)</span>
+                              )}
+                            </FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <Input
+                                  placeholder="Masukkan nama pasien"
+                                  {...field}
+                                  disabled={
+                                    (!isGuestMode && !!selectedPatient) ||
+                                    (!isGuestMode && isLoadingPatient)
+                                  }
+                                  className={`bg-white/90 border-sky-300 focus:border-blue-500 ${
+                                    !isGuestMode && selectedPatient
+                                      ? 'bg-gray-50 text-gray-700 cursor-not-allowed'
+                                      : ''
+                                  }`}
+                                  onChange={(e) => {
+                                    field.onChange(e)
+                                    if (!isGuestMode && !selectedPatient) {
+                                      handleSearchChange(e.target.value)
+                                      setShowExistingPatients(true)
+                                    }
+                                  }}
+                                  onFocus={() =>
+                                    !isGuestMode &&
+                                    !selectedPatient &&
+                                    setShowExistingPatients(true)
+                                  }
+                                />
+                                {!isGuestMode && isSearching && (
+                                  <div className="absolute right-3 top-3">
+                                    <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                                  </div>
+                                )}
+                                {!isGuestMode && selectedPatient && (
+                                  <div className="absolute right-3 top-3">
+                                    <div className="text-xs text-green-600 font-medium">
+                                      ✓ Terpilih
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+
+                            {/* Show existing patients dropdown - Only for non-guest mode */}
+                            {!isGuestMode &&
+                              !selectedPatient &&
+                              showExistingPatients &&
+                              searchQuery.trim() &&
+                              existingPatients.length > 0 && (
+                                <div className="absolute z-10 w-full mt-1 bg-white/90 backdrop-blur-md border-sky-200 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                                  {existingPatients.map((patient) => (
+                                    <button
+                                      key={patient.id}
+                                      type="button"
+                                      className="w-full text-left px-3 py-2 hover:bg-sky-50 border-b border-sky-100 last:border-b-0 transition-colors"
+                                      onClick={() => selectPatient(patient)}
+                                    >
+                                      <div className="font-medium text-sm text-sky-900">
+                                        {patient.name}
+                                      </div>
+                                      <div className="text-xs text-sky-600">
+                                        {patient.age} tahun •{' '}
+                                        {patient.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
+                                      </div>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="patient_info.patient_age"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sky-700">
+                              Usia *{' '}
+                              {selectedPatient && !isGuestMode && (
+                                <span className="text-xs text-gray-500">(Tidak dapat diubah)</span>
+                              )}
+                            </FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Masukkan nomor telepon atau email"
+                                type="number"
+                                placeholder="Masukkan usia"
+                                disabled={
+                                  (!isGuestMode && !!selectedPatient) ||
+                                  (!isGuestMode && isLoadingPatient)
+                                }
+                                className={`bg-white/90 border-sky-300 focus:border-blue-500 ${
+                                  !isGuestMode && selectedPatient
+                                    ? 'bg-gray-50 text-gray-700 cursor-not-allowed'
+                                    : ''
+                                }`}
+                                {...field}
+                                onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="patient_info.patient_gender"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sky-700">
+                              Jenis Kelamin *{' '}
+                              {selectedPatient && !isGuestMode && (
+                                <span className="text-xs text-gray-500">(Tidak dapat diubah)</span>
+                              )}
+                            </FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                              disabled={
+                                (!isGuestMode && !!selectedPatient) ||
+                                (!isGuestMode && isLoadingPatient)
+                              }
+                            >
+                              <FormControl>
+                                <SelectTrigger
+                                  className={`bg-white/90 border-sky-300 focus:border-blue-500 ${
+                                    !isGuestMode && selectedPatient
+                                      ? 'bg-gray-50 text-gray-700 cursor-not-allowed'
+                                      : ''
+                                  }`}
+                                >
+                                  <SelectValue placeholder="Pilih jenis kelamin" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="L">Laki-laki</SelectItem>
+                                <SelectItem value="P">Perempuan</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="patient_info.facility_name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sky-700">
+                              Nama Fasilitas (Opsional)
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Masukkan nama fasilitas kesehatan"
                                 className="bg-white/90 border-sky-300 focus:border-blue-500"
                                 {...field}
                               />
                             </FormControl>
                             <FormMessage />
-                            <p className="text-xs text-sky-500 mt-1">
-                              Diperlukan untuk identifikasi dan follow-up hasil screening
-                            </p>
                           </FormItem>
                         )}
                       />
-                    )}
-                  </div>
 
-                  <FormField
-                    control={form.control}
-                    name="patient_info.screening_type"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sky-700">
-                          Tipe Screening * {selectedPatient && !isGuestMode && <span className="text-xs text-gray-500">(Terdeteksi otomatis)</span>}
-                        </FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger className={`bg-white/90 border-sky-300 focus:border-blue-500 ${
-                              !isGuestMode && selectedPatient ? 'bg-green-50 border-green-300' : ''
-                            }`}>
-                              <SelectValue placeholder="Pilih tipe screening" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="initial">Screening Awal</SelectItem>
-                            <SelectItem value="follow_up">Screening Follow-up</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        {!isGuestMode && selectedPatient && (
-                          <div className="text-xs text-green-600 mt-1 flex items-center gap-1">
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <span>
-                              {field.value === 'follow_up'
-                                ? 'Pasien sudah pernah di-screening sebelumnya'
-                                : 'Screening pertama untuk pasien ini'
-                              }
-                            </span>
-                          </div>
-                        )}
-                        {isGuestMode && (
-                          <div className="text-xs text-blue-600 mt-1 flex items-center gap-1">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                            <span>
-                              {field.value === 'initial'
-                                ? 'Screening pertama (disarankan untuk pengguna baru)'
-                                : 'Screening lanjutan'
-                              }
-                            </span>
-                          </div>
-                        )}
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Change Patient Button - Only for non-guest mode */}
-                  {!isGuestMode && selectedPatient && (
-                    <div className="flex justify-end">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => {
-                          setSelectedPatient(null)
-                          form.reset({
-                            patient_info: {
-                              patient_name: '',
-                              patient_age: 0,
-                              patient_gender: 'L',
-                              facility_name: '',
-                              screening_type: 'initial',
-                              contact_info: '',
-                            },
-                            questions: {
-                              '1': 0,
-                              '2': 0,
-                              '3': 0,
-                              '4': 0,
-                              '5': 0,
-                              '6': 0,
-                              '7': 0,
-                              '8': 0,
-                              '9': 0,
-                            },
-                          })
-                          // Remove patient parameter from URL
-                          const newUrl = window.location.pathname
-                          window.history.replaceState({}, '', newUrl)
-                        }}
-                        className="border-red-300 text-red-700 hover:bg-red-50"
-                      >
-                        Ganti Pasien
-                      </Button>
+                      {/* Contact Information Field - Only show in guest mode */}
+                      {isGuestMode && (
+                        <FormField
+                          control={form.control}
+                          name="patient_info.contact_info"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-sky-700">Informasi Kontak *</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="Masukkan nomor telepon atau email"
+                                  className="bg-white/90 border-sky-300 focus:border-blue-500"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                              <p className="text-xs text-sky-500 mt-1">
+                                Diperlukan untuk identifikasi dan follow-up hasil screening
+                              </p>
+                            </FormItem>
+                          )}
+                        />
+                      )}
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+
+                    <FormField
+                      control={form.control}
+                      name="patient_info.screening_type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sky-700">
+                            Tipe Screening *{' '}
+                            {selectedPatient && !isGuestMode && (
+                              <span className="text-xs text-gray-500">(Terdeteksi otomatis)</span>
+                            )}
+                          </FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger
+                                className={`bg-white/90 border-sky-300 focus:border-blue-500 ${
+                                  !isGuestMode && selectedPatient
+                                    ? 'bg-green-50 border-green-300'
+                                    : ''
+                                }`}
+                              >
+                                <SelectValue placeholder="Pilih tipe screening" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="initial">Screening Awal</SelectItem>
+                              <SelectItem value="follow_up">Screening Follow-up</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {!isGuestMode && selectedPatient && (
+                            <div className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                              <span>
+                                {field.value === 'follow_up'
+                                  ? 'Pasien sudah pernah di-screening sebelumnya'
+                                  : 'Screening pertama untuk pasien ini'}
+                              </span>
+                            </div>
+                          )}
+                          {isGuestMode && (
+                            <div className="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                              <span>
+                                {field.value === 'initial'
+                                  ? 'Screening pertama (disarankan untuk pengguna baru)'
+                                  : 'Screening lanjutan'}
+                              </span>
+                            </div>
+                          )}
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Change Patient Button - Only for non-guest mode */}
+                    {!isGuestMode && selectedPatient && (
+                      <div className="flex justify-end">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedPatient(null)
+                            form.reset({
+                              patient_info: {
+                                patient_name: '',
+                                patient_age: 0,
+                                patient_gender: 'L',
+                                facility_name: '',
+                                screening_type: 'initial',
+                                contact_info: '',
+                              },
+                              questions: {
+                                '1': 0,
+                                '2': 0,
+                                '3': 0,
+                                '4': 0,
+                                '5': 0,
+                                '6': 0,
+                                '7': 0,
+                                '8': 0,
+                                '9': 0,
+                              },
+                            })
+                            // Remove patient parameter from URL
+                            const newUrl = window.location.pathname
+                            window.history.replaceState({}, '', newUrl)
+                          }}
+                          className="border-red-300 text-red-700 hover:bg-red-50"
+                        >
+                          Ganti Pasien
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </motion.div>
             )}
 

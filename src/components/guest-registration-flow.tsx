@@ -37,29 +37,29 @@ const registrationSchema = {
     required: 'Email wajib diisi',
     pattern: {
       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-      message: 'Format email tidak valid'
-    }
+      message: 'Format email tidak valid',
+    },
   },
   password: {
     required: 'Password wajib diisi',
     minLength: {
       value: 6,
-      message: 'Password minimal 6 karakter'
-    }
+      message: 'Password minimal 6 karakter',
+    },
   },
   confirmPassword: {
-    required: 'Konfirmasi password wajib diisi'
+    required: 'Konfirmasi password wajib diisi',
   },
   fullName: {
     required: 'Nama lengkap wajib diisi',
     minLength: {
       value: 2,
-      message: 'Nama minimal 2 karakter'
-    }
+      message: 'Nama minimal 2 karakter',
+    },
   },
   role: {
-    required: 'Role wajib dipilih'
-  }
+    required: 'Role wajib dipilih',
+  },
 }
 
 interface GuestRegistrationFlowProps {
@@ -79,7 +79,7 @@ interface RegistrationFormData {
 export default function GuestRegistrationFlow({
   guestIdentifier,
   screeningData,
-  onComplete
+  onComplete,
 }: GuestRegistrationFlowProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLinkingData, setIsLinkingData] = useState(false)
@@ -92,16 +92,15 @@ export default function GuestRegistrationFlow({
   const { toast } = useToast()
   const { register: registerUser, user } = useAuthStore()
 
-      
   const form = useForm<RegistrationFormData>({
     defaultValues: {
       email: '',
       password: '',
       confirmPassword: '',
       fullName: screeningData?.identity?.name || screeningData?.patient_info?.patient_name || '',
-      role: 'pasien' // Default to pasien for guest conversion
+      role: 'pasien', // Default to pasien for guest conversion
     },
-    mode: 'onChange'
+    mode: 'onChange',
   })
 
   // Get guest identifier from URL or props
@@ -116,10 +115,8 @@ export default function GuestRegistrationFlow({
     return password === confirmPassword || 'Password tidak cocok'
   }
 
-  
   const linkGuestScreeningToUser = async (userId: string) => {
     if (!guestIdentifier) {
-      // No guest identifier provided, skipping data linking
       return 0
     }
     setIsLinkingData(true)
@@ -129,12 +126,16 @@ export default function GuestRegistrationFlow({
       // Find guest screenings
       const { data: guestScreenings, error: fetchError } = await supabase
         .from('screenings')
-        .select('id, esas_data')
+        .select('id, esas_data, patient_id, created_at')
         .eq('guest_identifier', guestIdentifier)
         .eq('is_guest', true)
+        .order('created_at', { ascending: false })
 
       if (fetchError) {
         throw new Error(`Gagal mengambil data screening: ${fetchError.message}`)
+      }
+
+      if (guestScreenings && guestScreenings.length > 0) {
       }
 
       if (!guestScreenings || guestScreenings.length === 0) {
@@ -143,13 +144,16 @@ export default function GuestRegistrationFlow({
 
       // Create patient record if not exists
       let patientId: string | null = null
-      if (screeningData?.identity) {
+      const firstScreening = guestScreenings[0]
+      const firstScreeningData = firstScreening.esas_data
+
+      if (firstScreeningData?.identity) {
         const patientData = {
           user_id: userId,
-          name: screeningData.identity.name,
-          age: screeningData.identity.age,
-          gender: screeningData.identity.gender,
-          facility_name: screeningData.identity.facility_name || null
+          name: firstScreeningData.identity.name,
+          age: firstScreeningData.identity.age,
+          gender: firstScreeningData.identity.gender,
+          facility_name: firstScreeningData.identity.facility_name || null,
         }
 
         const { data: newPatient, error: patientError } = await supabase
@@ -159,10 +163,11 @@ export default function GuestRegistrationFlow({
           .single()
 
         if (patientError) {
-          // Handle patient creation error
+          // Continue without patient record but still link screenings
         } else if (newPatient) {
           patientId = newPatient.id
         }
+      } else {
       }
 
       // Update screenings to link to user
@@ -171,7 +176,7 @@ export default function GuestRegistrationFlow({
         const updateData: any = {
           user_id: userId,
           is_guest: false,
-          guest_identifier: null
+          guest_identifier: null,
         }
 
         if (patientId) {
@@ -183,13 +188,13 @@ export default function GuestRegistrationFlow({
           .update(updateData)
           .eq('id', screening.id)
 
-        if (!updateError) {
+        if (updateError) {
+        } else {
           linkedCount++
         }
       }
 
       return linkedCount
-
     } catch {
       return 0
     } finally {
@@ -209,10 +214,26 @@ export default function GuestRegistrationFlow({
       // 1. Register user using authStore (same as normal registration)
       await registerUser(data.email, data.password, data.fullName, data.role)
 
-      // Get the user after successful registration
-      const currentUser = user
+      // Wait a moment for state to update after registration
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      // Get the user after successful registration with retry mechanism
+      let currentUser = user
+      let retryCount = 0
+      const maxRetries = 3
+
+      while (!currentUser && retryCount < maxRetries) {
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        // Force refresh user state
+        await useAuthStore.getState().loadUser()
+        currentUser = useAuthStore.getState().user
+        retryCount++
+      }
+
       if (!currentUser) {
-        throw new Error('User not found after registration')
+        throw new Error(
+          'User registration completed but user data not available. Please try logging in.'
+        )
       }
 
       setCreatedUserId(currentUser.id)
@@ -225,35 +246,71 @@ export default function GuestRegistrationFlow({
       setRegistrationStep('success')
 
       toast({
-        title: "Registrasi Berhasil!",
+        title: 'Registrasi Berhasil!',
         description: `Akun Anda sebagai ${data.role === 'perawat' ? 'Perawat' : 'Pasien'} telah dibuat${linkedCount > 0 ? ` dan ${linkedCount} data screening telah ditautkan` : ''}`,
       })
 
       if (onComplete) {
         onComplete(currentUser.id)
       }
-
     } catch (error) {
       toast({
-        title: "Registrasi Gagal",
-        description: error instanceof Error ? error.message : 'Terjadi kesalahan. Silakan coba lagi.',
-        variant: "destructive",
+        title: 'Registrasi Gagal',
+        description:
+          error instanceof Error ? error.message : 'Terjadi kesalahan. Silakan coba lagi.',
+        variant: 'destructive',
       })
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  const handleCompleteRegistration = () => {
+  const handleCompleteRegistration = async () => {
     if (createdUserId) {
-      // Redirect based on role
-      const role = form.getValues('role')
-      if (role === 'pasien') {
-        router.push('/pasien/dashboard')
-      } else if (role === 'perawat') {
-        router.push('/dashboard')
-      } else {
-        router.push('/')
+      // Final verification of user state before redirect
+      try {
+        const currentState = useAuthStore.getState()
+
+        // If user state is still not properly loaded, try one more time
+        if (!currentState.user || currentState.user.id !== createdUserId) {
+          await currentState.loadUser()
+
+          // Wait for state to update
+          await new Promise((resolve) => setTimeout(resolve, 500))
+        }
+
+        // Get the role from form or current state
+        const role = form.getValues('role') || currentState.userRole || 'pasien'
+
+        // Show loading state
+        toast({
+          title: 'Mengarahkan ke Dashboard...',
+          description: 'Mohon tunggu sebentar',
+        })
+
+        // Redirect based on role with slight delay for toast
+        setTimeout(() => {
+          if (role === 'pasien') {
+            router.push('/pasien/dashboard')
+          } else if (role === 'perawat') {
+            router.push('/dashboard')
+          } else if (role === 'admin') {
+            router.push('/admin/dashboard')
+          } else {
+            router.push('/')
+          }
+        }, 1000)
+      } catch {
+        toast({
+          title: 'Redirect Error',
+          description: 'Silakan login manual ke dashboard',
+          variant: 'destructive',
+        })
+
+        // Fallback redirect
+        setTimeout(() => {
+          router.push('/login')
+        }, 2000)
       }
     }
   }
@@ -309,9 +366,7 @@ export default function GuestRegistrationFlow({
             <Card className="bg-gradient-to-br from-blue-50/50 to-purple-50/50 border-blue-200">
               <CardHeader>
                 <CardTitle className="text-xl text-blue-900">Formulir Pendaftaran</CardTitle>
-                <CardDescription>
-                  Lengkapi data diri Anda untuk membuat akun
-                </CardDescription>
+                <CardDescription>Lengkapi data diri Anda untuk membuat akun</CardDescription>
               </CardHeader>
               <CardContent>
                 <Form {...form}>
@@ -410,7 +465,7 @@ export default function GuestRegistrationFlow({
                         rules={{
                           ...registrationSchema.confirmPassword,
                           validate: (value) =>
-                            validatePasswordMatch(form.getValues('password'), value)
+                            validatePasswordMatch(form.getValues('password'), value),
                         }}
                         render={({ field }) => (
                           <FormItem>
@@ -498,15 +553,14 @@ export default function GuestRegistrationFlow({
               >
                 <CheckCircle2Icon className="w-10 h-10 text-white" />
               </motion.div>
-              <h1 className="text-3xl font-bold text-green-800 mb-4">
-                Registrasi Berhasil!
-              </h1>
+              <h1 className="text-3xl font-bold text-green-800 mb-4">Registrasi Berhasil!</h1>
               <div className="space-y-4 text-gray-600">
                 <p>
                   Akun Anda telah berhasil dibuat.
                   {linkedScreenings > 0 && (
                     <span className="font-medium text-green-600">
-                      {' '}{linkedScreenings} data screening telah ditautkan ke akun Anda.
+                      {' '}
+                      {linkedScreenings} data screening telah ditautkan ke akun Anda.
                     </span>
                   )}
                 </p>

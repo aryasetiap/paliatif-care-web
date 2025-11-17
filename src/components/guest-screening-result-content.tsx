@@ -24,14 +24,14 @@ interface ESASScreeningResultContentProps {
 const getESASQuestionText = (questionNumber: string): string => {
   const questionTexts: Record<string, string> = {
     '1': 'Nyeri (Pain)',
-    '2': 'Lelah (Tiredness)',
-    '3': 'Mual (Nausea)',
-    '4': 'Depresi (Depression)',
-    '5': 'Cemas (Anxiety)',
-    '6': 'Mengantuk (Drowsiness)',
-    '7': 'Nafsu Makan (Appetite)',
-    '8': 'Kesejahteraan (Well-being)',
-    '9': 'Napas Pendek (Shortness of Breath)',
+    '2': 'Intoleransi Aktivitas (Activity Intolerance)',
+    '3': 'Gangguan Pola Tidur (Sleep Disturbance)',
+    '4': 'Mual (Nausea)',
+    '5': 'Risiko Defisit Nutrisi (Nutrition Deficit Risk)',
+    '6': 'Pola Napas Tidak Efektif (Ineffective Breathing Pattern)',
+    '7': 'Keputusasaan (Despair)',
+    '8': 'Ansietas (Anxiety)',
+    '9': 'Peningkatan Koping Keluarga (Overall Well-Being)',
   }
   return questionTexts[questionNumber] || `Pertanyaan ${questionNumber}`
 }
@@ -123,7 +123,7 @@ export default function ESASScreeningResultContent({
         onclone: (clonedDoc) => {
           // Remove print:hidden elements and optimize for PDF
           const printElements = clonedDoc.querySelectorAll('.print\\:hidden')
-          printElements.forEach(el => el.remove())
+          printElements.forEach((el) => el.remove())
 
           // Optimize styles for PDF
           const body = clonedDoc.body
@@ -140,7 +140,7 @@ export default function ESASScreeningResultContent({
             .motion-div { transform: none !important; opacity: 1 !important; }
           `
           clonedDoc.head.appendChild(style)
-        }
+        },
       })
 
       // Create PDF with optimized image settings
@@ -149,7 +149,7 @@ export default function ESASScreeningResultContent({
         orientation: 'p',
         unit: 'mm',
         format: 'a4',
-        compress: true // Enable compression
+        compress: true, // Enable compression
       })
 
       const imgWidth = 210 // A4 width in mm
@@ -562,13 +562,13 @@ export default function ESASScreeningResultContent({
                     Hasil screening ini merupakan alat bantu penilaian awal dan{' '}
                     <strong>bukan pengganti diagnosis medis profesional</strong>.
                   </p>
-                  <p className="font-medium">⚠️ Segera hubungi fasilitas kesehatan jika:</p>
+                  {/* <p className="font-medium">⚠️ Segera hubungi fasilitas kesehatan jika:</p>
                   <ul className="text-left max-w-md mx-auto space-y-1">
                     <li>• Skor gejala ≥ 7 (keluhan berat)</li>
                     <li>• Mengalami sesak napas yang berat</li>
                     <li>• Nyeri yang tidak tertolong dengan obat</li>
                     <li>• Perubahan kondisi yang mendadak</li>
-                  </ul>
+                  </ul> */}
                 </div>
               </div>
             </CardContent>

@@ -50,14 +50,16 @@ export default function PatientDashboardPage() {
     if (!user) return
 
     try {
+
       const supabase = createClient()
 
-      // Load patient's screenings
+      // Load patient's screenings - simpler query to avoid encoding issues
       const { data: screeningsData } = await supabase
         .from('screenings')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
+
 
       // Calculate stats
       const now = new Date()
@@ -86,9 +88,16 @@ export default function PatientDashboardPage() {
   }, [user])
 
   useEffect(() => {
+    // More robust user check with delay for refresh scenarios
     if (!user) {
-      router.push('/login')
-      return
+      // Give some time for auth to load on refresh
+      const timer = setTimeout(() => {
+        if (!user) {
+          router.push('/login')
+        }
+      }, 1000) // 1 second delay
+
+      return () => clearTimeout(timer)
     }
 
     loadPatientData()

@@ -41,7 +41,6 @@ interface ESAScreeningFormData {
   }
 }
 
-
 // ESAS Questions (dipindahkan dari file utama untuk organisasi yang lebih baik)
 const ESAS_QUESTIONS = [
   {
@@ -88,7 +87,8 @@ const ESAS_QUESTIONS = [
     number: '5',
     text: 'Seberapa berkurang nafsu makan yang Anda alami saat ini?',
     descriptions: {
-      '0-3': 'Nafsu makan normal / sedikit berkurang - Masih mampu makan dengan baik',
+      '0': 'Nafsu makan normal',
+      '1-3': 'Nafsu makan normal / sedikit berkurang - Masih mampu makan dengan baik',
       '4-6': 'Nafsu makan menurun sedang - Mulai sulit makan, porsi berkurang dari biasanya',
       '7-10': 'Nafsu makan sangat menurun - Tidak ada keinginan makan, menolak asupan',
     },
@@ -127,9 +127,11 @@ const ESAS_QUESTIONS = [
     number: '9',
     text: 'Secara keseluruhan, bagaimana perasaan Anda saat ini?',
     descriptions: {
-      '0-3': 'Merasa sangat baik / ringan - Pasien merasa tenang, nyaman, dan positif',
+      '0': 'Merasa sangat baik - Pasien merasa sehat dan bugar',
+      '1-3': 'Merasa sangat baik / ringan - Pasien merasa tenang, nyaman, dan positif',
       '4-6': 'Perasaan sedang / tidak nyaman - Pasien merasa kurang bersemangat, cepat lelah',
-      '7-10': 'Perasaan buruk / sangat tidak nyaman - Pasien merasa sangat buruk, kehilangan kendali',
+      '7-10':
+        'Perasaan buruk / sangat tidak nyaman - Pasien merasa sangat buruk, kehilangan kendali',
     },
   },
 ]
@@ -142,7 +144,13 @@ interface ESASQuestionComponentProps {
   disabled?: boolean
 }
 
-function ESASQuestionComponent({ question, value, onChange, error, disabled = false }: ESASQuestionComponentProps) {
+function ESASQuestionComponent({
+  question,
+  value,
+  onChange,
+  error,
+  disabled = false,
+}: ESASQuestionComponentProps) {
   const getScoreColor = (score: number) => {
     if (score === 0) return 'bg-gray-100 border-gray-300'
     if (score >= 1 && score <= 3) return 'bg-green-100 border-green-300'
@@ -176,7 +184,9 @@ function ESASQuestionComponent({ question, value, onChange, error, disabled = fa
   }
 
   return (
-    <Card className={`${getScoreColor(value)} transition-all duration-300 hover:shadow-lg bg-white/80 backdrop-blur-md border-sky-200 ${disabled ? 'opacity-75' : ''}`}>
+    <Card
+      className={`${getScoreColor(value)} transition-all duration-300 hover:shadow-lg bg-white/80 backdrop-blur-md border-sky-200 ${disabled ? 'opacity-75' : ''}`}
+    >
       <CardHeader>
         <CardTitle className="text-lg text-sky-900">
           <span className="font-bold text-sky-600">{question.number}.</span> {question.text}
@@ -199,7 +209,7 @@ function ESASQuestionComponent({ question, value, onChange, error, disabled = fa
             <Button
               key={score}
               type="button"
-              variant={value === score ? "default" : "outline"}
+              variant={value === score ? 'default' : 'outline'}
               size="sm"
               onClick={() => onChange(score)}
               disabled={disabled}
@@ -282,15 +292,15 @@ function ESASPasienForm({ userRole: _userRole, onSubmit, onCancel }: ESASFormVar
         patient_info: {
           ...data.patient_info,
           patient_name: profile?.full_name || data.patient_info.patient_name,
-        }
+        },
       }
 
       await onSubmit(enhancedData)
     } catch (error) {
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Gagal menyimpan screening",
-        variant: "destructive",
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Gagal menyimpan screening',
+        variant: 'destructive',
       })
     } finally {
       setIsSubmitting(false)

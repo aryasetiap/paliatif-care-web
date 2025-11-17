@@ -1,4 +1,5 @@
 import { createClient } from './supabase'
+import { getAuthenticatedUser } from './authHelpers'
 import { z } from 'zod'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { patientSchema, patientSearchSchema, getValidationErrors } from './validations'
@@ -58,9 +59,9 @@ export const createPatient = async (patientData: PatientInsert): Promise<Patient
     const validatedData = patientSchema.parse(patientData)
 
     const supabase = createClient()
-    const currentUser = await supabase.auth.getUser()
+    const currentUser = await getAuthenticatedUser()
 
-    if (!currentUser.data.user) {
+    if (!currentUser) {
       throw new PatientError('User not authenticated', 'UNAUTHORIZED', 401)
     }
 
@@ -68,7 +69,7 @@ export const createPatient = async (patientData: PatientInsert): Promise<Patient
     const { data: existingPatient } = await supabase
       .from('patients')
       .select('id')
-      .eq('user_id', currentUser.data.user.id)
+      .eq('user_id', currentUser.id)
       .eq('name', validatedData.name)
       .eq('age', validatedData.age)
       .eq('gender', validatedData.gender)
@@ -85,7 +86,7 @@ export const createPatient = async (patientData: PatientInsert): Promise<Patient
     // Create patient with user_id
     const patientWithUser = {
       ...validatedData,
-      user_id: currentUser.data.user.id,
+      user_id: currentUser.id,
     }
 
     const { data, error } = await supabase
@@ -122,9 +123,9 @@ export const updatePatient = async (
     const validatedData = patientSchema.partial().parse(updates)
 
     const supabase = createClient()
-    const currentUser = await supabase.auth.getUser()
+    const currentUser = await getAuthenticatedUser()
 
-    if (!currentUser.data.user) {
+    if (!currentUser) {
       throw new PatientError('User not authenticated', 'UNAUTHORIZED', 401)
     }
 
@@ -139,7 +140,7 @@ export const updatePatient = async (
       throw new PatientError('Pasien tidak ditemukan', 'NOT_FOUND', 404)
     }
 
-    if (existingPatient.user_id !== currentUser.data.user.id) {
+    if (existingPatient.user_id !== currentUser.id) {
       throw new PatientError('Akses ditolak', 'FORBIDDEN', 403)
     }
 
@@ -148,7 +149,7 @@ export const updatePatient = async (
       const { data: duplicatePatient } = await supabase
         .from('patients')
         .select('id')
-        .eq('user_id', currentUser.data.user.id)
+        .eq('user_id', currentUser.id)
         .eq('name', validatedData.name || existingPatient.name)
         .eq('age', validatedData.age || existingPatient.age)
         .eq('gender', validatedData.gender || existingPatient.gender)
@@ -206,9 +207,9 @@ export const searchPatients = async (
     const validatedParams = patientSearchSchema.parse(searchParams)
 
     const supabase = createClient()
-    const currentUser = await supabase.auth.getUser()
+    const currentUser = await getAuthenticatedUser()
 
-    if (!currentUser.data.user) {
+    if (!currentUser) {
       throw new PatientError('User not authenticated', 'UNAUTHORIZED', 401)
     }
 
@@ -226,7 +227,7 @@ export const searchPatients = async (
     let query = supabase
       .from('patients')
       .select('*', { count: 'exact' })
-      .eq('user_id', currentUser.data.user.id)
+      .eq('user_id', currentUser.id)
 
     // Apply search filter
     if (search) {
@@ -275,9 +276,9 @@ export const searchPatients = async (
 export const getPatientById = async (patientId: string): Promise<PatientWithScreenings> => {
   try {
     const supabase = createClient()
-    const currentUser = await supabase.auth.getUser()
+    const currentUser = await getAuthenticatedUser()
 
-    if (!currentUser.data.user) {
+    if (!currentUser) {
       throw new PatientError('User not authenticated', 'UNAUTHORIZED', 401)
     }
 
@@ -300,7 +301,7 @@ export const getPatientById = async (patientId: string): Promise<PatientWithScre
       `
       )
       .eq('id', patientId)
-      .eq('user_id', currentUser.data.user.id)
+      .eq('user_id', currentUser.id)
       .single()
 
     if (error) {
@@ -335,9 +336,9 @@ export const getPatientById = async (patientId: string): Promise<PatientWithScre
 export const deletePatient = async (patientId: string): Promise<void> => {
   try {
     const supabase = createClient()
-    const currentUser = await supabase.auth.getUser()
+    const currentUser = await getAuthenticatedUser()
 
-    if (!currentUser.data.user) {
+    if (!currentUser) {
       throw new PatientError('User not authenticated', 'UNAUTHORIZED', 401)
     }
 
@@ -352,7 +353,7 @@ export const deletePatient = async (patientId: string): Promise<void> => {
       throw new PatientError('Pasien tidak ditemukan', 'NOT_FOUND', 404)
     }
 
-    if (existingPatient.user_id !== currentUser.data.user.id) {
+    if (existingPatient.user_id !== currentUser.id) {
       throw new PatientError('Akses ditolak', 'FORBIDDEN', 403)
     }
 
@@ -391,13 +392,13 @@ export const deletePatient = async (patientId: string): Promise<void> => {
 export const getDashboardStats = async (): Promise<DashboardStats> => {
   try {
     const supabase = createClient()
-    const currentUser = await supabase.auth.getUser()
+    const currentUser = await getAuthenticatedUser()
 
-    if (!currentUser.data.user) {
+    if (!currentUser) {
       throw new PatientError('User not authenticated', 'UNAUTHORIZED', 401)
     }
 
-    const userId = currentUser.data.user.id
+    const userId = currentUser.id
 
     // Get total patients
     const { count: totalPatients } = await supabase
@@ -500,9 +501,9 @@ export const getDashboardStats = async (): Promise<DashboardStats> => {
 export const getPatientScreeningHistory = async (patientId: string) => {
   try {
     const supabase = createClient()
-    const currentUser = await supabase.auth.getUser()
+    const currentUser = await getAuthenticatedUser()
 
-    if (!currentUser.data.user) {
+    if (!currentUser) {
       throw new PatientError('User not authenticated', 'UNAUTHORIZED', 401)
     }
 
@@ -513,7 +514,7 @@ export const getPatientScreeningHistory = async (patientId: string) => {
       .eq('id', patientId)
       .single()
 
-    if (!patient || patient.user_id !== currentUser.data.user.id) {
+    if (!patient || patient.user_id !== currentUser.id) {
       throw new PatientError('Pasien tidak ditemukan', 'NOT_FOUND', 404)
     }
 
@@ -556,9 +557,9 @@ export const getPatientScreeningHistory = async (patientId: string) => {
 export const getPatientsWithLatestScreening = async (limit: number = 10) => {
   try {
     const supabase = createClient()
-    const currentUser = await supabase.auth.getUser()
+    const currentUser = await getAuthenticatedUser()
 
-    if (!currentUser.data.user) {
+    if (!currentUser) {
       throw new PatientError('User not authenticated', 'UNAUTHORIZED', 401)
     }
 
@@ -577,7 +578,7 @@ export const getPatientsWithLatestScreening = async (limit: number = 10) => {
         updated_at
       `
       )
-      .eq('user_id', currentUser.data.user.id)
+      .eq('user_id', currentUser.id)
       .order('created_at', { ascending: false })
       .limit(limit * 2) // Get more patients to account for those without screenings
 

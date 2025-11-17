@@ -20,7 +20,32 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
-  const { login, userRole } = useAuthStore()
+  const { login } = useAuthStore() // userRole not needed anymore, using waitForRole
+
+  // Function to wait for role to be loaded
+  const waitForRole = async (maxWaitMs = 2000): Promise<string | null> => {
+    return new Promise((resolve) => {
+      const checkRole = () => {
+        const currentRole = useAuthStore.getState().userRole
+        if (currentRole) {
+          resolve(currentRole)
+          return
+        }
+
+        // Check if we've waited too long
+        if (Date.now() - startTime > maxWaitMs) {
+          resolve(null)
+          return
+        }
+
+        // Check again in 100ms
+        setTimeout(checkRole, 100)
+      }
+
+      const startTime = Date.now()
+      checkRole()
+    })
+  }
 
   const {
     register,
@@ -54,14 +79,27 @@ export default function LoginPage() {
       // Login dengan Supabase menggunakan authStore
       await login(data.email, data.password)
 
-      toast({
-        title: 'Login berhasil',
-        description: `Selamat datang kembali${userRole ? ` sebagai ${userRole}` : ''}!`,
-      })
+      // Wait for role to be loaded from database
+      const loadedRole = await waitForRole(3000) // Wait up to 3 seconds
 
-      // Redirect ke dashboard berdasarkan role setelah login berhasil
-      const redirectPath = getRoleBasedRedirect(userRole)
-      router.push(redirectPath)
+      if (loadedRole) {
+        toast({
+          title: 'Login berhasil',
+          description: `Selamat datang kembali sebagai ${loadedRole}!`,
+        })
+
+        const redirectPath = getRoleBasedRedirect(loadedRole)
+        router.push(redirectPath)
+      } else {
+        // Fallback if role loading fails
+        toast({
+          title: 'Login berhasil',
+          description: 'Selamat datang kembali!',
+        })
+
+        // Fallback to middleware-based redirect
+        window.location.href = '/'
+      }
     } catch (error) {
       toast({
         title: 'Login gagal',

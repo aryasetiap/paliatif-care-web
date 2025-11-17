@@ -40,13 +40,13 @@ export const signUp = async (email: string, password: string, fullName: string, 
       const { error: rpcError } = await supabase.rpc('create_user_profile', {
         p_user_id: authData.user.id,
         p_full_name: fullName,
-        p_role: role
+        p_role: role,
       })
 
       if (rpcError) {
         // Fallback: Try direct insert with session
         // Wait a moment for the auth session to be established
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        await new Promise((resolve) => setTimeout(resolve, 1000))
 
         // Check if profile already exists first
         const { data: existingProfile } = await supabase
@@ -57,16 +57,15 @@ export const signUp = async (email: string, password: string, fullName: string, 
 
         if (!existingProfile) {
           // Profile doesn't exist, create it
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .insert({
-              id: authData.user.id,
-              full_name: fullName,
-              role: role
-            })
+          const { error: profileError } = await supabase.from('profiles').insert({
+            id: authData.user.id,
+            full_name: fullName,
+            role: role,
+          })
 
           if (profileError) {
             throw new Error(`Profile creation failed: ${profileError.message}`)
+          } else {
           }
         } else {
           // Update role if it's incorrect
@@ -78,12 +77,16 @@ export const signUp = async (email: string, password: string, fullName: string, 
 
             if (updateError) {
               throw new Error(`Role update failed: ${updateError.message}`)
+            } else {
             }
           }
         }
+      } else {
       }
     } catch (error) {
-      throw new Error(`Profile creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      throw new Error(
+        `Profile creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
     }
   }
 
@@ -118,16 +121,45 @@ export const signOut = async () => {
 export const getCurrentUser = async () => {
   const supabase = createClient()
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
+  try {
+    // First check if we have a session
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-  if (error) {
-    throw new Error(error.message)
+    if (sessionError) {
+      return null // Session error
+    }
+
+    if (!session) {
+      return null // No active session
+    }
+
+    // For refresh scenarios, first try to get user from session directly
+    if (session.user) {
+      return session.user
+    }
+
+    // Verify the user still exists (more strict validation)
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(session.access_token)
+
+    if (error) {
+      // Don't immediately return null for token issues - might be temporary
+      if (error.message.includes('Invalid session') || error.message.includes('expired')) {
+        return null // True auth error
+      }
+      // For other validation errors, return session user as fallback
+      return session.user
+    }
+
+    return user
+  } catch {
+    return null // Return null instead of throwing to avoid infinite loops
   }
-
-  return user
 }
 
 export const onAuthStateChange = (callback: (event: string, session: any) => void) => {
@@ -268,20 +300,24 @@ export const updatePassword = async (newPassword: string) => {
   try {
     // Update the password - Supabase will handle session validation automatically
     const { error } = await supabase.auth.updateUser({
-      password: newPassword
+      password: newPassword,
     })
 
     if (error) {
       // Handle specific error cases
       if (error.message.includes('Invalid session') || error.message.includes('expired')) {
-        throw new Error('Link reset password telah kadaluarsa. Silakan minta link reset password baru.')
+        throw new Error(
+          'Link reset password telah kadaluarsa. Silakan minta link reset password baru.'
+        )
       }
       throw new Error(error.message)
     }
   } catch (err: any) {
     // Handle network or other errors
     if (err.message?.includes('session') || err.message?.includes('expired')) {
-      throw new Error('Link reset password telah kadaluarsa. Silakan minta link reset password baru.')
+      throw new Error(
+        'Link reset password telah kadaluarsa. Silakan minta link reset password baru.'
+      )
     }
     throw err
   }
