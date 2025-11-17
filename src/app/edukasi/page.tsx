@@ -315,7 +315,9 @@ export default function EducationPage() {
                       <p className="text-sky-700 leading-relaxed mb-4 text-sm line-clamp-3">
                         {typeof disease.definition === 'string'
                           ? disease.definition
-                          : disease.definition.hiv}
+                          : disease.definition && typeof disease.definition === 'object'
+                            ? disease.definition.hiv || disease.definition.aids || Object.values(disease.definition)[0]
+                            : 'Definisi tidak tersedia'}
                       </p>
 
                       {/* Symptoms Count */}

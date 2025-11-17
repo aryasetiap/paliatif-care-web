@@ -9,155 +9,157 @@
     "diseases": [
       {
         "id": "alzheimer",
-        "name": "Alzheimer",
+        "name": "ALZHEIMER",
         "slug": "alzheimer",
         "category": "neurologis",
-        "definition": "Penyakit Alzheimer adalah gangguan otak yang merusak sel-sel secara bertahap dan menyebabkan penurunan serius pada kemampuan mengingat, berpikir, dan bertingkah laku (demensia).",
+        "definition": "Gangguan otak yang merusak sel-sel secara bertahap dan menyebabkan Penurunan serius pada kemampuan mengingat, berpikir, dan bertingkah laku (Demensia).",
         "symptoms": [
-          "Sulit Mengingat Parah: Lupa hal penting, termasuk orang terdekat atau sering tersesat",
-          "Perubahan Sikap: Mudah marah, cemas, atau berbicara sendiri",
-          "Ketergantungan: Membutuhkan bantuan total untuk kegiatan sehari-hari (makan, mandi)"
+          "Sulit Mengingat Parah: Lupa hal penting, termasuk orang terdekat atau sering tersesat.",
+          "Perubahan Sikap: Mudah marah, cemas, atau berbicara sendiri.",
+          "Ketergantungan: Membutuhkan bantuan total untuk kegiatan sehari-hari (makan, mandi)."
         ],
         "causes": [
-          "Perubahan di Otak: Penumpukan protein abnormal (plak dan belitan) yang mengganggu kerja sel otak",
-          "Faktor Utama: Usia lanjut, genetika, serta kondisi seperti tekanan darah tinggi, diabetes, dan kurangnya stimulasi"
+          "Perubahan di Otak: Penumpukan protein abnormal (plak dan belitan) yang mengganggu kerja sel otak.",
+          "Faktor Utama: Usia lanjut, genetika, serta kondisi seperti tekanan darah tinggi, diabetes, dan kurangnya stimulasi."
         ],
         "risk_factors": {
           "unchangeable": [
             "Usia lanjut",
-            "Riwayat keluarga"
+            "riwayat keluarga"
           ],
           "changeable": [
             "Penyakit jantung",
-            "Diabetes",
-            "Merokok",
-            "Kurangnya aktivitas"
+            "diabetes",
+            "merokok",
+            "kurangnya aktivitas"
           ]
         },
         "references": [
-          "Alzheimer's Association. (2024). What is Alzheimer's disease?",
-          "Alzheimer's.gov. (2024). Causes and risk factors for Alzheimer's disease.",
-          "Cedars-Sinai Health. (2024). Alzheimer's disease: Causes, symptoms, and prevention.",
+          "Alzheimer’s Association. (2024). What is Alzheimer’s disease?",
+          "Alzheimer’s.gov. (2024). Causes and risk factors for Alzheimer’s disease.",
+          "Cedars-Sinai Health. (2024). Alzheimer’s disease: Causes, symptoms, and prevention.",
           "World Health Organization. (2023). WHO Palliative Care Guidelines.",
           "Kartika, A. W., Kumboyono, Y. S. H., Hayati, Y. S., & Kristianingrum, N. D. (2024). Implementasi Modifikasi Cognitive Stimulation Therapy untuk Meningkatkan Kemampuan Kognitif Lansia Risiko Demensia. Jurnal Masyarakat Mandiri (JMM), 8(5), 4646–4655.",
-          "Alzheimer's Association. (2024). Complementary and Alternative Therapies for Alzheimer's Disease. Alzheimer's Association."
+          "Alzheimer’s Association. (2024). Complementary and Alternative Therapies for Alzheimer’s Disease. Alzheimer’s Association"
         ]
       },
       {
         "id": "kanker-payudara",
-        "name": "Kanker Payudara",
+        "name": "KANKER PAYUDARA",
         "slug": "kanker-payudara",
         "category": "onkologi",
-        "definition": "Kanker payudara adalah pertumbuhan sel tidak normal di payudara yang bisa menyebar ke bagian tubuh lain jika tidak diobati. Awalnya, kanker ini sering kali muncul di saluran atau kelenjar susu.",
+        "definition": "Kanker payudara: pertumbuhan sel tidak normal di payudara. Bisa menyebar ke bagian tubuh lain jika tidak diobati. Awalnya muncul di saluran atau kelenjar susu.",
         "symptoms": [
-          "Benjolan di payudara atau ketiak",
-          "Nyeri, bengkak, atau keluar cairan dari puting yang tidak normal",
-          "Puting tertarik ke dalam atau perubahan bentuk payudara",
-          "Kulit payudara tampak seperti kulit jeruk"
+          "Benjolan di payudara atau ketiak.",
+          "Nyeri, bengkak, atau keluar cairan dari puting.",
+          "Cairan tidak normal keluar dari puting.",
+          "Puting tertarik ke dalam atau bentuk payudara berubah.",
+          "Kulit payudara tampak seperti kulit jeruk."
         ],
         "causes": [
-          "Faktor keturunan atau genetik",
-          "Usia yang makin tua",
-          "Gaya hidup tidak sehat (makan junk food, jarang olahraga)",
-          "Penggunaan hormon atau pil KB dalam waktu lama",
-          "Tidak menikah, tidak menyusui, atau melahirkan di usia >35 tahun",
-          "Stres berlebihan dan paparan asap rokok"
+          "Faktor keturunan atau genetik.",
+          "Usia yang makin tua.",
+          "Gaya hidup tidak sehat (makan junk food, jarang olahraga).",
+          "Penggunaan hormon atau pil KB dalam waktu lama.",
+          "Tidak menikah, tidak menyusui, atau melahirkan di usia >35 tahun.",
+          "Stres berlebihan dan paparan asap rokok."
         ],
         "risk_factors": {
           "internal": [
-            "Usia >50 tahun",
-            "Riwayat keluarga dengan kanker payudara",
-            "Hormon estrogen tinggi",
-            "Peran Gen BRCA1 & BRCA2: Mutasi pada gen ini meningkatkan risiko kanker, dapat diwariskan, dan memicu kanker muncul lebih cepat dan ganas"
+            "Usia >50 tahun.",
+            "Riwayat keluarga dengan kanker payudara.",
+            "Hormon estrogen tinggi.",
+            "Merokok, alkohol, jarang olahraga.",
+            "Pil KB atau kosmetik berhormon lama digunakan."
           ],
           "external": [
-            "Makanan tinggi lemak, rendah serat",
-            "Berat badan berlebih (gemuk)",
-            "Kurang aktivitas fisik",
-            "Konsumsi alkohol",
-            "Penggunaan obat hormon jangka panjang, pil KB, atau kosmetik berhormon lama",
-            "Merokok"
-          ]
+            "Makanan tinggi lemak, rendah serat.",
+            "Berat badan berlebih (gemuk).",
+            "Kurang aktivitas fisik.",
+            "Konsumsi alkohol.",
+            "Penggunaan obat hormon jangka panjang."
+          ],
+          "genetic_role": "Peran Gen BRCA1 & BRCA2 Berfungsi mencegah kerusakan sel. Jika bermutasi → risiko kanker meningkat. Bisa diwariskan dari orang tua. Kanker bisa muncul lebih cepat dan lebih ganas ."
         },
         "references": [
           "Pertiwi, A. W. (2021). Edukasi pemeriksaan payudara sendiri (SADARI) terhadap deteksi dini kanker payudara pada remaja dengan media video [Tesis/Skripsi, Universitas Aiska–University]. Aiska University.",
-          "Danucalov, M. A., Garcia, M. C., & Simões, R. P. (2023). Effects of yoga on stress, sleep quality, and cortisol levels in women with breast cancer undergoing chemotherapy: A randomized controlled trial. Complementary Therapies in Medicine, 72, 102927.",
+          "Danucalov, M. A., Garcia, M. C., & Simões, R. P. (2023). Effects of yoga on stress, sleep quality, and cortisol levels in women with breast cancer undergoing chemotherapy: A randomized controlled trial. Complementary Therapies in Medicine, 72 , 102927.",
           "Fitriani, I., Vinza, J. E., Pasundung, J., & Pakaya, M. P. (2023). Buku Kanker Payudara (Edisi Biomedik III). Fakultas Kesehatan Masyarakat, Universitas Sam Ratulangi.",
-          "World Health Organization. (2025, August 14). Breast cancer. https://www.who.int/news-room/fact-sheets/detail/breast-cancer",
-          "Alodokter. (n.d.). Kanker payudara – gejala, penyebab, dan pengobatan. https://www.alodokter.com/kanker-payudara",
-          "Sciena. (n.d.). Sciena: Scientific Journal. Retrieved from https://journal.scientic.id/index.php/sciena/article/download/175/148/520"
+          "World Health Organization. (2025, August 14). Breast cancer . https://www.who.int/news-room/fact-sheets/detail/breast-cancer",
+          "Alodokter. (n.d.). Kanker payudara – gejala, penyebab, dan pengobatan . https://www.alodokter.com/kanker-payudara",
+          "Sciena. (n.d.). Sciena: Scientific Journal . Retrieved from https://journal.scientic.id/index.php/sciena/article/download/175/148/520"
         ]
       },
       {
         "id": "gagal-ginjal-kronik",
-        "name": "Gagal Ginjal Kronik (CKD)",
+        "name": "GAGAL GINJAL KRONIK (CKD)",
         "slug": "gagal-ginjal-kronik",
         "category": "ginjal",
         "definition": "Penyakit ginjal kronik adalah kondisi ketika fungsi ginjal menurun secara perlahan dalam waktu lama, biasanya lebih dari tiga bulan. Ginjal menjadi kurang mampu menyaring kotoran dan cairan berlebih dari tubuh dengan baik.",
         "symptoms": [
-          "Mudah lelah atau terlihat pucat",
-          "Nafas terasa pendek",
-          "Kaki atau wajah tampak bengkak",
-          "Jumlah air kencing berkurang",
-          "Tekanan darah meningkat"
+          "Mudah lelah atau terlihat pucat.",
+          "Nafas terasa pendek.",
+          "Kaki atau wajah tampak bengkak.",
+          "Jumlah air kencing berkurang.",
+          "Tekanan darah meningkat."
         ],
         "causes": [
-          "Kadar gula darah yang tinggi dalam waktu lama (diabetes)",
-          "Tekanan darah tinggi yang tidak terkontrol",
-          "Peradangan pada ginjal",
-          "Kelainan bawaan atau kistik pada ginjal",
-          "Adanya sumbatan di saluran kencing, misalnya karena batu atau pembesaran prostat"
+          "Kadar gula darah yang tinggi dalam waktu lama 5-10 tahun (diabetes).",
+          "Tekanan darah tinggi yang tidak terkontrol.",
+          "Peradangan pada ginjal.",
+          "Kelainan bawaan atau kistik pada ginjal.",
+          "Adanya sumbatan di saluran kencing, misalnya karena batu atau pembesaran prostat."
         ],
         "risk_factors": [
-          "Tekanan darah atau gula darah yang tidak stabil",
-          "Terlalu sering mengonsumsi obat pereda nyeri tanpa pengawasan dokter",
-          "Kebiasaan merokok",
-          "Kadar lemak dalam darah tinggi"
+          "Tekanan darah atau gula darah yang tidak stabil.",
+          "Terlalu sering mengonsumsi obat pereda nyeri tanpa pengawasan dokter.",
+          "Kebiasaan merokok.",
+          "Kadar lemak dalam darah tinggi."
         ],
         "references": [
-          "Andhayani, A. C., et al. Penyakit Ginjal Kronik: Diagnosis, Penanganan, dan Pencegahan. Google Books.",
-          "Atrie, U. Y., et al. BUKU REFERENSI EDUKASI KESEHATAN UNTUK PENCEGAHAN PENYAKIT GINJAL. Google Books."
+          "Penyakit Ginjal Kronik: Diagnosis, Penanganan, dan Pencegahan - dr. Ayu Cahya Andhayani, Sp.PD. , Suhendra Mandala Ernas, dr., Dr. Alvin Wiharja Sp.K.O., MM , Ir. Neni Ekowati Januariana MPH , Mahardika Putri Kaonang, S.Kep., Ns., M.Kep. , dr. Agustiawan, MKM, AIFO-K, FRSPH, FISQua, dr. Novia Nurinta Jayanti Saragih - Google Books https://share.google/VPYcZLarh8L8nHArd",
+          "BUKU REFERENSI EDUKASI KESEHATAN UNTUK PENCEGAHAN PENYAKIT GINJAL - Utari Yunie Atrie, S.Kep, Ns., M.Kep, Ns. Yeni Kartika Sari, M.Kep, Ns. Diyah Candra Anita, S.Kep., M.Sc., Mesya, S.Kep., Ns., M.Kep, Dr. Christin Hiyana Tungga Dewi, SST., M.Kes - Google Books https://share.google/ksEu7vATOWJKgjVYV"
         ]
       },
       {
         "id": "diabetes",
-        "name": "Diabetes",
+        "name": "DIABETES",
         "slug": "diabetes",
         "category": "metabolik",
         "definition": "Diabetes adalah penyakit ketika kadar gula darah terlalu tinggi karena tubuh kekurangan atau tidak bisa menggunakan insulin dengan baik.",
         "symptoms": [
-          "Sering buang air kecil, terutama di malam hari",
-          "Sering merasa haus, meskipun sudah banyak minum",
-          "Cepat merasa lapar, walau sudah makan",
-          "Berat badan turun tanpa sebab yang jelas",
-          "Mudah lelah atau lemas",
-          "Pandangan menjadi kabur"
+          "Sering buang air kecil, terutama di malam hari.",
+          "Sering merasa haus, meskipun sudah banyak minum.",
+          "Cepat merasa lapar, walau sudah makan.",
+          "Berat badan turun tanpa sebab yang jelas.",
+          "Mudah lelah atau lemas.",
+          "Pandangan menjadi kabur."
         ],
         "causes": [
-          "Pola makan tidak sehat, misalnya terlalu sering mengonsumsi makanan manis, tinggi lemak, atau olahan",
-          "Kelebihan berat badan atau obesitas, yang membuat tubuh sulit menggunakan insulin dengan baik",
-          "Kurang bergerak atau jarang olahraga, sehingga gula darah tidak terbakar menjadi energi",
-          "Stres dan kurang tidur, yang bisa memengaruhi kerja hormon insulin",
-          "Faktor genetik atau keturunan, terutama jika orang tua atau saudara memiliki diabetes"
+          "Pola makan tidak sehat, misalnya terlalu sering mengonsumsi makanan manis, tinggi lemak, atau olahan.",
+          "Kelebihan berat badan atau obesitas, yang membuat tubuh sulit menggunakan insulin dengan baik.",
+          "Kurang bergerak atau jarang olahraga, sehingga gula darah tidak terbakar menjadi energi.",
+          "Stres dan kurang tidur, yang bisa memengaruhi kerja hormon insulin.",
+          "Faktor genetik atau keturunan, terutama jika orang tua atau saudara memiliki diabetes."
         ],
         "risk_factors": {
           "unchangeable": [
-            "Usia >40 tahun",
-            "Riwayat keluarga"
+            "usia >40 tahun",
+            "riwayat keluarga"
           ],
           "changeable": [
-            "Obesitas",
-            "Pola makan tinggi lemak dan gula",
-            "Kurang olahraga",
-            "Merokok",
-            "Tekanan darah tinggi"
+            "obesitas",
+            "pola makan tinggi lemak dan gula",
+            "kurang olahraga",
+            "merokok",
+            "tekanan darah tinggi"
           ]
         },
         "references": []
       },
       {
         "id": "gagal-jantung",
-        "name": "Gagal Jantung",
+        "name": "GAGAL JANTUNG",
         "slug": "gagal-jantung",
         "category": "kardiovaskular",
         "definition": "Gagal jantung merupakan kondisi ketika otot jantung tidak dapat memompa darah secara optimal, sehingga suplai darah yang membawa oksigen dan nutrisi tidak cukup untuk kebutuhan tubuh.",
@@ -165,7 +167,7 @@
           "utama": [
             "Sesak napas",
             "Kelelahan ekstrem",
-            "Pembengkakan pada pergelangan kaki, tungkai, atau perut"
+            "Pembengkakan pada pergelangan kaki, tungkai, atau perut."
           ],
           "sisi_kiri": [
             "Sesak napas saat aktivitas ringan",
@@ -180,7 +182,7 @@
             "Pembengkakan pada vena jugularis di leher",
             "Pembesaran hati",
             "Penumpukan cairan di rongga perut",
-            "Keluhan saluran cerna seperti mual dan nafsu makan menurun"
+            "Keluhan saluran cerna seperti mual dan nafsu makan menurun."
           ]
         },
         "causes": [
@@ -193,7 +195,7 @@
           "Konsumsi alkohol berlebih",
           "Merokok",
           "Obesitas (kelebihan berat badan)",
-          "Penyakit lain (diabetes melitus, anemia kronik, hipertiroidisme)"
+          "Penyakit (diabetes melitus, anemia kronik, hipertiroidisme)"
         ],
         "risk_factors": [
           "Riwayat keluarga dengan gagal jantung",
@@ -206,7 +208,7 @@
           "Merokok",
           "Penggunaan alkohol berlebih",
           "Pola makan yang tidak sehat",
-          "Penggunaan obat-obatan terlarang",
+          "Penggunaan obat obatan terlarang",
           "Kurang aktivitas fisik"
         ],
         "references": []
@@ -217,41 +219,39 @@
         "slug": "hiv-aids",
         "category": "infeksi",
         "definition": {
-          "hiv": "HIV (Human Immunodeficiency Virus): Virus yang menyerang sistem kekebalan tubuh, khususnya sel yang melawan infeksi.",
-          "aids": "AIDS (Acquired Immunodeficiency Syndrome): Kondisi di mana tubuh sangat rentan terhadap infeksi dan penyakit serius akibat kerusakan sistem kekebalan tubuh oleh HIV."
+          "hiv": "HIV (Human Immunodeficiency Virus) adalah virus yang menyerang sistem kekebalan tubuh, khususnya sel yang melawan infeksi.",
+          "aids": "AIDS (Acquired Immunodeficiency Syndrome) yaitu kondisi di mana tubuh sangat rentan terhadap infeksi dan penyakit serius"
         },
-        "symptoms": {
-          "tahapan": [
-            {
-              "tahap": "Tahap Awal",
-              "gejala": "Gejala mirip flu seperti demam dan sakit tenggorokan"
-            },
-            {
-              "tahap": "Tahap Tanpa Gejala",
-              "gejala": "Virus berkembang tanpa menunjukkan gejala"
-            },
-            {
-              "tahap": "Tahap Lanjut/AIDS",
-              "gejala": "Sistem kekebalan tubuh melemah, menyebabkan infeksi serius"
-            }
-          ]
-        },
+        "symptoms": [
+          "sariawan yang tidak kunjung hilang",
+          "sakit kepala",
+          "mudah cape dan lemas",
+          "hilang nafsu makan",
+          "sering gampang sakit, terutama flu dan batuk yang datang lagi dan lagi",
+          "radang tenggorokan",
+          "penurunan bb secara drastis 5-10 kg dalam 1 - 2 bulan",
+          "kulit sering muncul bercak atau ruam kemerahan yang terasa gatal atau panas",
+          "Berkeringat di malam hari",
+          "bagian organ intim terasa tidak nyaman, perih, atau muncul luka yang lama sembuh"
+        ],
         "causes": [
           "Melalui cairan tubuh seperti darah, sperma, cairan vagina, dan ASI",
-          "Melalui hubungan seks tanpa pelindung, berbagi jarum suntik, dan dari ibu ke anak selama kehamilan, persalinan, atau menyusui"
+          "Melalui hubungan seks tanpa pelindung, berbagi jarum suntik, dan dari ibu ke anak selama kehamilan, persalinan, atau menyusui."
         ],
         "risk_factors": [
           "Berganti-ganti pasangan dan berhubungan seksual melalui dubur/anus tanpa menggunakan kondom",
-          "Menggunakan jarum suntik secara bersamaan",
-          "Penularan dari ibu hamil ke janin melalui plasenta",
-          "Mendapatkan suntikan, transfusi darah, atau prosedur medis lainnya yang tidak steril atau tidak dilakukan secara profesional"
+          "Menggunakan jarum suntik secara bersamaan.",
+          "Penularan HIV/AIDS dari ibu hamil ke janin melalui plasenta",
+          "Mendapatkan suntikan, transfusi darah atau prosedur medis lainnya yang tidak steril atau tidak dilakukan dengan profesional"
         ],
         "references": [
-          "Fauci, A. S., & Loscalzo, J. (2022). Penyakit Virus Human Immunodeficiency: AIDS dan Gangguan Terkait. Dalam Harrison Prinsip-Prinsip Ilmu Penyakit Dalam (Edisi ke-21). Jakarta: EGC.",
-          "Daniels, V. G. AIDS: The Acquired Immune Deficiency Syndrome.",
+          "Harrison’s Principles of Internal Medicine (edisi ke-21) — Bab berjudul “Human Immunodeficiency Virus Disease: AIDS and Related Disorders”.",
+          "AIDS: The Acquired Immune Deficiency Syndrome oleh Victor G. Daniels.",
+          "Human Immunodeficiency Virus Infection and Acquired Immunodeficiency Syndrome (HIV/AIDS): An Overview oleh S. R. Prabhu.",
+          "Fauci, A. S., & Loscalzo, J. (2022). Penyakit Virus Human Immunodeficiency: AIDS dan Gangguan Terkait. Dalam Harrison Prinsip-Prinisi Ilmu Penyakit Dalam (Edisi ke-21). Jakarta: EGC.",
           "Prabhu, S. R. (2023). Infeksi HIV dan AIDS: Suatu Tinjauan Umum. Wiley.",
-          "Aryani, A., et al. (2021). Buku Ajar Keperawatan HIV/AIDS.",
-          "Huriati. (2018). Konsep Asuhan Keperawatan HIV/AIDS."
+          "Buku Ajar Keperawatan HIV/AIDS — A. Aryani et al., 2021. Buku ini mencakup konsep penyakit HIV/AIDS, terapi ARV, perawatan ibu–bayi, anak dengan HIV/AIDS, stigmatisasi, dan lain-lain.",
+          "A. Aryani dkk. (2021). Buku Ajar Keperawatan HIV/AIDS. Huriati (2018). Konsep Asuhan Keperawatan HIV/AIDS."
         ]
       },
       {
@@ -288,34 +288,34 @@
         ],
         "references": [
           "Rahayu, F. M. (2023). Penyakit Tidak Menular. Bumi Aksara.",
-          "Gunawan, Y. E. S., et al. (2024). Buku ajar keperawatan medikal bedah untuk mahasiswa DIII keperawatan (Jilid I). PT Nuansa Fajar Cemerlang.",
+          "Gunawan, Y. E. S., Sito, R., Kusumawati, H., Sandagji, F., Abdullah, A., Pangesti, D. N., Deliana, M., Sasmita, Y., Panma, Y., Aziza, W., Khomsah, I. Y., Aminah, S., Medea, G. P., Wulan, S. R., Durjia, S. A., & Tomasao, J. (2024). Buku ajar keperawatan medikal bedah untuk mahasiswa DIII keperawatan (Jilid I). PT Nuansa Fajar Cemerlang.",
           "Krismiadi, D., & Rahmadania, W. O. (2025). Buku Ajar Keperawatan Medikal Bedah: Sistem Pernapasan. Penerbit NEM."
         ]
       },
       {
         "id": "stroke",
-        "name": "Stroke",
+        "name": "STROKE",
         "slug": "stroke",
         "category": "neurologis",
         "definition": "Stroke adalah kondisi ketika aliran darah ke otak berkurang secara mendadak. Hal ini dapat membuat beberapa sel otak kekurangan oksigen dan nutrisi sehingga fungsinya terganggu. Ada dua jenis stroke: Stroke Iskemik (aliran darah terhambat) dan Stroke Hemoragik (pembuluh darah di otak pecah).",
         "symptoms": [
-          "Kelemahan atau sulit menggerakkan satu sisi tubuh",
-          "Sulit berbicara atau memahami pembicaraan",
-          "Penglihatan kabur atau ganda",
-          "Pusing atau kehilangan keseimbangan",
-          "Sakit kepala mendadak, terutama pada stroke hemoragik"
+          "Kelemahan atau sulit menggerakkan satu sisi tubuh.",
+          "Sulit berbicara atau memahami pembicaraan.",
+          "Penglihatan kabur atau ganda.",
+          "Pusing atau kehilangan keseimbangan.",
+          "Sakit kepala mendadak, terutama pada stroke hemoragik."
         ],
         "causes": [
-          "Penyumbatan aliran darah di pembuluh otak",
-          "Pecahnya pembuluh darah otak karena tekanan darah tinggi atau kondisi tertentu pada dinding pembuluh darah"
+          "Penyumbatan aliran darah di pembuluh otak.",
+          "Pecahnya pembuluh darah otak karena tekanan darah tinggi atau kondisi tertentu pada dinding pembuluh darah."
         ],
         "risk_factors": [
-          "Tekanan darah tinggi",
-          "Gula darah tidak terkontrol",
-          "Kadar lemak darah tinggi",
-          "Merokok",
-          "Aktivitas fisik kurang",
-          "Riwayat keluarga dengan kondisi serupa"
+          "Tekanan darah tinggi.",
+          "Gula darah tidak terkontrol.",
+          "Kadar lemak darah tinggi.",
+          "Merokok.",
+          "Aktivitas fisik kurang.",
+          "Riwayat keluarga dengan kondisi serupa."
         ],
         "references": []
       }

@@ -6,7 +6,6 @@ import {
   BookOpen,
   AlertTriangle,
   Users,
-  Activity,
   ArrowRight,
   Heart,
   ShieldCheck,
@@ -86,6 +85,39 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
     return result
   }
 
+  // Helper function untuk format definition
+  const formatDefinition = (definition: Disease['definition']) => {
+    if (typeof definition === 'string') {
+      return [{ category: 'Definisi', content: definition }]
+    }
+
+    if (typeof definition === 'object' && definition !== null) {
+      const result = []
+
+      // Handle HIV/AIDS definition with hiv and aids properties
+      if ('hiv' in definition || 'aids' in definition) {
+        if (definition.hiv) {
+          result.push({ category: 'HIV (Human Immunodeficiency Virus)', content: definition.hiv })
+        }
+        if (definition.aids) {
+          result.push({ category: 'AIDS (Acquired Immunodeficiency Syndrome)', content: definition.aids })
+        }
+      }
+
+      // Handle other object definitions
+      else {
+        Object.entries(definition).forEach(([key, value]) => {
+          const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+          result.push({ category: formattedKey, content: value })
+        })
+      }
+
+      return result
+    }
+
+    return [{ category: 'Definisi', content: 'Tidak tersedia' }]
+  }
+
   // Helper function untuk format risk factors
   const formatRiskFactors = (riskFactors: Disease['risk_factors']) => {
     if (!riskFactors) return null
@@ -116,9 +148,31 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
       ]
     }
 
+    // Check if it's an object with internal/external properties
+    if (riskFactors && typeof riskFactors === 'object' && !Array.isArray(riskFactors)) {
+      const riskObj = riskFactors as Record<string, any>
+      const result = []
+
+      if ('internal' in riskObj && riskObj.internal) {
+        result.push({ category: 'Faktor Risiko Internal', items: riskObj.internal })
+      }
+      if ('external' in riskObj && riskObj.external) {
+        result.push({ category: 'Faktor Risiko Eksternal', items: riskObj.external })
+      }
+      if ('genetic_role' in riskObj && riskObj.genetic_role) {
+        result.push({ category: 'Peran Genetik', items: [riskObj.genetic_role] })
+      }
+
+      // Return result only if we found internal/external properties
+      if (result.length > 0) {
+        return result
+      }
+    }
+
     return null
   }
 
+  const formattedDefinition = formatDefinition(disease.definition)
   const formattedSymptoms = formatSymptoms(disease.symptoms)
   const formattedRiskFactors = formatRiskFactors(disease.risk_factors)
 
@@ -208,73 +262,7 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
               </p>
             </div>
 
-            {/* Enhanced Info Cards */}
-            <div className="grid md:grid-cols-3 gap-6 mb-12">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
-                viewport={{ once: true }}
-                className="group"
-              >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                  <div className="relative bg-white/85 backdrop-blur-lg border border-sky-300 rounded-xl p-6 hover:bg-white hover:shadow-lg hover:shadow-sky-500/20 transition-all duration-300">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Activity className="h-5 w-5 text-blue-400" />
-                      <h4 className="font-semibold text-sky-900">Kategori</h4>
-                    </div>
-                    <p className="text-sky-700 capitalize">{disease.category}</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
-                viewport={{ once: true }}
-                className="group"
-              >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                  <div className="relative bg-white/85 backdrop-blur-lg border border-sky-300 rounded-xl p-6 hover:bg-white hover:shadow-lg hover:shadow-sky-500/20 transition-all duration-300">
-                    <div className="flex items-center gap-3 mb-2">
-                      <AlertTriangle className="h-5 w-5 text-orange-400" />
-                      <h4 className="font-semibold text-sky-900">Total Gejala</h4>
-                    </div>
-                    <p className="text-sky-700">
-                      {formattedSymptoms.reduce((sum, group) => sum + group.items.length, 0)} gejala
-                      teridentifikasi
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
-                viewport={{ once: true }}
-                className="group"
-              >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                  <div className="relative bg-white/85 backdrop-blur-lg border border-sky-300 rounded-xl p-6 hover:bg-white hover:shadow-lg hover:shadow-sky-500/20 transition-all duration-300">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Users className="h-5 w-5 text-purple-400" />
-                      <h4 className="font-semibold text-sky-900">Faktor Risiko</h4>
-                    </div>
-                    <p className="text-sky-700">
-                      {formattedRiskFactors
-                        ? `${formattedRiskFactors.reduce((sum, group) => sum + group.items.length, 0)} faktor risiko`
-                        : 'Berbagai faktor risiko'}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-
+  
             {/* Key Information Summary */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -322,6 +310,90 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
                 </div>
               </div>
             </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Definition Section */}
+      <section id="definition" className="relative pt-20 pb-20">
+        {/* Background Blur */}
+        <div className="absolute inset-0 bg-white/5 backdrop-blur-xl"></div>
+
+        <div className="relative z-10 container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto"
+          >
+            {/* Section Header */}
+            <div className="text-center mb-16">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
+                viewport={{ once: true }}
+                className="flex justify-center mb-6"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
+                  <div className="relative bg-white/80 backdrop-blur-md border border-sky-300 rounded-full p-3">
+                    <BookOpen className="h-8 w-8 text-blue-400" />
+                  </div>
+                </div>
+              </motion.div>
+
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-6">
+                <span className="text-sky-900">Definisi</span>
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                  {disease.name}
+                </span>
+              </h2>
+
+              <p className="text-lg md:text-xl text-sky-700 max-w-3xl mx-auto leading-relaxed">
+                Pahami pengertian dasar dari {disease.name.toLowerCase()} untuk landasan
+                pemahaman yang komprehensif.
+              </p>
+            </div>
+
+            {/* Definition Cards */}
+            <div className="space-y-6">
+              {formattedDefinition.map((defItem, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1, ease: 'easeOut' }}
+                  viewport={{ once: true }}
+                  className="group"
+                >
+                  <div className="relative">
+                    {/* Background Glow */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
+
+                    {/* Card Content */}
+                    <div className="relative bg-white/95 backdrop-blur-lg border border-sky-300 rounded-2xl p-8 hover:bg-white hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-500">
+                      {/* Header */}
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl blur-lg opacity-40"></div>
+                          <div className="relative bg-white/80 backdrop-blur-md border border-sky-300 rounded-xl p-3">
+                            <BookOpen className="h-6 w-6 text-blue-400" />
+                          </div>
+                        </div>
+                        <h3 className="text-2xl font-bold text-sky-900">{defItem.category}</h3>
+                      </div>
+
+                      {/* Definition Content */}
+                      <div className="prose prose-sky max-w-none">
+                        <p className="text-sky-700 text-lg leading-relaxed">{defItem.content}</p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         </div>
       </section>
@@ -561,7 +633,7 @@ export default function EducationDetailPage({ params }: { params: Promise<{ slug
 
                         {/* Risk Factors List */}
                         <div className="grid gap-3">
-                          {riskGroup.items.map((factor, factorIndex) => (
+                          {riskGroup.items.map((factor: string, factorIndex: number) => (
                             <div key={factorIndex} className="flex items-start gap-3">
                               <div className="flex-shrink-0 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center mt-0.5">
                                 <div className="w-2 h-2 bg-white rounded-full"></div>

@@ -59,7 +59,7 @@ export default function Home() {
     {
       icon: Sparkles,
       title: 'Terapi',
-      description: 'Pilihan terapi komplementer untuk meningkatkan kualitas hidup pasien.',
+      description: 'Pilihan terapi komplementer untuk meningkatkan kualitas hidup anda.',
       href: '/terapi',
       color: 'text-primary',
       bgColor: 'bg-primary-cream/60',
@@ -67,7 +67,7 @@ export default function Home() {
     {
       icon: BookOpen,
       title: 'Edukasi',
-      description: 'Materi edukasi 8 penyakit terminal untuk pengetahuan perawat.',
+      description: 'Materi edukasi 8 penyakit terminal untuk pengetahuan anda.',
       href: '/edukasi',
       color: 'text-primary',
       bgColor: 'bg-primary-cream/60',
@@ -308,8 +308,8 @@ export default function Home() {
                       width={600}
                       height={450}
                       className="w-full rounded-xl object-cover"
-                      priority
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      loading="lazy"
                     />
                   </div>
                 </motion.div>
