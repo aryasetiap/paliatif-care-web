@@ -29,10 +29,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
-import { Loader2, Save, User, MapPin } from 'lucide-react'
-import { createPatient, updatePatient, type Patient, type PatientInsert, type PatientUpdate } from '@/lib/patient-management-index'
+import { Loader2, Save, User } from 'lucide-react'
+import {
+  createPatient,
+  updatePatient,
+  type Patient,
+  type PatientInsert,
+  type PatientUpdate,
+} from '@/lib/patient-management-index'
 import { createClient } from '@/lib/supabase'
 
 const patientFormSchema = z.object({
@@ -52,11 +57,7 @@ const patientFormSchema = z.object({
     .max(100, 'Nama fasilitas maksimal 100 karakter')
     .optional()
     .or(z.literal('')),
-  notes: z
-    .string()
-    .max(500, 'Catatan maksimal 500 karakter')
-    .optional()
-    .or(z.literal('')),
+  notes: z.string().max(500, 'Catatan maksimal 500 karakter').optional().or(z.literal('')),
 })
 
 type PatientFormValues = z.infer<typeof patientFormSchema>
@@ -72,7 +73,7 @@ export function PatientFormDialog({
   open,
   onOpenChange,
   patient,
-  onSuccess
+  onSuccess,
 }: PatientFormDialogProps) {
   const [loading, setLoading] = useState(false)
   const isEdit = !!patient
@@ -113,7 +114,9 @@ export function PatientFormDialog({
       } else {
         // Create new patient
         const supabase = createClient()
-        const { data: { user } } = await supabase.auth.getUser()
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
 
         if (!user) {
           toast({
@@ -146,7 +149,6 @@ export function PatientFormDialog({
 
       // Call success callback
       onSuccess?.(savedPatient)
-
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Gagal menyimpan data pasien'
 
@@ -178,8 +180,7 @@ export function PatientFormDialog({
           <DialogDescription>
             {isEdit
               ? 'Perbarui informasi data pasien yang sudah ada.'
-              : 'Tambahkan pasien baru untuk melakukan skrining ESAS.'
-            }
+              : 'Tambahkan pasien baru untuk melakukan skrining ESAS.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -247,46 +248,6 @@ export function PatientFormDialog({
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="facility_name"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      Fasilitas Kesehatan
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Nama rumah sakit atau klinik (opsional)"
-                        {...field}
-                        className="bg-white/90 border-sky-300 focus:border-blue-500"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Catatan Tambahan</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Catatan penting tentang pasien (opsional)"
-                        {...field}
-                        className="bg-white/90 border-sky-300 focus:border-blue-500 resize-none"
-                        rows={3}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
 
             {/* Patient Preview */}
@@ -295,12 +256,18 @@ export function PatientFormDialog({
                 <p className="text-sm font-medium text-sky-900 mb-2">Preview Pasien:</p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                    {form.watch('name').split(' ').map(word => word.charAt(0).toUpperCase()).join('').slice(0, 2)}
+                    {form
+                      .watch('name')
+                      .split(' ')
+                      .map((word) => word.charAt(0).toUpperCase())
+                      .join('')
+                      .slice(0, 2)}
                   </div>
                   <div>
                     <p className="font-medium text-sky-900">{form.watch('name')}</p>
                     <p className="text-sm text-sky-600">
-                      {form.watch('age')} tahun • {form.watch('gender') === 'L' ? 'Laki-laki' : 'Perempuan'}
+                      {form.watch('age')} tahun •{' '}
+                      {form.watch('gender') === 'L' ? 'Laki-laki' : 'Perempuan'}
                       {form.watch('facility_name') && ` • ${form.watch('facility_name')}`}
                     </p>
                   </div>
@@ -348,9 +315,7 @@ export function QuickAddPatient({ onPatientCreated }: QuickAddPatientProps) {
         <User className="h-8 w-8 text-sky-600" />
       </div>
       <h3 className="text-lg font-semibold text-sky-900 mb-2">Tambah Pasien Baru</h3>
-      <p className="text-sky-600 mb-4 text-sm">
-        Tambahkan pasien baru untuk memulai skrining ESAS
-      </p>
+      <p className="text-sky-600 mb-4 text-sm">Tambahkan pasien baru untuk memulai skrining ESAS</p>
       <Button
         onClick={() => setOpen(true)}
         className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white"
@@ -359,11 +324,7 @@ export function QuickAddPatient({ onPatientCreated }: QuickAddPatientProps) {
         Tambah Pasien
       </Button>
 
-      <PatientFormDialog
-        open={open}
-        onOpenChange={setOpen}
-        onSuccess={onPatientCreated}
-      />
+      <PatientFormDialog open={open} onOpenChange={setOpen} onSuccess={onPatientCreated} />
     </div>
   )
 }
