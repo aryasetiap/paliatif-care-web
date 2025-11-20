@@ -204,10 +204,11 @@ export default function Home() {
                   className="space-y-4"
                 >
                   <p className="text-lg md:text-xl text-sky-700 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                    Skrining ini membantu mengenali kebutuhan fisik, emosional, dan sosial Anda
-                    secara menyeluruh. Dengan memahami kondisi secara lebih dalam, Anda dapat
-                    melakukan perawatan yang tepat untuk menjaga kenyamanan dan kualitas hidup
-                    terbaik Anda.
+                    SIHAT adalah Skrining Informasi Holistik Asuhan Paliatif Terpadu dengan
+                    pendekatan holistik yang bertujuan untuk meningkatkan kenyamanan serta
+                    ketenangan pasien dan keluarga dengan cara mengurangi ketidaknyamanan pasien
+                    melalui pengkajian yang tepat, seperti penatalaksanaan nyeri, manajemen gejala,
+                    dan dukungan psikososial maupun spiritual.
                   </p>
                 </motion.div>
               </div>
@@ -310,22 +311,6 @@ export default function Home() {
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       loading="lazy"
                     />
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0, x: -15 }}
-                  animate={
-                    rightSectionInView
-                      ? { opacity: 1, scale: 1, x: 0 }
-                      : { opacity: 0, scale: 0, x: -15 }
-                  }
-                  transition={{ duration: 0.6, delay: 1.3, ease: 'easeOut' }}
-                  className="absolute -bottom-4 -left-4 lg:-bottom-5 lg:-left-5 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-3 shadow-lg border border-purple-400/20"
-                >
-                  <div className="text-center text-white">
-                    <div className="text-xl lg:text-2xl font-bold mb-1">24/7</div>
-                    <div className="text-xs text-purple-100">Support</div>
                   </div>
                 </motion.div>
               </div>
@@ -590,10 +575,11 @@ export default function Home() {
                       Revolusi Perawatan Paliatif Indonesia
                     </h3>
                     <p className="text-sky-700 leading-relaxed">
-                      Skrining ini membantu mengenali kebutuhan fisik, emosional, dan sosial Anda
-                      secara menyeluruh. Dengan memahami kondisi secara lebih dalam, Anda dapat
-                      melakukan perawatan yang tepat untuk menjaga kenyamanan dan kualitas hidup
-                      terbaik Anda.
+                      SIHAT adalah Skrining Informasi Holistik Asuhan Paliatif Terpadu dengan
+                      pendekatan holistik yang bertujuan untuk meningkatkan kenyamanan serta
+                      ketenangan pasien dan keluarga dengan cara mengurangi ketidaknyamanan pasien
+                      melalui pengkajian yang tepat, seperti penatalaksanaan nyeri, manajemen
+                      gejala, dan dukungan psikososial maupun spiritual.
                     </p>
                   </div>
 
