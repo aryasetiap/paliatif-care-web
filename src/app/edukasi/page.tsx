@@ -1,37 +1,37 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Activity, BookOpen, ArrowRight, Stethoscope, Heart, ShieldCheck } from 'lucide-react'
+import { BookOpen, ArrowRight, Stethoscope, Heart, ShieldCheck } from 'lucide-react' // Activity
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import educationData from '@/data/edukasi-penyakit-terminal.json'
-import { EducationData, Disease } from '@/types/edukasi'
-import EducationSearch from '@/components/edukasi/education-search'
+import { EducationData } from '@/types/edukasi' // Disease
+// import EducationSearch from '@/components/edukasi/education-search'
 
 import '@/styles/modern-patterns.css'
 
 export default function EducationPage() {
-  const router = useRouter()
+  // const router = useRouter()
   const leftSectionRef = useRef(null)
   const leftSectionInView = useInView(leftSectionRef, { once: true, amount: 0.3 })
 
-  const handleSearchResultSelect = (disease: Disease) => {
-    // Navigate to the disease detail page
-    router.push(`/edukasi/${disease.slug}`)
-  }
+  // const handleSearchResultSelect = (disease: Disease) => {
+  //   // Navigate to the disease detail page
+  //   router.push(`/edukasi/${disease.slug}`)
+  // }
 
   const data = educationData as EducationData
   const diseases = data.edukasi_penyakit_terminal.diseases
 
-  const stats = [
-    { label: 'Penyakit', value: diseases.length, icon: Stethoscope },
-    { label: 'Kategori', value: new Set(diseases.map((d) => d.category)).size, icon: Activity },
-    { label: 'Materi', value: '24/7', icon: BookOpen },
-  ]
+  // const stats = [
+  //   { label: 'Penyakit', value: diseases.length, icon: Stethoscope },
+  //   { label: 'Kategori', value: new Set(diseases.map((d) => d.category)).size, icon: Activity },
+  //   { label: 'Materi', value: '24/7', icon: BookOpen },
+  // ]
 
   return (
     <div className="relative overflow-hidden">
@@ -176,8 +176,7 @@ export default function EducationPage() {
       </section>
 
       {/* Search Section */}
-      <section className="relative py-16">
-        {/* Background Blur */}
+      {/* <section className="relative py-16">
         <div className="absolute inset-0 bg-white/5 backdrop-blur-xl"></div>
 
         <div className="relative z-10 container mx-auto px-4">
@@ -188,7 +187,6 @@ export default function EducationPage() {
             viewport={{ once: true }}
             className="max-w-2xl mx-auto"
           >
-            {/* Section Header */}
             <div className="text-center mb-8">
               <h2 className="text-2xl md:text-3xl font-bold text-sky-900 mb-4">
                 Cari Informasi Kesehatan
@@ -198,15 +196,13 @@ export default function EducationPage() {
               </p>
             </div>
 
-            {/* Search Component */}
             <EducationSearch onResultSelect={handleSearchResultSelect} className="w-full" />
           </motion.div>
         </div>
-      </section>
+      </section> */}
 
       {/* Statistics Section */}
-      <section className="relative py-20">
-        {/* Background Blur */}
+      {/* <section className="relative py-20">
         <div className="absolute inset-0 bg-white/5 backdrop-blur-xl"></div>
 
         <div className="relative container mx-auto px-4">
@@ -242,7 +238,7 @@ export default function EducationPage() {
             })}
           </motion.div>
         </div>
-      </section>
+      </section> */}
 
       {/* Diseases Grid Section */}
       <section id="diseases" className="relative py-20">
@@ -316,7 +312,9 @@ export default function EducationPage() {
                         {typeof disease.definition === 'string'
                           ? disease.definition
                           : disease.definition && typeof disease.definition === 'object'
-                            ? disease.definition.hiv || disease.definition.aids || Object.values(disease.definition)[0]
+                            ? disease.definition.hiv ||
+                              disease.definition.aids ||
+                              Object.values(disease.definition)[0]
                             : 'Definisi tidak tersedia'}
                       </p>
 

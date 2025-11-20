@@ -254,7 +254,7 @@ export default function Home() {
                     <Button
                       size="lg"
                       className="relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group border-0 overflow-hidden"
-                      onClick={handleScreeningClick}
+                      onClick={() => router.push('/screening/guest')}
                     >
                       <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                       <div className="relative flex items-center">
@@ -399,24 +399,6 @@ export default function Home() {
                       <p className="text-sky-700 leading-relaxed mb-6 text-center">
                         {feature.description}
                       </p>
-
-                      {/* Button */}
-                      <div className="flex justify-center">
-                        <Button
-                          size="sm"
-                          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-md hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 px-5 py-2.5 font-medium border-0"
-                          onClick={() => {
-                            if (feature.title === 'Skrining') {
-                              handleScreeningClick()
-                            } else {
-                              router.push(feature.href)
-                            }
-                          }}
-                        >
-                          <span>Mulai</span>
-                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                        </Button>
-                      </div>
                     </div>
                   </div>
                 </motion.div>
