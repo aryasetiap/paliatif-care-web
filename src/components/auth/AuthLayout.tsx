@@ -110,10 +110,7 @@ export default function AuthLayout({
               </motion.div>
               <div>
                 <h1 className="text-lg sm:text-xl font-bold text-sky-900 group-hover:text-blue-600 transition-colors">
-                  Pelita
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 ml-1">
-                    Care
-                  </span>
+                  Sihat
                 </h1>
               </div>
             </Link>
@@ -157,10 +154,7 @@ export default function AuthLayout({
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-sky-900 mb-1.5 sm:mb-2">
-              Pelita{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
-                Care
-              </span>
+              Sihat
             </h1>
             {subtitle && <p className="text-sky-700 text-sm sm:text-base">{subtitle}</p>}
             <p className="text-sky-700 text-base sm:text-lg font-semibold mt-1.5 sm:mt-2">

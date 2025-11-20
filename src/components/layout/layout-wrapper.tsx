@@ -100,7 +100,7 @@ export function AuthLayout({
                 <div className="h-4 w-4 rounded-full bg-current" />
               </div>
             </div>
-            <h1 className="text-3xl font-bold mb-4">PelitaCare</h1>
+            <h1 className="text-3xl font-bold mb-4">Sihat</h1>
             <p className="text-lg opacity-90">
               Meningkatkan Kualitas Hidup Melalui Perawatan Paliatif yang Tepat
             </p>

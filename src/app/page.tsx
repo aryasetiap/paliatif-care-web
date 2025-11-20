@@ -192,9 +192,8 @@ export default function Home() {
                   transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
                   className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight"
                 >
-                  <span className="text-sky-900">Pelita</span>
-                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                    Care
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                    Sihat
                   </span>
                 </motion.h1>{' '}
                 {/* Remaining Stats Cards */}
@@ -495,7 +494,7 @@ export default function Home() {
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-6">
                 <span className="text-sky-900">Tentang</span>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
-                  Pelita Care
+                  Sihat
                 </span>
               </h2>
               <p className="text-lg md:text-xl text-sky-700 max-w-3xl mx-auto leading-relaxed">

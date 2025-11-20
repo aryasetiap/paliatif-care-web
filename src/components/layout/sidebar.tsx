@@ -214,7 +214,7 @@ export function Sidebar({ className, collapsed = false, onToggle }: SidebarProps
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Activity className="h-4 w-4" />
             </div>
-            <span className="font-bold">PelitaCare</span>
+            <span className="font-bold">Sihat</span>
           </div>
         )}
         <Button
@@ -274,7 +274,7 @@ export function Sidebar({ className, collapsed = false, onToggle }: SidebarProps
               </p>
             </div>
             <div className="text-center text-xs text-muted-foreground">
-              <p>PelitaCare v1.0.0</p>
+              <p>Sihat v1.0.0</p>
               <p>© 2025 DuaKode Labs</p>
             </div>
           </div>
@@ -287,7 +287,7 @@ export function Sidebar({ className, collapsed = false, onToggle }: SidebarProps
                 </div>
               </TooltipTrigger>
               <TooltipContent side="right">
-                <p className="text-xs">PelitaCare v1.0.0</p>
+                <p className="text-xs">Sihat v1.0.0</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

@@ -81,7 +81,7 @@ export function Header({ user }: HeaderProps) {
             </motion.div>
             <div className="hidden sm:block">
               <span className="font-bold text-lg text-gradient-primary block leading-tight">
-                PelitaCare
+                Sihat
               </span>
               <span className="text-xs text-muted-foreground">Sistem Paliatif Terpadu</span>
             </div>
@@ -259,7 +259,7 @@ function MobileNav({ navigation }: MobileNavProps) {
         />
         <div>
           <span className="font-bold text-lg text-gradient-primary block leading-tight">
-            PelitaCare
+            Sihat
           </span>
           <span className="text-xs text-muted-foreground">Sistem Paliatif Terpadu</span>
         </div>

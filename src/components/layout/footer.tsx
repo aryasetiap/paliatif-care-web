@@ -24,7 +24,7 @@ const footerSections = {
   ],
   perusahaan: [
     {
-      name: 'Tentang PelitaCare',
+      name: 'Tentang Sihat',
       href: '/about',
       description: 'Misi dan visi kami',
     },
@@ -91,10 +91,7 @@ export function Footer() {
                 </div>
               </div>
               <div>
-                <h3 className="text-3xl font-bold text-white tracking-tight">Pelita</h3>
-                <p className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 font-bold text-lg">
-                  Care
-                </p>
+                <h3 className="text-3xl font-bold text-white tracking-tight">Sihat</h3>
               </div>
             </div>
 
@@ -117,10 +114,10 @@ export function Footer() {
                 <div className="flex-1">
                   <div className="text-white font-medium text-sm mb-1">Email</div>
                   <a
-                    href="mailto:info@peliacare.id"
+                    href="mailto:info@sihat.id"
                     className="text-white/60 hover:text-sky-300 transition-colors duration-200 text-sm"
                   >
-                    info@peliacare.id
+                    info@sihat.id
                   </a>
                 </div>
               </div>
@@ -268,7 +265,7 @@ export function Footer() {
               Keperawatan Paliatif 2025 - Jurusan Keperawatan KI TK3 - Poltekkes Kemenkes Tanjung
               Karang
             </p>
-            <p className="text-white/50 text-xs mt-2">© 2025 PelitaCare. All rights reserved.</p>
+            <p className="text-white/50 text-xs mt-2">© 2025 Sihat. All rights reserved.</p>
           </motion.div>
         </div>
       </div>
