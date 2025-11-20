@@ -98,7 +98,6 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
           description: 'Screening ESAS berhasil disimpan. Anda akan diarahkan ke hasil.',
         })
       }
-
     } catch (error) {
       toast({
         title: 'Error',
@@ -157,7 +156,7 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
       </div>
 
       {/* Guest Information Alert */}
-      {showDisclaimer && (
+      {/* {showDisclaimer && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -187,7 +186,7 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
             </AlertDescription>
           </Alert>
         </motion.div>
-      )}
+      )} */}
 
       <Form {...form}>
         <form
@@ -267,7 +266,7 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
           </Card>
 
           {/* Live Risk Indicator */}
-          <Card className={`border-2 ${getRiskColor()}`}>
+          {/* <Card className={`border-2 ${getRiskColor()}`}>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -280,7 +279,7 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
                 <Badge className={`${getRiskColor()} text-lg px-4 py-2`}>{getRiskLevel()}</Badge>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           {/* ESAS Questions */}
           <div className="space-y-6">
@@ -318,14 +317,14 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
           </div>
 
           {/* Final Reminder */}
-          <Alert className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
+          {/* <Alert className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
             <InfoIcon className="h-4 w-4 text-yellow-600" />
             <AlertDescription className="text-yellow-800">
               <strong>Catatan Penting:</strong> Screening ESAS adalah alat evaluasi gejala dan bukan
               pengganti diagnosis medis profesional. Jika Anda mengalami gejala berat atau kondisi
               darurat, segera hubungi fasilitas kesehatan terdekat.
             </AlertDescription>
-          </Alert>
+          </Alert> */}
 
           {/* Action Buttons */}
           <div className="flex justify-center gap-4 pt-6">
@@ -363,7 +362,10 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
                     return
                   }
 
-                  if (!currentValues.patient_info?.patient_age || currentValues.patient_info.patient_age <= 0) {
+                  if (
+                    !currentValues.patient_info?.patient_age ||
+                    currentValues.patient_info.patient_age <= 0
+                  ) {
                     toast({
                       title: 'Validasi Error',
                       description: 'Usia harus diisi dengan benar',
@@ -374,11 +376,11 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
 
                   // Trigger submission manually
                   await handleSubmit(currentValues as any)
-
                 } catch (error) {
                   toast({
                     title: 'Error',
-                    description: error instanceof Error ? error.message : 'Gagal memproses screening',
+                    description:
+                      error instanceof Error ? error.message : 'Gagal memproses screening',
                     variant: 'destructive',
                   })
                 }

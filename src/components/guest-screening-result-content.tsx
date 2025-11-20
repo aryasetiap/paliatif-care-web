@@ -316,7 +316,7 @@ export default function ESASScreeningResultContent({
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-2 print:hidden">
-              <div className="flex gap-2">
+              {/* <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -344,7 +344,7 @@ export default function ESASScreeningResultContent({
                   <Share2 className="w-4 h-4" />
                   Bagikan
                 </Button>
-              </div>
+              </div> */}
               <Button
                 size="sm"
                 onClick={() =>
@@ -457,7 +457,7 @@ export default function ESASScreeningResultContent({
         </motion.div>
 
         {/* ESAS Questions Results */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
@@ -495,7 +495,7 @@ export default function ESASScreeningResultContent({
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </motion.div> */}
 
         {/* Recommendations */}
         {recommendation && (
@@ -547,7 +547,7 @@ export default function ESASScreeningResultContent({
         )}
 
         {/* Disclaimer */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
@@ -562,18 +562,18 @@ export default function ESASScreeningResultContent({
                     Hasil screening ini merupakan alat bantu penilaian awal dan{' '}
                     <strong>bukan pengganti diagnosis medis profesional</strong>.
                   </p>
-                  {/* <p className="font-medium">⚠️ Segera hubungi fasilitas kesehatan jika:</p>
+                  <p className="font-medium">⚠️ Segera hubungi fasilitas kesehatan jika:</p>
                   <ul className="text-left max-w-md mx-auto space-y-1">
                     <li>• Skor gejala ≥ 7 (keluhan berat)</li>
                     <li>• Mengalami sesak napas yang berat</li>
                     <li>• Nyeri yang tidak tertolong dengan obat</li>
                     <li>• Perubahan kondisi yang mendadak</li>
-                  </ul> */}
+                  </ul>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </motion.div> */}
 
         {/* Footer Actions */}
         <motion.div

@@ -50,7 +50,6 @@ export default function PatientDashboardPage() {
     if (!user) return
 
     try {
-
       const supabase = createClient()
 
       // Load patient's screenings - simpler query to avoid encoding issues
@@ -60,17 +59,17 @@ export default function PatientDashboardPage() {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
 
-
       // Calculate stats
       const now = new Date()
       const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-      const thisMonthScreenings = screeningsData?.filter(s =>
-        new Date(s.created_at) >= firstDayOfMonth
-      ).length || 0
+      const thisMonthScreenings =
+        screeningsData?.filter((s) => new Date(s.created_at) >= firstDayOfMonth).length || 0
 
-      const averageScore = screeningsData && screeningsData.length > 0
-        ? screeningsData.reduce((sum, s) => sum + (s.highest_score || 0), 0) / screeningsData.length
-        : 0
+      const averageScore =
+        screeningsData && screeningsData.length > 0
+          ? screeningsData.reduce((sum, s) => sum + (s.highest_score || 0), 0) /
+            screeningsData.length
+          : 0
 
       setStats({
         totalScreenings: screeningsData?.length || 0,
@@ -163,7 +162,7 @@ export default function PatientDashboardPage() {
               </h1>
               <p className="text-sky-600">Dashboard Paliatif Care Anda</p>
             </div>
-            <div className="mt-4 md:mt-0">
+            {/* <div className="mt-4 md:mt-0">
               <Button
                 asChild
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
@@ -173,12 +172,12 @@ export default function PatientDashboardPage() {
                   Screening Baru
                 </Link>
               </Button>
-            </div>
+            </div> */}
           </div>
         </motion.div>
 
         {/* Statistics Cards */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
@@ -235,10 +234,9 @@ export default function PatientDashboardPage() {
                       ? new Date(stats.lastScreeningDate).toLocaleDateString('id-ID', {
                           day: 'numeric',
                           month: 'short',
-                          year: 'numeric'
+                          year: 'numeric',
                         })
-                      : 'Belum ada'
-                    }
+                      : 'Belum ada'}
                   </p>
                   <p className="text-xs text-sky-500 mt-1">Tanggal terakhir</p>
                 </div>
@@ -246,14 +244,14 @@ export default function PatientDashboardPage() {
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </motion.div> */}
 
         {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"
+          className="grid grid-cols-1 mb-8" // mt-4 md:mt-0
         >
           <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="text-center">
@@ -273,7 +271,7 @@ export default function PatientDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
+          {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="text-center">
               <div className="mx-auto mb-2 p-3 bg-green-100 rounded-full group-hover:bg-green-200 transition-colors">
                 <User className="h-6 w-6 text-green-600" />
@@ -293,7 +291,7 @@ export default function PatientDashboardPage() {
                 </Link>
               </Button>
             </CardContent>
-          </Card>
+          </Card> */}
         </motion.div>
 
         {/* Recent Screenings */}
@@ -308,23 +306,12 @@ export default function PatientDashboardPage() {
                 <FileText className="mr-2 h-5 w-5 text-sky-600" />
                 Riwayat Screening Saya
               </CardTitle>
-              <CardDescription>Daftar semua screening yang telah Anda lakukan. Klik pada item untuk melihat detail hasil.</CardDescription>
+              <CardDescription>
+                Daftar semua screening yang telah Anda lakukan. Klik pada item untuk melihat detail
+                hasil.
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              {screenings.length > 0 && (
-                <div className="flex justify-end mb-4">
-                  <Button
-                    variant="outline"
-                    asChild
-                    className="border-sky-300 text-sky-700 hover:bg-sky-50"
-                  >
-                    <Link href="/pasien/screenings">
-                      <FileText className="mr-2 h-4 w-4" />
-                      Lihat Semua Hasil
-                    </Link>
-                  </Button>
-                </div>
-              )}
               <div className="space-y-4">
                 {screenings.length === 0 ? (
                   <div className="text-center py-8">
@@ -349,7 +336,9 @@ export default function PatientDashboardPage() {
                           <div className="w-3 h-3 bg-blue-600 rounded-full flex-shrink-0 group-hover:bg-blue-700 transition-colors"></div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-sky-900 group-hover:text-blue-800 transition-colors">
-                              {screening.screening_type === 'initial' ? 'Screening Awal' : 'Screening Follow-up'}
+                              {screening.screening_type === 'initial'
+                                ? 'Screening Awal'
+                                : 'Screening Follow-up'}
                             </p>
                             <p className="text-xs text-sky-600">
                               {new Date(screening.created_at).toLocaleString('id-ID', {
@@ -380,6 +369,20 @@ export default function PatientDashboardPage() {
                   ))
                 )}
               </div>
+              {/* {screenings.length > 0 && (
+                <div className="flex justify-end mt-4">
+                  <Button
+                    variant="outline"
+                    asChild
+                    className="border-sky-300 text-sky-700 hover:bg-sky-50"
+                  >
+                    <Link href="/pasien/screenings">
+                      <FileText className="mr-2 h-4 w-4" />
+                      Lihat Semua Hasil
+                    </Link>
+                  </Button>
+                </div>
+              )} */}
             </CardContent>
           </Card>
         </motion.div>

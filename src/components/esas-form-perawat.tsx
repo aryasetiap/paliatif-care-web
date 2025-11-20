@@ -236,7 +236,7 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-5xl mx-auto p-6"
+      className="max-w-5xl mx-auto p-6 mt-16"
     >
       {/* Header untuk Perawat */}
       <div className="mb-6 text-center">
@@ -466,7 +466,7 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
                       )}
                     />
 
-                    <FormField
+                    {/* <FormField
                       control={form.control}
                       name="patient_info.facility_name"
                       render={({ field }) => (
@@ -482,13 +482,13 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
                           <FormMessage />
                         </FormItem>
                       )}
-                    />
+                    /> */}
                   </div>
                 </TabsContent>
               </Tabs>
 
               {/* Screening Type */}
-              <div className="mt-4">
+              {/* <div className="mt-4">
                 <FormField
                   control={form.control}
                   name="patient_info.screening_type"
@@ -510,7 +510,7 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
                     </FormItem>
                   )}
                 />
-              </div>
+              </div> */}
             </CardContent>
           </Card>
 

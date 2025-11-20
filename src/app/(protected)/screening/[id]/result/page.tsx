@@ -107,31 +107,42 @@ function normalizeScreeningData(data: any): ScreeningData {
         name: 'Tidak diketahui',
         age: 0,
         gender: 'L',
-        facility_name: ''
+        facility_name: '',
       },
       questions: data.esas_data?.questions || {
-        '1': { score: data.esas_data?.pain || 0, text: 'Nyeri', description: 'Nyeri ringan/sedang/berat' },
-        '2': { score: 0, text: 'Lelah/Kekurangan Tenaga', description: 'Kelelahan/Intoleransi Aktivitas' },
+        '1': {
+          score: data.esas_data?.pain || 0,
+          text: 'Nyeri',
+          description: 'Nyeri ringan/sedang/berat',
+        },
+        '2': {
+          score: 0,
+          text: 'Lelah/Kekurangan Tenaga',
+          description: 'Kelelahan/Intoleransi Aktivitas',
+        },
         '3': { score: 0, text: 'Kantuk/Gangguan Tidur', description: 'Gangguan Pola Tidur' },
         '4': { score: data.esas_data?.nausea || 0, text: 'Mual/Nausea', description: 'Nausea' },
         '5': { score: 0, text: 'Nafsu Makan', description: 'Resiko Defisit Nutrisi' },
         '6': { score: 0, text: 'Sesak/Pola Napas', description: 'Pola Napas Tidak Efektif' },
         '7': { score: 0, text: 'Sedih/Keputusasaan', description: 'Keputusasaan/Depresi' },
         '8': { score: 0, text: 'Cemas/Ansietas', description: 'Ansietas' },
-        '9': { score: 0, text: 'Perasaan Keseluruhan', description: 'Koping Keluarga' }
+        '9': { score: 0, text: 'Perasaan Keseluruhan', description: 'Koping Keluarga' },
       },
-      ...data.esas_data
+      ...data.esas_data,
     },
     recommendation: {
       diagnosis: data.recommendation?.diagnosis || 'Nyeri kronis',
-      intervention_steps: data.recommendation?.intervention_steps || data.recommendation?.actions || ['Monitor tingkat nyeri'],
-      references: data.recommendation?.references || ['Assessment and Management of Cancer Pain, WHO Guidelines'],
+      intervention_steps: data.recommendation?.intervention_steps ||
+        data.recommendation?.actions || ['Monitor tingkat nyeri'],
+      references: data.recommendation?.references || [
+        'Assessment and Management of Cancer Pain, WHO Guidelines',
+      ],
       action_required: data.recommendation?.action_required || 'Perlu intervensi keperawatan',
       priority: data.recommendation?.priority || 2,
       therapy_type: data.recommendation?.therapy_type || 'Terapi Relaksasi',
       frequency: data.recommendation?.frequency || '2 kali sehari',
-      ...data.recommendation
-    }
+      ...data.recommendation,
+    },
   }
 }
 
@@ -246,7 +257,7 @@ export default function ScreeningResultPage() {
                 Edmonton Symptom Assessment System - Hasil Penilaian Gejala Pasien Paliatif
               </p>
             </div>
-            <div className="flex gap-2">
+            {/* <div className="flex gap-2">
               <Button
                 variant="outline"
                 onClick={() => router.push('/screening/new')}
@@ -254,7 +265,7 @@ export default function ScreeningResultPage() {
               >
                 Screening Baru
               </Button>
-            </div>
+            </div> */}
           </div>
         </motion.div>
 
@@ -279,7 +290,8 @@ export default function ScreeningResultPage() {
                 <div>
                   <label className="text-sm font-medium text-sky-600">Usia</label>
                   <p className="text-lg font-semibold text-sky-900">
-                    {screeningData.esas_data?.identity?.age && screeningData.esas_data.identity.age > 0
+                    {screeningData.esas_data?.identity?.age &&
+                    screeningData.esas_data.identity.age > 0
                       ? `${screeningData.esas_data.identity.age} tahun`
                       : 'Data tidak lengkap'}
                   </p>
@@ -318,33 +330,41 @@ export default function ScreeningResultPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6"
+          className="grid grid-cols-1 mb-6" // lg:grid-cols-3 gap-6
         >
-          <Card className="lg:col-span-1 bg-white/80 backdrop-blur-md border-sky-200">
-            <CardHeader>
-              <CardTitle className="text-xl text-sky-900">Hasil Evaluasi</CardTitle>
+          <Card className="lg:col-span-1 bg-white/90 backdrop-blur-md border border-sky-200 shadow-md rounded-xl transition-all duration-300 hover:shadow-lg">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xl font-bold text-sky-900 flex items-center gap-2">
+                <Heart className="w-5 h-5 text-red-400" />
+                Hasil Evaluasi
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-sky-600">Skor Tertinggi</label>
-                <div className="flex items-center gap-2 mt-1">
-                  <span
-                    className={`text-3xl font-bold ${getScoreColor(screeningData.highest_score).split(' ')[0]}`}
-                  >
-                    {screeningData.highest_score}
-                  </span>
-                  <span className="text-sm text-sky-600">/ 10</span>
+            <CardContent className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <label className="text-sm font-medium text-sky-600">Skor Tertinggi</label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span
+                      className={`text-4xl font-extrabold ${getScoreColor(screeningData.highest_score).split(' ')[0]} drop-shadow`}
+                    >
+                      {screeningData.highest_score}
+                    </span>
+                    <span className="text-base text-sky-600 font-semibold">/ 10</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-sky-600">Tingkat Risiko</label>
+                  <div className="mt-1">
+                    <Badge
+                      className={`px-3 py-1 rounded-full text-base font-semibold ${riskConfig.color} border`}
+                    >
+                      {riskConfig.label}
+                    </Badge>
+                  </div>
                 </div>
               </div>
-
-              <div>
-                <label className="text-sm font-medium text-sky-600">Tingkat Risiko</label>
-                <div className="mt-1">
-                  <Badge className={`${riskConfig.color} border`}>{riskConfig.label}</Badge>
-                </div>
-              </div>
-              {/* 
-              <div>
+              {/* Prioritas, uncomment if needed */}
+              {/* <div>
                 <label className="text-sm font-medium text-sky-600">Prioritas</label>
                 <p className="text-lg font-semibold text-sky-900">
                   Prioritas {screeningData.recommendation.priority}
@@ -353,7 +373,7 @@ export default function ScreeningResultPage() {
             </CardContent>
           </Card>
 
-          <Card className="lg:col-span-2 bg-white/80 backdrop-blur-md border-sky-200">
+          {/* <Card className="lg:col-span-2 bg-white/80 backdrop-blur-md border-sky-200">
             <CardHeader>
               <CardTitle className="text-xl text-sky-900">Rekomendasi Tindakan</CardTitle>
             </CardHeader>
@@ -362,12 +382,10 @@ export default function ScreeningResultPage() {
                 <AlertTitle className="text-lg font-semibold">
                   {screeningData.recommendation.action_required || 'Perlu evaluasi lebih lanjut'}
                 </AlertTitle>
-                <AlertDescription className="mt-2">
-                  {riskConfig.description}
-                </AlertDescription>
+                <AlertDescription className="mt-2">{riskConfig.description}</AlertDescription>
               </Alert>
             </CardContent>
-          </Card>
+          </Card> */}
         </motion.div>
 
         {/* Diagnosis and Intervention */}
@@ -375,9 +393,9 @@ export default function ScreeningResultPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"
+          className="grid grid-cols-1 mb-6" // lg:grid-cols-2 gap-6
         >
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200">
+          {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200">
             <CardHeader>
               <CardTitle className="text-xl text-sky-900">Diagnosa Keperawatan</CardTitle>
             </CardHeader>
@@ -404,45 +422,66 @@ export default function ScreeningResultPage() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200">
+          <Card className="bg-white/90 backdrop-blur-md border border-sky-200 shadow-md rounded-xl transition-all duration-300 hover:shadow-lg">
             <CardHeader>
-              <CardTitle className="text-xl text-sky-900">Intervensi Keperawatan</CardTitle>
+              <CardTitle className="text-xl font-bold text-sky-900 flex items-center gap-2">
+                <Heart className="w-5 h-5 text-blue-400" />
+                Intervensi Keperawatan
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-[200px]">
-                {screeningData.recommendation?.intervention_steps && screeningData.recommendation.intervention_steps.length > 0 ? (
-                  <ol className="space-y-3">
+              <ScrollArea className="max-h-[260px]">
+                {screeningData.recommendation?.intervention_steps &&
+                screeningData.recommendation.intervention_steps.length > 0 ? (
+                  <ol className="space-y-4">
                     {screeningData.recommendation.intervention_steps.map((step, index) => (
-                      <li key={index} className="flex gap-3">
-                        <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-xs font-medium">
+                      <li key={index} className="flex items-start gap-3">
+                        <span className="flex-shrink-0 w-7 h-7 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-base font-semibold shadow-sm border border-blue-200">
                           {index + 1}
                         </span>
-                        <span className="text-sm text-sky-700 leading-relaxed">{step}</span>
+                        <span className="text-sm md:text-base text-sky-800 leading-relaxed font-medium">
+                          {step}
+                        </span>
                       </li>
                     ))}
                   </ol>
-                ) : screeningData.recommendation?.actions && screeningData.recommendation.actions.length > 0 ? (
-                  <ol className="space-y-3">
+                ) : screeningData.recommendation?.actions &&
+                  screeningData.recommendation.actions.length > 0 ? (
+                  <ol className="space-y-4">
                     {screeningData.recommendation.actions.map((step, index) => (
-                      <li key={index} className="flex gap-3">
-                        <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-xs font-medium">
+                      <li key={index} className="flex items-start gap-3">
+                        <span className="flex-shrink-0 w-7 h-7 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-base font-semibold shadow-sm border border-blue-200">
                           {index + 1}
                         </span>
-                        <span className="text-sm text-sky-700 leading-relaxed">{step}</span>
+                        <span className="text-sm md:text-base text-sky-800 leading-relaxed font-medium">
+                          {step}
+                        </span>
                       </li>
                     ))}
                   </ol>
                 ) : (
-                  <div className="text-sm text-sky-600 italic">
+                  <div className="text-sm md:text-base text-sky-600 italic">
                     <p className="mb-2">Intervensi tidak tersedia dalam data</p>
                     <p className="text-xs text-sky-500">Rekomendasi default:</p>
-                    <ul className="mt-2 space-y-1">
-                      <li>• Monitor tingkat nyeri pasien</li>
-                      <li>• Lakukan asesmen nyeri secara berkala</li>
-                      <li>• Berikan edukasi tentang manajemen nyeri</li>
-                      <li>• Dokumentasikan respon terhadap intervensi</li>
+                    <ul className="mt-2 space-y-2">
+                      <li className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-blue-300 rounded-full inline-block" />
+                        Monitor tingkat nyeri pasien
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-blue-300 rounded-full inline-block" />
+                        Lakukan asesmen nyeri secara berkala
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-blue-300 rounded-full inline-block" />
+                        Berikan edukasi tentang manajemen nyeri
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-blue-300 rounded-full inline-block" />
+                        Dokumentasikan respon terhadap intervensi
+                      </li>
                     </ul>
                   </div>
                 )}
@@ -452,7 +491,7 @@ export default function ScreeningResultPage() {
         </motion.div>
 
         {/* Detailed ESAS Scores */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
@@ -511,10 +550,10 @@ export default function ScreeningResultPage() {
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </motion.div> */}
 
         {/* Scientific References */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
@@ -528,7 +567,8 @@ export default function ScreeningResultPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {screeningData.recommendation?.references && screeningData.recommendation.references.length > 0 ? (
+                {screeningData.recommendation?.references &&
+                screeningData.recommendation.references.length > 0 ? (
                   screeningData.recommendation.references.map((reference, index) => (
                     <div key={index} className="p-3 bg-sky-50 rounded-lg border border-sky-100">
                       <p className="text-sm text-sky-700 italic">{reference}</p>
@@ -540,13 +580,20 @@ export default function ScreeningResultPage() {
                     <p className="text-xs text-sky-500">Referensi standar:</p>
                     <div className="mt-2 space-y-2">
                       <div className="p-3 bg-sky-50 rounded-lg border border-sky-100">
-                        <p className="text-sm text-sky-700 italic">Assessment and Management of Cancer Pain, WHO Guidelines</p>
+                        <p className="text-sm text-sky-700 italic">
+                          Assessment and Management of Cancer Pain, WHO Guidelines
+                        </p>
                       </div>
                       <div className="p-3 bg-sky-50 rounded-lg border border-sky-100">
-                        <p className="text-sm text-sky-700 italic">Edmonton Symptom Assessment System (ESAS) - Canadian Palliative Care Association</p>
+                        <p className="text-sm text-sky-700 italic">
+                          Edmonton Symptom Assessment System (ESAS) - Canadian Palliative Care
+                          Association
+                        </p>
                       </div>
                       <div className="p-3 bg-sky-50 rounded-lg border border-sky-100">
-                        <p className="text-sm text-sky-700 italic">Nursing Interventions for Pain Management, NANDA International</p>
+                        <p className="text-sm text-sky-700 italic">
+                          Nursing Interventions for Pain Management, NANDA International
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -554,7 +601,7 @@ export default function ScreeningResultPage() {
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </motion.div> */}
 
         {/* Educational Resources Section */}
         <motion.div
@@ -666,7 +713,7 @@ export default function ScreeningResultPage() {
                   </motion.div>
                 ))}
               </div>
-              <div className="mt-6 text-center">
+              {/* <div className="mt-6 text-center">
                 <Button
                   variant="outline"
                   onClick={() => router.push('/edukasi')}
@@ -688,7 +735,7 @@ export default function ScreeningResultPage() {
                     />
                   </svg>
                 </Button>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
         </motion.div>
@@ -716,7 +763,7 @@ export default function ScreeningResultPage() {
             Kembali ke Dashboard
           </Button>
 
-          <Button
+          {/* <Button
             onClick={() => router.push('/pasien/screenings')}
             className="flex items-center gap-2 border-sky-300 text-sky-700 hover:bg-sky-50"
           >
@@ -737,7 +784,7 @@ export default function ScreeningResultPage() {
               />
             </svg>
             Screening Baru
-          </Button>
+          </Button> */}
         </motion.div>
       </div>
 

@@ -220,7 +220,8 @@ export default function HeaderNav() {
                   }`}
                   onClick={handleLogout}
                 >
-                  <LogOut className="h-4 w-4" />
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
                 </Button>
               </>
             ) : (
@@ -373,15 +374,16 @@ export default function HeaderNav() {
                     {/* Logout Button */}
                     <Button
                       variant="ghost"
-                      className="w-full flex items-center justify-center px-4 py-3 text-sm font-medium text-red-700 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors border border-red-300"
+                      className="w-full space-x-2 flex items-center justify-start px-4 py-6 text-sm font-medium text-red-700 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors border border-red-300"
                       onClick={() => {
                         handleLogout()
                         setIsMenuOpen(false)
                       }}
                     >
-                      <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/20 border border-red-400/30 mr-3">
+                      <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/20 border border-red-400/30">
                         <LogOut className="h-4 w-4 text-red-400" />
                       </div>
+                      <span>Logout</span>
                     </Button>
                   </>
                 ) : (

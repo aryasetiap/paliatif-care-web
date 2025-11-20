@@ -423,7 +423,7 @@ export default function PatientsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
           >
             <Card className="bg-white/80 backdrop-blur-md border-sky-200">
               <CardContent className="p-6">
@@ -461,7 +461,7 @@ export default function PatientsPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white/80 backdrop-blur-md border-sky-200">
+            {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -473,12 +473,12 @@ export default function PatientsPage() {
                   <AlertTriangle className="h-8 w-8 text-red-500" />
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </motion.div>
         )}
 
         {/* Search and Filters */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -579,7 +579,7 @@ export default function PatientsPage() {
               </Button>
             </div>
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {/* Patients Display */}
         <motion.div
@@ -594,7 +594,7 @@ export default function PatientsPage() {
                 <CardTitle className="text-xl text-sky-900">
                   Daftar Pasien ({total} pasien)
                 </CardTitle>
-                <div className="flex items-center gap-4">
+                {/* <div className="flex items-center gap-4">
                   <div className="text-sm text-sky-600">
                     Tampilan: {viewMode === 'table' ? 'Tabel' : 'Kartu'}
                   </div>
@@ -607,7 +607,7 @@ export default function PatientsPage() {
                           : `Sampai ${new Date(dateTo).toLocaleDateString('id-ID')}`}
                     </div>
                   )}
-                </div>
+                </div> */}
               </div>
             </CardHeader>
             <CardContent>

@@ -55,8 +55,12 @@ export default function DashboardPage() {
 
       // Load screenings this month
       const now = new Date()
-      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
-      const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10)
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+        .toISOString()
+        .slice(0, 10)
+      const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+        .toISOString()
+        .slice(0, 10)
       const { count: screeningsThisMonth } = await supabase
         .from('screenings')
         .select('*', { count: 'exact', head: true })
@@ -152,7 +156,7 @@ export default function DashboardPage() {
               <h1 className="text-3xl font-bold text-sky-900 mb-2">Dashboard</h1>
               <p className="text-sky-600">Sistem Edukasi & Skrining Paliatif Care</p>
             </div>
-            <div className="mt-4 md:mt-0">
+            {/* <div className="mt-4 md:mt-0">
               <Button
                 asChild
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
@@ -162,7 +166,7 @@ export default function DashboardPage() {
                   Screening Baru
                 </Link>
               </Button>
-            </div>
+            </div> */}
           </div>
         </motion.div>
 
@@ -237,7 +241,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" // lg:grid-cols-3
         >
           <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="text-center">
@@ -279,7 +283,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
+          {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="text-center">
               <div className="mx-auto mb-2 p-3 bg-purple-100 rounded-full group-hover:bg-purple-200 transition-colors">
                 <BookOpen className="h-6 w-6 text-purple-600" />
@@ -299,7 +303,7 @@ export default function DashboardPage() {
                 </Link>
               </Button>
             </CardContent>
-          </Card>
+          </Card> */}
 
           {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="text-center">
@@ -321,7 +325,7 @@ export default function DashboardPage() {
           </Card> */}
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1">
           {/* Recent Activities */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -369,7 +373,7 @@ export default function DashboardPage() {
           </motion.div>
 
           {/* High Risk Patients */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -418,7 +422,7 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
 

@@ -13,15 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  FileText,
-  Search,
-  Filter,
-  ArrowLeft,
-  Calendar,
-  Activity,
-  ChevronRight,
-} from 'lucide-react'
+import { FileText, Search, Filter, ArrowLeft, Calendar, Activity, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
@@ -82,16 +74,17 @@ export default function PatientScreeningsPage() {
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(screening =>
-        screening.screening_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        screening.risk_level?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        new Date(screening.created_at).toLocaleDateString('id-ID').includes(searchTerm)
+      filtered = filtered.filter(
+        (screening) =>
+          screening.screening_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          screening.risk_level?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          new Date(screening.created_at).toLocaleDateString('id-ID').includes(searchTerm)
       )
     }
 
     // Apply risk level filter
     if (riskLevelFilter !== 'all') {
-      filtered = filtered.filter(screening => screening.risk_level === riskLevelFilter)
+      filtered = filtered.filter((screening) => screening.risk_level === riskLevelFilter)
     }
 
     // Apply sorting
@@ -176,7 +169,7 @@ export default function PatientScreeningsPage() {
               Kembali ke Dashboard
             </Button>
             <div className="flex-1"></div>
-            <Button
+            {/* <Button
               asChild
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
             >
@@ -184,7 +177,7 @@ export default function PatientScreeningsPage() {
                 <Activity className="mr-2 h-4 w-4" />
                 Screening Baru
               </Link>
-            </Button>
+            </Button> */}
           </div>
 
           <div className="text-center">
@@ -196,7 +189,7 @@ export default function PatientScreeningsPage() {
         </motion.div>
 
         {/* Filters */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
@@ -254,7 +247,7 @@ export default function PatientScreeningsPage() {
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </motion.div> */}
 
         {/* Screenings List */}
         <motion.div
@@ -278,13 +271,14 @@ export default function PatientScreeningsPage() {
                   <div className="text-center py-12">
                     <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      {screenings.length === 0 ? 'Belum ada screening' : 'Tidak ada hasil yang cocok'}
+                      {screenings.length === 0
+                        ? 'Belum ada screening'
+                        : 'Tidak ada hasil yang cocok'}
                     </h3>
                     <p className="text-gray-600 mb-4">
                       {screenings.length === 0
                         ? 'Anda belum pernah melakukan screening. Mulai screening pertama Anda sekarang.'
-                        : 'Coba ubah filter atau kata kunci pencarian'
-                      }
+                        : 'Coba ubah filter atau kata kunci pencarian'}
                     </p>
                     {screenings.length === 0 && (
                       <Button asChild>
@@ -303,16 +297,15 @@ export default function PatientScreeningsPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: 0.05 * index }}
                     >
-                      <Link
-                        href={`/screening/${screening.id}/result`}
-                        className="block"
-                      >
+                      <Link href={`/screening/${screening.id}/result`} className="block">
                         <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all duration-200 hover:shadow-md group cursor-pointer">
                           <div className="flex items-center space-x-4">
                             <div className="w-3 h-3 bg-blue-600 rounded-full flex-shrink-0 group-hover:bg-blue-700 transition-colors"></div>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-sky-900 group-hover:text-blue-800 transition-colors">
-                                {screening.screening_type === 'initial' ? 'Screening Awal' : 'Screening Follow-up'}
+                                {screening.screening_type === 'initial'
+                                  ? 'Screening Awal'
+                                  : 'Screening Follow-up'}
                               </p>
                               <p className="text-xs text-sky-600 flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />

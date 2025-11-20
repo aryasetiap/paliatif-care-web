@@ -311,7 +311,7 @@ function ESASPasienForm({ userRole: _userRole, onSubmit, onCancel }: ESASFormVar
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-4xl mx-auto p-6"
+      className="max-w-4xl mx-auto p-6 pt-16"
     >
       {/* Header untuk Pasien */}
       <div className="mb-6 text-center">
@@ -403,7 +403,7 @@ function ESASPasienForm({ userRole: _userRole, onSubmit, onCancel }: ESASFormVar
                 )}
               />
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="patient_info.facility_name"
                 render={({ field }) => (
@@ -419,9 +419,9 @@ function ESASPasienForm({ userRole: _userRole, onSubmit, onCancel }: ESASFormVar
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="patient_info.screening_type"
                 render={({ field }) => (
@@ -441,7 +441,7 @@ function ESASPasienForm({ userRole: _userRole, onSubmit, onCancel }: ESASFormVar
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
             </CardContent>
           </Card>
 
