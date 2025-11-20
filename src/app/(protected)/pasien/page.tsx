@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -14,18 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  Search,
-  Plus,
-  Calendar,
-  User,
-  AlertTriangle,
-  TrendingUp,
-  Filter,
-  Eye,
-  Grid,
-  List,
-} from 'lucide-react'
+import { Plus, Calendar, User, TrendingUp, Eye } from 'lucide-react'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
@@ -56,12 +44,12 @@ export default function PatientsPage() {
   const [stats, setStats] = useState<any>(null)
 
   // Search state
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery] = useState('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
 
   // View state
-  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table')
+  const [viewMode] = useState<'table' | 'cards'>('table')
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [patientsWithScreening, setPatientsWithScreening] = useState<
     Array<
@@ -460,126 +448,8 @@ export default function PatientsPage() {
                 </div>
               </CardContent>
             </Card>
-
-            {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-sky-600">Risiko Tinggi</p>
-                    <p className="text-2xl font-bold text-sky-900">
-                      {stats.highRiskPatients.length}
-                    </p>
-                  </div>
-                  <AlertTriangle className="h-8 w-8 text-red-500" />
-                </div>
-              </CardContent>
-            </Card> */}
           </motion.div>
         )}
-
-        {/* Search and Filters */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="bg-white/80 backdrop-blur-md border border-sky-200 rounded-xl p-6 mb-8"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sky-500" />
-              <Input
-                placeholder="Cari nama pasien..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white/90 border-sky-300 focus:border-blue-500"
-              />
-            </div>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sky-500" />
-              <Input
-                type="date"
-                placeholder="Dari tanggal pendaftaran"
-                value={dateFrom}
-                onChange={(e) => {
-                  const newDate = e.target.value
-                  const validDate = validateAndFormatDate(newDate, 'dateFrom input')
-                  if (validDate) {
-                    setDateFrom(validDate)
-                  } else {
-                    setDateFrom('')
-                  }
-                }}
-                max={new Date().toISOString().split('T')[0]}
-                className="pl-10 bg-white/90 border-sky-300 focus:border-blue-500"
-              />
-            </div>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sky-500" />
-              <Input
-                type="date"
-                placeholder="Sampai tanggal pendaftaran"
-                value={dateTo}
-                onChange={(e) => {
-                  const newDate = e.target.value
-                  const validDate = validateAndFormatDate(newDate, 'dateTo input')
-                  if (validDate) {
-                    setDateTo(validDate)
-                  } else {
-                    setDateTo('')
-                  }
-                }}
-                max={new Date().toISOString().split('T')[0]}
-                className="pl-10 bg-white/90 border-sky-300 focus:border-blue-500"
-              />
-            </div>
-            <Button
-              onClick={() => {
-                setSearchQuery('')
-                setDateFrom('')
-                setDateTo('')
-                // Reset search params to valid defaults
-                setSearchParams((prev) => ({
-                  ...prev,
-                  dateFrom: undefined,
-                  dateTo: undefined,
-                  search: undefined,
-                  page: 1,
-                }))
-              }}
-              variant="outline"
-              className="border-sky-300 text-sky-700 hover:bg-sky-50"
-            >
-              <Filter className="mr-2 h-4 w-4" />
-              Reset
-            </Button>
-            <div className="flex gap-2">
-              <Button
-                variant={viewMode === 'table' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('table')}
-                className={
-                  viewMode === 'table'
-                    ? 'bg-sky-600 text-white'
-                    : 'border-sky-300 text-sky-700 hover:bg-sky-50'
-                }
-              >
-                <List className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'cards' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('cards')}
-                className={
-                  viewMode === 'cards'
-                    ? 'bg-sky-600 text-white'
-                    : 'border-sky-300 text-sky-700 hover:bg-sky-50'
-                }
-              >
-                <Grid className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </motion.div> */}
 
         {/* Patients Display */}
         <motion.div
@@ -594,20 +464,6 @@ export default function PatientsPage() {
                 <CardTitle className="text-xl text-sky-900">
                   Daftar Pasien ({total} pasien)
                 </CardTitle>
-                {/* <div className="flex items-center gap-4">
-                  <div className="text-sm text-sky-600">
-                    Tampilan: {viewMode === 'table' ? 'Tabel' : 'Kartu'}
-                  </div>
-                  {(dateFrom || dateTo) && (
-                    <div className="text-xs bg-sky-100 text-sky-700 px-2 py-1 rounded-full">
-                      {dateFrom && dateTo
-                        ? `${new Date(dateFrom).toLocaleDateString('id-ID')} - ${new Date(dateTo).toLocaleDateString('id-ID')}`
-                        : dateFrom
-                          ? `Dari ${new Date(dateFrom).toLocaleDateString('id-ID')}`
-                          : `Sampai ${new Date(dateTo).toLocaleDateString('id-ID')}`}
-                    </div>
-                  )}
-                </div> */}
               </div>
             </CardHeader>
             <CardContent>

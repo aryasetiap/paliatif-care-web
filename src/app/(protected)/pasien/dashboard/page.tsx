@@ -5,16 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import {
-  User,
-  Activity,
-  Clock,
-  FileText,
-  Plus,
-  Calendar,
-  AlertCircle,
-  ChevronRight,
-} from 'lucide-react'
+import { Activity, FileText, Plus, AlertCircle, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
@@ -37,12 +28,6 @@ interface PatientScreening {
 export default function PatientDashboardPage() {
   const [screenings, setScreenings] = useState<PatientScreening[]>([])
   const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState({
-    totalScreenings: 0,
-    thisMonthScreenings: 0,
-    lastScreeningDate: null as string | null,
-    averageRiskScore: 0,
-  })
   const router = useRouter()
   const { user, profile } = useAuthStore()
 
@@ -58,25 +43,6 @@ export default function PatientDashboardPage() {
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-
-      // Calculate stats
-      const now = new Date()
-      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-      const thisMonthScreenings =
-        screeningsData?.filter((s) => new Date(s.created_at) >= firstDayOfMonth).length || 0
-
-      const averageScore =
-        screeningsData && screeningsData.length > 0
-          ? screeningsData.reduce((sum, s) => sum + (s.highest_score || 0), 0) /
-            screeningsData.length
-          : 0
-
-      setStats({
-        totalScreenings: screeningsData?.length || 0,
-        thisMonthScreenings,
-        lastScreeningDate: screeningsData?.[0]?.created_at || null,
-        averageRiskScore: Math.round(averageScore * 10) / 10,
-      })
 
       setScreenings(screeningsData || [])
     } catch {
@@ -162,89 +128,8 @@ export default function PatientDashboardPage() {
               </h1>
               <p className="text-sky-600">Dashboard Paliatif Care Anda</p>
             </div>
-            {/* <div className="mt-4 md:mt-0">
-              <Button
-                asChild
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
-              >
-                <Link href="/screening/new?type=self">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Screening Baru
-                </Link>
-              </Button>
-            </div> */}
           </div>
         </motion.div>
-
-        {/* Statistics Cards */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
-        >
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-sky-600">Total Screening</p>
-                  <p className="text-3xl font-bold text-sky-900">{stats.totalScreenings}</p>
-                  <p className="text-xs text-sky-500 mt-1">Semua waktu</p>
-                </div>
-                <FileText className="h-8 w-8 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-sky-600">Screening Bulan Ini</p>
-                  <p className="text-3xl font-bold text-sky-900">{stats.thisMonthScreenings}</p>
-                  <p className="text-xs text-sky-500 mt-1">
-                    {new Date().toLocaleDateString('id-ID', { month: 'long' })}
-                  </p>
-                </div>
-                <Calendar className="h-8 w-8 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-sky-600">Skor Rata-rata</p>
-                  <p className="text-3xl font-bold text-sky-900">{stats.averageRiskScore}</p>
-                  <p className="text-xs text-sky-500 mt-1">Dari skala 0-10</p>
-                </div>
-                <Activity className="h-8 w-8 text-purple-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-sky-600">Terakhir Screening</p>
-                  <p className="text-lg font-bold text-sky-900">
-                    {stats.lastScreeningDate
-                      ? new Date(stats.lastScreeningDate).toLocaleDateString('id-ID', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        })
-                      : 'Belum ada'}
-                  </p>
-                  <p className="text-xs text-sky-500 mt-1">Tanggal terakhir</p>
-                </div>
-                <Clock className="h-8 w-8 text-orange-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div> */}
 
         {/* Quick Actions */}
         <motion.div
@@ -270,28 +155,6 @@ export default function PatientDashboardPage() {
               </Button>
             </CardContent>
           </Card>
-
-          {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-2 p-3 bg-green-100 rounded-full group-hover:bg-green-200 transition-colors">
-                <User className="h-6 w-6 text-green-600" />
-              </div>
-              <CardTitle className="text-lg">Profil Saya</CardTitle>
-              <CardDescription>Perbarui informasi pribadi Anda</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                variant="outline"
-                className="w-full border-sky-300 text-sky-700 hover:bg-sky-50"
-                asChild
-              >
-                <Link href="/pasien/profile">
-                  Lihat Profil
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card> */}
         </motion.div>
 
         {/* Recent Screenings */}
@@ -369,20 +232,6 @@ export default function PatientDashboardPage() {
                   ))
                 )}
               </div>
-              {/* {screenings.length > 0 && (
-                <div className="flex justify-end mt-4">
-                  <Button
-                    variant="outline"
-                    asChild
-                    className="border-sky-300 text-sky-700 hover:bg-sky-50"
-                  >
-                    <Link href="/pasien/screenings">
-                      <FileText className="mr-2 h-4 w-4" />
-                      Lihat Semua Hasil
-                    </Link>
-                  </Button>
-                </div>
-              )} */}
             </CardContent>
           </Card>
         </motion.div>

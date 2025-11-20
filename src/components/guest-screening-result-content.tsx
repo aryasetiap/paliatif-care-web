@@ -11,37 +11,13 @@ import { createClient } from '@/lib/supabase'
 import { useToast } from '@/hooks/use-toast'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Download, Printer, Share2 } from 'lucide-react'
+import { ArrowLeft, Download } from 'lucide-react'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 
 interface ESASScreeningResultContentProps {
   screeningId: string
   guestId: string
-}
-
-// Helper functions for ESAS questions
-const getESASQuestionText = (questionNumber: string): string => {
-  const questionTexts: Record<string, string> = {
-    '1': 'Nyeri (Pain)',
-    '2': 'Intoleransi Aktivitas (Activity Intolerance)',
-    '3': 'Gangguan Pola Tidur (Sleep Disturbance)',
-    '4': 'Mual (Nausea)',
-    '5': 'Risiko Defisit Nutrisi (Nutrition Deficit Risk)',
-    '6': 'Pola Napas Tidak Efektif (Ineffective Breathing Pattern)',
-    '7': 'Keputusasaan (Despair)',
-    '8': 'Ansietas (Anxiety)',
-    '9': 'Peningkatan Koping Keluarga (Overall Well-Being)',
-  }
-  return questionTexts[questionNumber] || `Pertanyaan ${questionNumber}`
-}
-
-const getESASQuestionDescription = (_questionNumber: string, score: number): string => {
-  if (score === 0) return 'Tidak ada keluhan'
-  if (score <= 3) return 'Keluhan ringan'
-  if (score <= 6) return 'Keluhan sedang'
-  if (score <= 8) return 'Keluhan berat'
-  return 'Keluhan sangat berat'
 }
 
 export default function ESASScreeningResultContent({
@@ -196,36 +172,6 @@ export default function ESASScreeningResultContent({
     }
   }
 
-  const handlePrint = () => {
-    window.print()
-  }
-
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Hasil Screening ESAS',
-          text: `Hasil screening ESAS untuk ${identity.name || 'Pasien'}`,
-          url: window.location.href,
-        })
-      } catch {
-        // Handle share error
-        toast({
-          title: 'Gagal Membagikan',
-          description: 'Terjadi kesalahan saat membagikan hasil',
-          variant: 'destructive',
-        })
-      }
-    } else {
-      // Fallback: Copy to clipboard
-      navigator.clipboard.writeText(window.location.href)
-      toast({
-        title: 'Link Disalin',
-        description: 'Link hasil screening telah disalin ke clipboard',
-      })
-    }
-  }
-
   const getRiskLevelColor = (level: string) => {
     switch (level) {
       case 'low':
@@ -239,22 +185,6 @@ export default function ESASScreeningResultContent({
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200'
     }
-  }
-
-  const getScoreColor = (score: number) => {
-    if (score === 0) return 'bg-gray-100 text-gray-700 border-gray-300'
-    if (score >= 1 && score <= 3) return 'bg-green-100 text-green-700 border-green-300'
-    if (score >= 4 && score <= 6) return 'bg-yellow-100 text-yellow-700 border-yellow-300'
-    if (score >= 7 && score <= 10) return 'bg-red-100 text-red-700 border-red-300'
-    return 'bg-gray-100 text-gray-700 border-gray-300'
-  }
-
-  const getScoreLevel = (score: number) => {
-    if (score === 0) return 'Tidak ada keluhan'
-    if (score >= 1 && score <= 3) return 'Ringan'
-    if (score >= 4 && score <= 6) return 'Sedang'
-    if (score >= 7 && score <= 10) return 'Berat'
-    return 'Tidak valid'
   }
 
   if (isLoading) {
@@ -288,7 +218,6 @@ export default function ESASScreeningResultContent({
 
   const esasData = screening.esas_data
   const identity = esasData?.identity || {}
-  const questions = esasData?.questions || {}
   const recommendation = screening.recommendation || {}
 
   return (

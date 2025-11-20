@@ -4,18 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import {
-  Users,
-  ClipboardList,
-  Activity,
-  AlertTriangle,
-  // Heart,
-  BookOpen,
-  UserCheck,
-  Calendar,
-  Clock,
-  ChevronRight,
-} from 'lucide-react'
+import { Users, ClipboardList, Calendar, Clock, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
@@ -156,17 +145,6 @@ export default function DashboardPage() {
               <h1 className="text-3xl font-bold text-sky-900 mb-2">Dashboard</h1>
               <p className="text-sky-600">Sistem Edukasi & Skrining Paliatif Care</p>
             </div>
-            {/* <div className="mt-4 md:mt-0">
-              <Button
-                asChild
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
-              >
-                <Link href="/screening/new">
-                  <Activity className="mr-2 h-4 w-4" />
-                  Screening Baru
-                </Link>
-              </Button>
-            </div> */}
           </div>
         </motion.div>
 
@@ -219,21 +197,6 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card>
-
-          {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-sky-600">Risiko Tinggi</p>
-                  <p className="text-3xl font-bold text-sky-900">
-                    {stats?.highRiskPatients?.length || 0}
-                  </p>
-                  <p className="text-xs text-sky-500 mt-1">Perlu intervensi segera</p>
-                </div>
-                <AlertTriangle className="h-8 w-8 text-red-500" />
-              </div>
-            </CardContent>
-          </Card> */}
         </motion.div>
 
         {/* Quick Actions */}
@@ -241,7 +204,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" // lg:grid-cols-3
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"
         >
           <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="text-center">
@@ -282,47 +245,6 @@ export default function DashboardPage() {
               </Button>
             </CardContent>
           </Card>
-
-          {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-2 p-3 bg-purple-100 rounded-full group-hover:bg-purple-200 transition-colors">
-                <BookOpen className="h-6 w-6 text-purple-600" />
-              </div>
-              <CardTitle className="text-lg">Edukasi</CardTitle>
-              <CardDescription>8 Penyakit Terminal</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                variant="outline"
-                className="w-full border-sky-300 text-sky-700 hover:bg-sky-50"
-                asChild
-              >
-                <Link href="/edukasi">
-                  Lihat Materi
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card> */}
-
-          {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-2 p-3 bg-red-100 rounded-full group-hover:bg-red-200 transition-colors">
-                <Heart className="h-6 w-6 text-red-600" />
-              </div>
-              <CardTitle className="text-lg">Intervensi</CardTitle>
-              <CardDescription>Terapi Komplementer</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                variant="outline"
-                className="w-full border-sky-300 text-sky-700 hover:bg-sky-50"
-                disabled
-              >
-                Coming Soon
-              </Button>
-            </CardContent>
-          </Card> */}
         </motion.div>
 
         <div className="grid grid-cols-1">
@@ -371,58 +293,6 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </motion.div>
-
-          {/* High Risk Patients */}
-          {/* <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <Card className="bg-white/80 backdrop-blur-md border-sky-200">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <AlertTriangle className="mr-2 h-5 w-5 text-red-500" />
-                  Pasien Risiko Tinggi
-                </CardTitle>
-                <CardDescription>Pasien yang memerlukan intervensi segera</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {stats?.highRiskPatients?.length === 0 ? (
-                    <p className="text-sky-600 text-center py-4">Tidak ada pasien Risiko tinggi</p>
-                  ) : (
-                    stats?.highRiskPatients?.map((screening, _index) => (
-                      <div
-                        key={screening.id}
-                        className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <UserCheck className="h-5 w-5 text-red-500" />
-                          <div>
-                            <p className="font-medium text-sky-900">
-                              {screening.patients?.name || 'Pasien'}
-                            </p>
-                            <p className="text-xs text-sky-600">
-                              {screening.patients?.age} tahun •{' '}
-                              {screening.patients?.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Badge className={getRiskLevelColor(screening.risk_level)}>
-                            {getRiskLevelText(screening.risk_level)}
-                          </Badge>
-                          <p className="text-xs text-sky-600 mt-1">
-                            Skor: {screening.highest_score}/10
-                          </p>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div> */}
         </div>
       </div>
 

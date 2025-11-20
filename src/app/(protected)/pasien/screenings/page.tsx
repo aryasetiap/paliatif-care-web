@@ -5,15 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { FileText, Search, Filter, ArrowLeft, Calendar, Activity, ChevronRight } from 'lucide-react'
+import { FileText, ArrowLeft, Calendar, Activity, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
@@ -37,9 +29,9 @@ export default function PatientScreeningsPage() {
   const [screenings, setScreenings] = useState<PatientScreening[]>([])
   const [filteredScreenings, setFilteredScreenings] = useState<PatientScreening[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [riskLevelFilter, setRiskLevelFilter] = useState<string>('all')
-  const [sortBy, setSortBy] = useState<string>('newest')
+  const [searchTerm] = useState('')
+  const [riskLevelFilter] = useState<string>('all')
+  const [sortBy] = useState<string>('newest')
   const router = useRouter()
   const { user } = useAuthStore()
 
@@ -169,15 +161,6 @@ export default function PatientScreeningsPage() {
               Kembali ke Dashboard
             </Button>
             <div className="flex-1"></div>
-            {/* <Button
-              asChild
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
-            >
-              <Link href="/screening/new?type=self">
-                <Activity className="mr-2 h-4 w-4" />
-                Screening Baru
-              </Link>
-            </Button> */}
           </div>
 
           <div className="text-center">
@@ -187,67 +170,6 @@ export default function PatientScreeningsPage() {
             </p>
           </div>
         </motion.div>
-
-        {/* Filters */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="mb-6"
-        >
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200">
-            <CardHeader>
-              <CardTitle className="flex items-center text-lg">
-                <Filter className="mr-2 h-5 w-5 text-sky-600" />
-                Filter & Pencarian
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input
-                    placeholder="Cari screening..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-white/90 border-sky-300"
-                  />
-                </div>
-
-                <Select value={riskLevelFilter} onValueChange={setRiskLevelFilter}>
-                  <SelectTrigger className="bg-white/90 border-sky-300">
-                    <SelectValue placeholder="Filter Risiko" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Semua Tingkat Risiko</SelectItem>
-                    <SelectItem value="low">Rendah</SelectItem>
-                    <SelectItem value="medium">Sedang</SelectItem>
-                    <SelectItem value="high">Tinggi</SelectItem>
-                    <SelectItem value="critical">Kritis</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="bg-white/90 border-sky-300">
-                    <SelectValue placeholder="Urutkan" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Terbaru</SelectItem>
-                    <SelectItem value="oldest">Terlama</SelectItem>
-                    <SelectItem value="highest_score">Skor Tertinggi</SelectItem>
-                    <SelectItem value="lowest_score">Skor Terendah</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <div className="text-center">
-                  <p className="text-sm text-sky-600 font-medium">
-                    Total: {filteredScreenings.length} screening
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div> */}
 
         {/* Screenings List */}
         <motion.div

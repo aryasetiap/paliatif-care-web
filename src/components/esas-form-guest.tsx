@@ -22,14 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 
 import { esasScreeningFormSchema, type ESAScreeningFormData } from '@/lib/validations'
 import { useToast } from '@/hooks/use-toast'
 import { motion } from 'framer-motion'
 import { ESASQuestionComponent, ESAS_QUESTIONS } from './esas-form-variants'
-import { InfoIcon, ShieldIcon } from 'lucide-react'
 
 interface ESASGuestFormProps {
   onSubmit?: (data: ESAScreeningFormData) => Promise<{ screeningId: string; guestId: string }>
@@ -38,7 +35,6 @@ interface ESASGuestFormProps {
 
 function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showDisclaimer, setShowDisclaimer] = useState(true)
 
   const { toast } = useToast()
 
@@ -109,28 +105,6 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
     }
   }
 
-  const getHighestScore = () => {
-    const questions = form.getValues('questions')
-    const scores = Object.values(questions).filter((score) => score > 0)
-    return scores.length > 0 ? Math.max(...scores) : 0
-  }
-
-  const getRiskLevel = () => {
-    const highestScore = getHighestScore()
-    if (highestScore === 0) return 'Tidak ada keluhan'
-    if (highestScore <= 3) return 'Ringan'
-    if (highestScore <= 6) return 'Sedang'
-    return 'Berat'
-  }
-
-  const getRiskColor = () => {
-    const highestScore = getHighestScore()
-    if (highestScore === 0) return 'bg-gray-100 text-gray-800 border-gray-300'
-    if (highestScore <= 3) return 'bg-green-100 text-green-800 border-green-300'
-    if (highestScore <= 6) return 'bg-yellow-100 text-yellow-800 border-yellow-300'
-    return 'bg-red-100 text-red-800 border-red-300'
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -154,39 +128,6 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
           Evaluasi gejala Anda tanpa perlu login. Hasil akan ditampilkan secara instan.
         </p>
       </div>
-
-      {/* Guest Information Alert */}
-      {/* {showDisclaimer && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
-        >
-          <Alert className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-            <ShieldIcon className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-800">
-              <div className="flex justify-between items-start">
-                <div>
-                  <strong>Informasi Penting:</strong>
-                  <ul className="mt-2 text-sm space-y-1">
-                    <li>• Hasil akan ditampilkan secara instan setelah selesai</li>
-                    <li>• Simpan ID yang diberikan untuk melihat hasil kembali</li>
-                    <li>• Data hanya untuk evaluasi dan bukan diagnosis medis</li>
-                  </ul>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowDisclaimer(false)}
-                  className="text-green-600 hover:text-green-800"
-                >
-                  ×
-                </Button>
-              </div>
-            </AlertDescription>
-          </Alert>
-        </motion.div>
-      )} */}
 
       <Form {...form}>
         <form
@@ -265,22 +206,6 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
             </CardContent>
           </Card>
 
-          {/* Live Risk Indicator */}
-          {/* <Card className={`border-2 ${getRiskColor()}`}>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <InfoIcon className="w-5 h-5" />
-                  <div>
-                    <div className="font-semibold">Status Risiko Saat Ini</div>
-                    <div className="text-sm opacity-80">Berdasarkan gejala yang Anda pilih</div>
-                  </div>
-                </div>
-                <Badge className={`${getRiskColor()} text-lg px-4 py-2`}>{getRiskLevel()}</Badge>
-              </div>
-            </CardContent>
-          </Card> */}
-
           {/* ESAS Questions */}
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-sky-900 mb-4">Pertanyaan ESAS</h2>
@@ -315,16 +240,6 @@ function ESASGuestForm({ onSubmit, onCancel }: ESASGuestFormProps) {
               ))}
             </div>
           </div>
-
-          {/* Final Reminder */}
-          {/* <Alert className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
-            <InfoIcon className="h-4 w-4 text-yellow-600" />
-            <AlertDescription className="text-yellow-800">
-              <strong>Catatan Penting:</strong> Screening ESAS adalah alat evaluasi gejala dan bukan
-              pengganti diagnosis medis profesional. Jika Anda mengalami gejala berat atau kondisi
-              darurat, segera hubungi fasilitas kesehatan terdekat.
-            </AlertDescription>
-          </Alert> */}
 
           {/* Action Buttons */}
           <div className="flex justify-center gap-4 pt-6">

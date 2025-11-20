@@ -8,13 +8,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 import { createClient } from '@/lib/supabase'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
-import { BookOpen, Heart, FileText } from 'lucide-react'
+import { BookOpen, Heart } from 'lucide-react'
 import '@/styles/modern-patterns.css'
 
 interface ScreeningData {
@@ -88,14 +87,6 @@ function getScoreColor(score: number) {
   if (score >= 4 && score <= 6) return 'bg-yellow-100 text-yellow-800'
   if (score >= 7 && score <= 10) return 'bg-red-100 text-red-800'
   return 'bg-gray-100 text-gray-800'
-}
-
-function getScoreLevel(score: number) {
-  if (score === 0) return 'Tidak ada keluhan'
-  if (score >= 1 && score <= 3) return 'Ringan'
-  if (score >= 4 && score <= 6) return 'Sedang'
-  if (score >= 7 && score <= 10) return 'Berat'
-  return 'Tidak valid'
 }
 
 // Helper function to normalize screening data format
@@ -257,15 +248,6 @@ export default function ScreeningResultPage() {
                 Edmonton Symptom Assessment System - Hasil Penilaian Gejala Pasien Paliatif
               </p>
             </div>
-            {/* <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => router.push('/screening/new')}
-                className="border-sky-300 text-sky-700 hover:bg-sky-50"
-              >
-                Screening Baru
-              </Button>
-            </div> */}
           </div>
         </motion.div>
 
@@ -363,29 +345,8 @@ export default function ScreeningResultPage() {
                   </div>
                 </div>
               </div>
-              {/* Prioritas, uncomment if needed */}
-              {/* <div>
-                <label className="text-sm font-medium text-sky-600">Prioritas</label>
-                <p className="text-lg font-semibold text-sky-900">
-                  Prioritas {screeningData.recommendation.priority}
-                </p>
-              </div> */}
             </CardContent>
           </Card>
-
-          {/* <Card className="lg:col-span-2 bg-white/80 backdrop-blur-md border-sky-200">
-            <CardHeader>
-              <CardTitle className="text-xl text-sky-900">Rekomendasi Tindakan</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Alert className={`${riskConfig.color} border`}>
-                <AlertTitle className="text-lg font-semibold">
-                  {screeningData.recommendation.action_required || 'Perlu evaluasi lebih lanjut'}
-                </AlertTitle>
-                <AlertDescription className="mt-2">{riskConfig.description}</AlertDescription>
-              </Alert>
-            </CardContent>
-          </Card> */}
         </motion.div>
 
         {/* Diagnosis and Intervention */}
@@ -395,35 +356,6 @@ export default function ScreeningResultPage() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="grid grid-cols-1 mb-6" // lg:grid-cols-2 gap-6
         >
-          {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200">
-            <CardHeader>
-              <CardTitle className="text-xl text-sky-900">Diagnosa Keperawatan</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-semibold text-lg text-sky-900">
-                    {screeningData.recommendation.diagnosis || 'Nyeri kronis'}
-                  </h3>
-                </div>
-
-                <div>
-                  <h4 className="font-medium text-sky-700 mb-2">Terapi yang Direkomendasikan</h4>
-                  <Badge variant="outline" className="text-sm border-sky-300 text-sky-700">
-                    {screeningData.recommendation.therapy_type || 'Terapi Relaksasi'}
-                  </Badge>
-                </div>
-
-                <div>
-                  <h4 className="font-medium text-sky-700 mb-2">Frekuensi</h4>
-                  <p className="text-sm text-sky-600">
-                    {screeningData.recommendation.frequency || '2 kali sehari'}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card> */}
-
           <Card className="bg-white/90 backdrop-blur-md border border-sky-200 shadow-md rounded-xl transition-all duration-300 hover:shadow-lg">
             <CardHeader>
               <CardTitle className="text-xl font-bold text-sky-900 flex items-center gap-2">
@@ -489,119 +421,6 @@ export default function ScreeningResultPage() {
             </CardContent>
           </Card>
         </motion.div>
-
-        {/* Detailed ESAS Scores */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200">
-            <CardHeader>
-              <CardTitle className="text-xl text-sky-900">Detail Skor ESAS</CardTitle>
-              <CardDescription className="text-sky-600">
-                Rincian skor untuk setiap gejala yang dinilai
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {screeningData.esas_data?.questions &&
-                  Object.entries(screeningData.esas_data.questions).map(
-                    ([questionNumber, questionData]) => {
-                      const questionNum = parseInt(questionNumber)
-                      return (
-                        <div
-                          key={questionNumber}
-                          className={`p-4 rounded-lg border ${getScoreColor(questionData?.score || 0)} ${
-                            questionNum === screeningData.primary_question
-                              ? 'ring-2 ring-blue-500 ring-offset-2'
-                              : ''
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="font-medium text-sky-900">
-                              {questionNumber}. {questionData?.text || 'Tidak ada pertanyaan'}
-                            </span>
-                            {questionNum === screeningData.primary_question && (
-                              <Badge
-                                variant="outline"
-                                className="text-xs border-blue-300 text-blue-700"
-                              >
-                                Utama
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-2xl font-bold">{questionData?.score || 0}</span>
-                            <span className="text-sm text-sky-600">/ 10</span>
-                          </div>
-                          <div className="mt-2">
-                            <Badge
-                              variant="outline"
-                              className={`text-xs ${getScoreColor(questionData?.score || 0)}`}
-                            >
-                              {getScoreLevel(questionData?.score || 0)}
-                            </Badge>
-                          </div>
-                        </div>
-                      )
-                    }
-                  )}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div> */}
-
-        {/* Scientific References */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-        >
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200 mt-6">
-            <CardHeader>
-              <CardTitle className="text-xl text-sky-900">Referensi Ilmiah</CardTitle>
-              <CardDescription className="text-sky-600">
-                Dasar literatur untuk intervensi yang direkomendasikan
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {screeningData.recommendation?.references &&
-                screeningData.recommendation.references.length > 0 ? (
-                  screeningData.recommendation.references.map((reference, index) => (
-                    <div key={index} className="p-3 bg-sky-50 rounded-lg border border-sky-100">
-                      <p className="text-sm text-sky-700 italic">{reference}</p>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-sm text-sky-600 italic">
-                    <p className="mb-2">Referensi tidak tersedia dalam data</p>
-                    <p className="text-xs text-sky-500">Referensi standar:</p>
-                    <div className="mt-2 space-y-2">
-                      <div className="p-3 bg-sky-50 rounded-lg border border-sky-100">
-                        <p className="text-sm text-sky-700 italic">
-                          Assessment and Management of Cancer Pain, WHO Guidelines
-                        </p>
-                      </div>
-                      <div className="p-3 bg-sky-50 rounded-lg border border-sky-100">
-                        <p className="text-sm text-sky-700 italic">
-                          Edmonton Symptom Assessment System (ESAS) - Canadian Palliative Care
-                          Association
-                        </p>
-                      </div>
-                      <div className="p-3 bg-sky-50 rounded-lg border border-sky-100">
-                        <p className="text-sm text-sky-700 italic">
-                          Nursing Interventions for Pain Management, NANDA International
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div> */}
 
         {/* Educational Resources Section */}
         <motion.div
@@ -713,29 +532,6 @@ export default function ScreeningResultPage() {
                   </motion.div>
                 ))}
               </div>
-              {/* <div className="mt-6 text-center">
-                <Button
-                  variant="outline"
-                  onClick={() => router.push('/edukasi')}
-                  className="border-sky-400 text-sky-700 hover:bg-sky-50 hover:border-sky-500"
-                >
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  Lihat Semua Materi Edukasi
-                  <svg
-                    className="w-4 h-4 ml-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </Button>
-              </div> */}
             </CardContent>
           </Card>
         </motion.div>
@@ -762,29 +558,6 @@ export default function ScreeningResultPage() {
             </svg>
             Kembali ke Dashboard
           </Button>
-
-          {/* <Button
-            onClick={() => router.push('/pasien/screenings')}
-            className="flex items-center gap-2 border-sky-300 text-sky-700 hover:bg-sky-50"
-          >
-            <FileText className="w-4 h-4" />
-            Lihat Semua Screening
-          </Button>
-
-          <Button
-            onClick={() => router.push('/screening/new?type=self')}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            Screening Baru
-          </Button> */}
         </motion.div>
       </div>
 
