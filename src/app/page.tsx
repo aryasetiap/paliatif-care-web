@@ -211,7 +211,6 @@ export default function Home() {
                     dan dukungan psikososial maupun spiritual.
                     <br />
                     <br />
-                    <span className='text-red-600 font-bold'>Berkenankah jika data anda kami simpan? Jika berkanan silahkan masuk atau daftar jika belum memiliki akun</span>
                   </p>
                 </motion.div>
               </div>
