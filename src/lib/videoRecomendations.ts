@@ -13,32 +13,41 @@ const RECOMMENDED_VIDEOS = {
   pain: [
     {
       id: 'pain-relief-1',
-      title: 'Progressive Muscle Relaxation for Pain Relief',
+      title: '1. Nyeri - Kompres Hangat',
       description:
-        'Teknik relaksasi otot progresif untuk mengurangi nyeri ringan. Pernapasan dalam dan relaksasi bertahap.',
-      thumbnailUrl: 'https://img.youtube.com/vi/y5JJt6x6HwU/mqdefault.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=y5JJt6x6HwU',
-      duration: '12:30',
+        'Kompres hangat membantu meningkatkan aliran darah, mengurangi ketegangan otot, serta meredakan rasa nyeri secara bertahap. Gunakan handuk hangat atau heating pad pada area yang sakit selama 15 hingga 20 menit untuk mendapatkan hasil yang optimal.',
+      thumbnailUrl: 'https://img.youtube.com/vi/q9oB6nsTz5o/mqdefault.jpg',
+      videoUrl: 'https://www.youtube.com/watch?v=q9oB6nsTz5o',
+      duration: '12:22',
     },
     {
       id: 'pain-relief-2',
-      title: 'Guided Meditation for Chronic Pain',
+      title: '1. Nyeri - Terapi Kognitif Distraksi Nyeri',
       description:
-        'Meditasi terbimbing khusus untuk mengelola nyeri kronis dengan teknik mindfulness.',
-      thumbnailUrl: 'https://img.youtube.com/vi/y5JJt6x6HwU/mqdefault.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=y5JJt6x6HwU',
-      duration: '15:00',
+        'Teknik distraksi kognitif untuk membantu mengalihkan fokus dari rasa nyeri melalui panduan visual dan suara. Metode ini efektif untuk meredakan ketegangan, menenangkan pikiran, dan membantu tubuh beradaptasi terhadap sensasi nyeri.',
+      thumbnailUrl: 'https://img.youtube.com/vi/W5JzONtaOvM/mqdefault.jpg',
+      videoUrl: 'https://www.youtube.com/watch?v=W5JzONtaOvM',
+      duration: '02:59',
     },
   ],
   fatigue: [
     {
       id: 'fatigue-management-1',
-      title: 'Gentle Stretching for Fatigue Relief',
+      title: '2. Keletihan - Pijat Kaki',
       description:
-        'Gerakan stretching ringan untuk meningkatkan energi dan mengurangi rasa lelah pada pasien paliatif.',
-      thumbnailUrl: 'https://img.youtube.com/vi/y5JJt6x6HwU/mqdefault.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=y5JJt6x6HwU',
-      duration: '12:15',
+        'Teknik pijat kaki sederhana untuk membantu meningkatkan sirkulasi, merilekskan otot, dan mengurangi rasa lelah. Metode ini bermanfaat bagi pasien paliatif untuk meningkatkan kenyamanan dan menambah energi.',
+      thumbnailUrl: 'https://img.youtube.com/vi/JJHPQW_dd3k/mqdefault.jpg',
+      videoUrl: 'https://www.youtube.com/watch?v=JJHPQW_dd3k',
+      duration: '08:44',
+    },
+    {
+      id: 'fatigue-management-2',
+      title: '2. Keletihan - Intoleransi aktifitas terapi jalan',
+      description:
+        'Teknik pijat kaki sederhana untuk membantu meningkatkan sirkulasi, merilekskan otot, dan mengurangi rasa lelah. Metode ini bermanfaat bagi pasien paliatif untuk meningkatkan kenyamanan dan menambah energi.',
+      thumbnailUrl: 'https://img.youtube.com/vi/8OxiCWzU6Lc/mqdefault.jpg',
+      videoUrl: 'https://youtu.be/8OxiCWzU6Lc',
+      duration: '06:31',
     },
   ],
   nausea: [
