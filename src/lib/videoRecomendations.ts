@@ -44,7 +44,7 @@ const RECOMMENDED_VIDEOS = {
       id: 'fatigue-management-2',
       title: '2. Keletihan - Intoleransi aktifitas terapi jalan',
       description:
-        'Teknik pijat kaki sederhana untuk membantu meningkatkan sirkulasi, merilekskan otot, dan mengurangi rasa lelah. Metode ini bermanfaat bagi pasien paliatif untuk meningkatkan kenyamanan dan menambah energi.',
+        'Panduan terapi berjalan untuk membantu meningkatkan toleransi aktivitas pada pasien yang mudah lelah. Latihan ini bertujuan melatih kekuatan tubuh, memperbaiki pernapasan, serta meningkatkan stamina secara bertahap dengan gerakan yang aman dan terkontrol.',
       thumbnailUrl: 'https://img.youtube.com/vi/8OxiCWzU6Lc/mqdefault.jpg',
       videoUrl: 'https://youtu.be/8OxiCWzU6Lc',
       duration: '06:31',
@@ -95,12 +95,12 @@ const RECOMMENDED_VIDEOS = {
   sleep: [
     {
       id: 'sleep-improvement-1',
-      title: 'Sleep Meditation for Deep Rest',
+      title: '3. Gangguan Pola Tidur - Terapi aromaterapi',
       description:
-        'Meditasi tidur untuk membantu pasien paliatif mendapatkan kualitas tidur yang lebih nyenyak.',
-      thumbnailUrl: 'https://img.youtube.com/vi/y5JJt6x6HwU/mqdefault.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=y5JJt6x6HwU',
-      duration: '20:45',
+        'Terapi aromaterapi menggunakan wewangian relaksasi untuk membantu menenangkan pikiran, merilekskan tubuh, dan memperbaiki kualitas tidur. Cocok bagi pasien dengan gangguan pola tidur untuk menciptakan suasana yang lebih nyaman sebelum beristirahat.',
+      thumbnailUrl: 'https://img.youtube.com/vi/LRhG-5ODq6E/mqdefault.jpg',
+      videoUrl: 'https://youtu.be/LRhG-5ODq6E',
+      duration: '01:56',
     },
   ],
   appetite: [
