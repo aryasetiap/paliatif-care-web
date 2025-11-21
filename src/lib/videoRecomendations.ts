@@ -9,22 +9,23 @@ export interface VideoData {
 }
 
 // Sample YouTube video URLs - these can be replaced with actual therapeutic/palliative care videos
+// Sesuai dengan ESAS Rule Engine di esas-rule-engine.ts
 const RECOMMENDED_VIDEOS = {
   pain: [
     {
       id: 'pain-relief-1',
-      title: '1. Nyeri - Kompres Hangat',
+      title: '1. Nyeri - Terapi Akupresur',
       description:
-        'Kompres hangat membantu meningkatkan aliran darah, mengurangi ketegangan otot, serta meredakan rasa nyeri secara bertahap. Gunakan handuk hangat atau heating pad pada area yang sakit selama 15 hingga 20 menit untuk mendapatkan hasil yang optimal.',
+        'Teknik akupresur sesuai intervensi keperawatan untuk nyeri kronis. Lakukan penekanan menggunakan ujung jari dengan tekanan lembut tapi mantap dan gerakan memutar kecil selama 1–2 menit pada titik nyeri. Ulangi 2–3 kali sehari atau setiap kali nyeri muncul.',
       thumbnailUrl: 'https://img.youtube.com/vi/q9oB6nsTz5o/mqdefault.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=q9oB6nsTz5o',
       duration: '12:22',
     },
     {
       id: 'pain-relief-2',
-      title: '1. Nyeri - Terapi Kognitif Distraksi Nyeri',
+      title: '1. Nyeri - Kompres Hangat',
       description:
-        'Teknik distraksi kognitif untuk membantu mengalihkan fokus dari rasa nyeri melalui panduan visual dan suara. Metode ini efektif untuk meredakan ketegangan, menenangkan pikiran, dan membantu tubuh beradaptasi terhadap sensasi nyeri.',
+        'Kompres hangat membantu meningkatkan aliran darah, mengurangi ketegangan otot, serta meredakan rasa nyeri secara bertahap. Gunakan handuk hangat atau heating pad pada area yang sakit selama 15 hingga 20 menit untuk mendapatkan hasil yang optimal.',
       thumbnailUrl: 'https://img.youtube.com/vi/W5JzONtaOvM/mqdefault.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=W5JzONtaOvM',
       duration: '02:59',
@@ -33,18 +34,18 @@ const RECOMMENDED_VIDEOS = {
   fatigue: [
     {
       id: 'fatigue-management-1',
-      title: '2. Keletihan - Pijat Kaki',
+      title: '2. Lelah - Slow Deep Breathing (SDB)',
       description:
-        'Teknik pijat kaki sederhana untuk membantu meningkatkan sirkulasi, merilekskan otot, dan mengurangi rasa lelah. Metode ini bermanfaat bagi pasien paliatif untuk meningkatkan kenyamanan dan menambah energi.',
+        'Teknik Slow Deep Breathing sesuai intervensi untuk intoleransi aktivitas. Ambil posisi duduk tegak, tarik napas perlahan melalui hidung 6 detik, tahan 6 detik, hembuskan perlahan melalui mulut 6 detik. Ulangi selama 15 menit, dua kali sehari (pagi dan sore).',
       thumbnailUrl: 'https://img.youtube.com/vi/JJHPQW_dd3k/mqdefault.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=JJHPQW_dd3k',
       duration: '08:44',
     },
     {
       id: 'fatigue-management-2',
-      title: '2. Keletihan - Intoleransi aktifitas terapi jalan',
+      title: '2. Lelah - Pijat Kaki untuk Sirkulasi',
       description:
-        'Panduan terapi berjalan untuk membantu meningkatkan toleransi aktivitas pada pasien yang mudah lelah. Latihan ini bertujuan melatih kekuatan tubuh, memperbaiki pernapasan, serta meningkatkan stamina secara bertahap dengan gerakan yang aman dan terkontrol.',
+        'Teknik pijat kaki sederhana untuk membantu meningkatkan sirkulasi, merilekskan otot, dan mengurangi rasa lelah. Metode ini bermanfaat bagi pasien paliatif untuk meningkatkan kenyamanan dan menambah energi.',
       thumbnailUrl: 'https://img.youtube.com/vi/8OxiCWzU6Lc/mqdefault.jpg',
       videoUrl: 'https://youtu.be/8OxiCWzU6Lc',
       duration: '06:31',
@@ -53,9 +54,9 @@ const RECOMMENDED_VIDEOS = {
   nausea: [
     {
       id: 'nausea-relief-1',
-      title: '4. Nausea',
+      title: '4. Nausea - Aromaterapi (Jahe, Peppermint)',
       description:
-        'Teknik akupresur pada titik P6 (Neiguan) untuk membantu meredakan mual dan muntah secara alami. Metode ini dapat dilakukan secara mandiri dengan tekanan lembut yang aman, sehingga bermanfaat bagi pasien paliatif maupun kondisi mual lainnya.',
+        'Aromaterapi sesuai intervensi keperawatan untuk nausea. Teteskan 1-2 tetes minyak esensial jahe atau peppermint ke tisu, dekatkan ke hidung 10-15 cm, hirup pelan-pelan selama 3-5 menit. Alternatif: teteskan ke air hangat dan hirup uapnya.',
       thumbnailUrl: 'https://img.youtube.com/vi/0Cg_B7vtM-I/mqdefault.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=0Cg_B7vtM-I',
       duration: '06:55',
@@ -64,40 +65,30 @@ const RECOMMENDED_VIDEOS = {
   anxiety: [
     {
       id: 'anxiety-relief-1',
-      title: '5-Minute Mindfulness Meditation for Anxiety',
+      title: '8. Cemas - Terapi Murottal',
       description:
-        'Meditasi mindfulness singkat untuk mengurangi kecemasan dan meningkatkan ketenangan pikiran.',
+        'Terapi Murottal sesuai intervensi keperawatan untuk ansietas. Putar audio murottal dengan volume lembut (40-50 dB) selama 10-20 menit. Amati ekspresi wajah, frekuensi napas, dan tanda relaksasi pasien selama terapi.',
       thumbnailUrl: 'https://img.youtube.com/vi/y5JJt6x6HwU/mqdefault.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=y5JJt6x6HwU',
-      duration: '5:42',
-    },
-    {
-      id: 'anxiety-relief-2',
-      title: 'Box Breathing Technique for Anxiety',
-      description:
-        'Teknik pernapasan kotak (box breathing) yang efektif mengurangi kecemasan secara instan.',
-      thumbnailUrl: 'https://img.youtube.com/vi/y5JJt6x6HwU/mqdefault.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=y5JJt6x6HwU',
-      duration: '8:15',
+      duration: '15:30',
     },
   ],
   depression: [
     {
       id: 'depression-support-1',
-      title: 'Guided Imagery for Emotional Wellbeing',
-      description:
-        'Visualisasi terbimbing untuk meningkatkan mood dan mengurangi gejala depresi ringan.',
-      thumbnailUrl: 'https://img.youtube.com/vi/y5JJt6x6HwU/mqdefault.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=y5JJt6x6HwU',
-      duration: '18:00',
+      title: '7. Terapi HOPE untuk Keputusasaan',
+      description: '',
+      thumbnailUrl: 'https://img.youtube.com/vi/3el279wtEM0/mqdefault.jpg',
+      videoUrl: 'https://youtu.be/3el279wtEM0?si=-8BuNWoD9O6FaXXG',
+      duration: '12:45',
     },
   ],
   sleep: [
     {
       id: 'sleep-improvement-1',
-      title: '3. Gangguan Pola Tidur - Terapi aromaterapi',
+      title: '3. Gangguan Tidur - Aromaterapi Lavender',
       description:
-        'Terapi aromaterapi menggunakan wewangian relaksasi untuk membantu menenangkan pikiran, merilekskan tubuh, dan memperbaiki kualitas tidur. Cocok bagi pasien dengan gangguan pola tidur untuk menciptakan suasana yang lebih nyaman sebelum beristirahat.',
+        'Aromaterapi Lavender sesuai intervensi keperawatan untuk gangguan pola tidur. Teteskan 2 tetes minyak esensial lavender ke kassa 2x2 cm, tempelkan di kerah pakaian 20 cm dari hidung, 1 jam sebelum tidur. Hirup aroma secara alami tanpa perlu menarik napas dalam.',
       thumbnailUrl: 'https://img.youtube.com/vi/LRhG-5ODq6E/mqdefault.jpg',
       videoUrl: 'https://youtu.be/LRhG-5ODq6E',
       duration: '01:56',
@@ -106,34 +97,34 @@ const RECOMMENDED_VIDEOS = {
   appetite: [
     {
       id: 'appetite-stimulation-1',
-      title: 'Nutrition Tips for Appetite Loss',
+      title: '5. Defisit Nutrisi',
       description:
-        'Strategi nutrisi dan tips praktis untuk meningkatkan nafsu makan pada pasien dengan gejala ringan.',
-      thumbnailUrl: 'https://img.youtube.com/vi/y5JJt6x6HwU/mqdefault.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=y5JJt6x6HwU',
-      duration: '9:15',
+        'Intervensi keperawatan untuk risiko defisit nutrisi dengan fokus pada peningkatan asupan makanan. Edukasi pasien mengenai makanan tinggi nutrisi, bantu memilih porsi kecil namun sering, dan ciptakan lingkungan makan yang nyaman. Pantau berat badan, nafsu makan, serta catat asupan harian untuk menilai efektivitas intervensi.',
+      thumbnailUrl: 'https://img.youtube.com/vi/MM2JUSKLnqk/mqdefault.jpg',
+      videoUrl: 'https://youtu.be/MM2JUSKLnqk?si=L_Ho-9LcXQfQQNGZ',
+      duration: '07:15',
     },
   ],
   breathing: [
     {
       id: 'breathing-improvement-1',
-      title: 'Diaphragmatic Breathing for Shortness of Breath',
+      title: '6. Pola Napas (Terapi kipas genggam)',
       description:
-        'Teknik pernapasan diafragma untuk mengurangi sesak dan meningkatkan oksigenasi pada pasien paliatif.',
-      thumbnailUrl: 'https://img.youtube.com/vi/y5JJt6x6HwU/mqdefault.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=y5JJt6x6HwU',
-      duration: '7:30',
+        'Intervensi keperawatan untuk mengatasi gangguan pola napas melalui terapi kipas genggam. Terapi ini membantu mengurangi sesak dengan memberikan aliran udara ke wajah untuk merangsang reseptor trigeminal, sehingga meningkatkan rasa lega saat bernapas. Pantau frekuensi napas, kenyamanan pasien, serta respon terhadap intervensi.',
+      thumbnailUrl: 'https://img.youtube.com/vi/uQkkimVP6Z0/mqdefault.jpg',
+      videoUrl: 'https://youtu.be/uQkkimVP6Z0?si=vCA8eh7JVOsAN968',
+      duration: '10:15',
     },
   ],
   wellbeing: [
     {
       id: 'wellbeing-boost-1',
-      title: 'Self-Acceptance Meditation',
+      title: '9. Perasaan - Family Empowerment Session',
       description:
-        'Praktik meditasi untuk meningkatkan kesejahteraan emosional dan penerimaan diri pada pasien paliatif.',
-      thumbnailUrl: 'https://img.youtube.com/vi/y5JJt6x6HwU/mqdefault.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=y5JJt6x6HwU',
-      duration: '12:00',
+        'Sesi Pemberdayaan Keluarga sesuai intervensi keperawatan untuk peningkatan koping keluarga. Orientasi 5 menit, latihan pernapasan bersama 5 menit, sesi refleksi positif 10 menit, doa/afirmasi bersama 5 menit, evaluasi ringan 5 menit.',
+      thumbnailUrl: 'https://img.youtube.com/vi/m6b0ziKW1pE/mqdefault.jpg',
+      videoUrl: 'https://www.youtube.com/watch?v=m6b0ziKW1pE',
+      duration: '25:00',
     },
   ],
 }
@@ -180,6 +171,7 @@ export function getRecommendedVideos(
     if (videoCount >= 4) break
 
     const symptomCategory = symptomMapping[question.questionId]
+
     if (symptomCategory && RECOMMENDED_VIDEOS[symptomCategory]) {
       const categoryVideos = RECOMMENDED_VIDEOS[symptomCategory]
 
@@ -188,14 +180,6 @@ export function getRecommendedVideos(
       recommendedVideos.push(...videosToAdd)
       videoCount += videosToAdd.length
     }
-  }
-
-  // If no specific symptom videos found, add general wellness videos
-  if (recommendedVideos.length === 0 && highestScore > 0 && highestScore <= 3) {
-    recommendedVideos.push(
-      ...RECOMMENDED_VIDEOS.anxiety.slice(0, 1),
-      ...RECOMMENDED_VIDEOS.breathing.slice(0, 1)
-    )
   }
 
   return recommendedVideos
@@ -229,11 +213,21 @@ export function formatESASScores(esasData: any): ESASQuestionScore[] {
   // Extract scores from questions
   Object.entries(questions).forEach(([key, value]: [string, any]) => {
     const questionId = parseInt(key)
-    if (questionId >= 1 && questionId <= 9 && value) {
+
+    if (questionId >= 1 && questionId <= 9 && value !== null && value !== undefined) {
+      let scoreValue = 0
+
+      // Handle both old format {1: 2} and new format {1: {score: 2}}
+      if (typeof value === 'object' && value.score !== undefined) {
+        scoreValue = value.score
+      } else if (typeof value === 'number') {
+        scoreValue = value
+      }
+
       scores.push({
         questionId,
         questionText: questionTexts[questionId] || `Question ${questionId}`,
-        score: value.score || 0,
+        score: scoreValue,
       })
     }
   })

@@ -13,7 +13,8 @@ import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Play } from 'lucide-react'
 import VideoPlayer from '@/components/video-player'
-import { getRecommendedVideos, shouldShowVideos, formatESASScores } from '@/lib/videoRecomendations'
+import { getRecommendedVideos, formatESASScores } from '@/lib/videoRecomendations'
+import ESASRuleEngine from '@/lib/esas-rule-engine'
 
 interface ESASScreeningResultContentProps {
   screeningId: string
@@ -116,7 +117,7 @@ export default function ESASScreeningResultContent({
 
   const esasData = screening.esas_data
   const identity = esasData?.identity || {}
-  const recommendation = screening.recommendation || {}
+  // const recommendation = screening.recommendation || {}
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
@@ -229,7 +230,7 @@ export default function ESASScreeningResultContent({
               <CardTitle className="text-xl text-sky-900">Ringkasan Penilaian</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="text-center">
                   <p className="text-sm text-gray-600 mb-2">Tingkat Risiko</p>
                   <Badge className={`${getRiskLevelColor(screening.risk_level)} text-lg px-4 py-2`}>
@@ -245,10 +246,10 @@ export default function ESASScreeningResultContent({
                     {screening.highest_score}/10
                   </div>
                 </div>
-                <div className="text-center">
+                {/* <div className="text-center">
                   <p className="text-sm text-gray-600 mb-2">Diagnosis Utama</p>
                   <p className="font-semibold text-sky-700">{recommendation.summary || '-'}</p>
-                </div>
+                </div> */}
               </div>
             </CardContent>
           </Card>
@@ -303,51 +304,140 @@ export default function ESASScreeningResultContent({
           </motion.div>
         )} */}
 
-        {/* Video Recommendations Section - Only show for scores 1-3 */}
-        {shouldShowVideos(screening?.highest_score || 0) && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="mb-8"
-          >
-            <Card className="bg-white/90 backdrop-blur-md border-sky-200 overflow-hidden">
-              <CardHeader>
-                <CardTitle className="text-xl font-bold text-sky-900 flex items-center gap-2">
-                  <Play className="w-5 h-5 text-purple-500" />
-                  Video Terapi Rekomendasi
-                </CardTitle>
-                <CardDescription className="text-sky-600">
-                  Berdasarkan hasil screening Anda, berikut adalah video terapi yang dapat membantu
-                  mengelola gejala ringan
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
-                {(() => {
-                  const esasScores = screening ? formatESASScores(screening.esas_data) : []
-                  const recommendedVideos = screening
-                    ? getRecommendedVideos(esasScores, screening.highest_score)
-                    : []
+        {/* Dynamic Content Section - Based on ESAS Score Logic */}
+        {(() => {
+          const highestScore = screening?.highest_score || 0
+          const displayLogic = ESASRuleEngine.getDisplayLogic(highestScore)
+          const esasScores = screening ? formatESASScores(screening.esas_data) : []
+          const recommendedVideos = screening ? getRecommendedVideos(esasScores, highestScore) : []
 
-                  return recommendedVideos.length > 0 ? (
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="mb-8"
+            >
+              {/* Video Section - Only for scores 1-3 */}
+              {displayLogic.showVideos && recommendedVideos.length > 0 && (
+                <Card className="bg-white/90 backdrop-blur-md border-sky-200 overflow-hidden">
+                  <CardHeader>
+                    <CardTitle className="text-xl font-bold text-sky-900 flex items-center gap-2">
+                      <Play className="w-5 h-5 text-purple-500" />
+                      Video Terapi Rekomendasi
+                    </CardTitle>
+                    <CardDescription className="text-sky-600">
+                      Berdasarkan hasil screening Anda, berikut adalah video terapi yang dapat
+                      membantu mengelola gejala ringan
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-6">
                     <VideoPlayer
                       videos={recommendedVideos}
                       autoPlay={false}
                       showPlaylist={recommendedVideos.length > 1}
                     />
-                  ) : (
-                    <div className="text-center py-8">
-                      <Play className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">
-                        Video rekomendasi tidak tersedia untuk gejala ini
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Intervention Text Section - Only for scores 4-10 */}
+              {displayLogic.showInterventionText && displayLogic.displayMessage && (
+                <Card
+                  className={`bg-white/90 backdrop-blur-md border-2 ${
+                    displayLogic.messageType === 'urgent'
+                      ? 'border-red-300 bg-red-50/50'
+                      : 'border-yellow-300 bg-yellow-50/50'
+                  }`}
+                >
+                  <CardHeader>
+                    <CardTitle
+                      className={`text-xl font-bold flex items-center gap-2 ${
+                        displayLogic.messageType === 'urgent' ? 'text-red-800' : 'text-yellow-800'
+                      }`}
+                    >
+                      {displayLogic.messageType === 'urgent' ? (
+                        <>
+                          <span className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                            !
+                          </span>
+                          Rekomendasi Tindakan Segera
+                        </>
+                      ) : (
+                        <>
+                          <span className="w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                            i
+                          </span>
+                          Rekomendasi Evaluasi
+                        </>
+                      )}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div
+                      className={`text-center py-6 ${
+                        displayLogic.messageType === 'urgent' ? 'text-red-700' : 'text-yellow-700'
+                      }`}
+                    >
+                      <div
+                        className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
+                          displayLogic.messageType === 'urgent'
+                            ? 'bg-red-200 text-red-600'
+                            : 'bg-yellow-200 text-yellow-600'
+                        }`}
+                      >
+                        {displayLogic.messageType === 'urgent' ? (
+                          <svg
+                            className="w-8 h-8"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="w-8 h-8"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                      <p className="text-lg font-semibold leading-relaxed">
+                        {displayLogic.displayMessage}
                       </p>
                     </div>
-                  )
-                })()}
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* No Videos Available Message - Only for scores 1-3 with no matching videos */}
+              {displayLogic.showVideos && recommendedVideos.length === 0 && (
+                <Card className="bg-white/90 backdrop-blur-md border-sky-200">
+                  <CardContent className="text-center py-8">
+                    <Play className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600">
+                      Video rekomendasi tidak tersedia untuk gejala ini
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </motion.div>
+          )
+        })()}
 
         {/* Footer Actions */}
         <motion.div

@@ -351,7 +351,6 @@ function ESASPasienForm({ userRole: _userRole, onSubmit, onCancel }: ESASFormVar
                     <FormControl>
                       <Input
                         placeholder="Nama lengkap Anda"
-                        defaultValue={profile?.full_name || ''}
                         {...field}
                         className="bg-white/90 border-sky-300"
                       />
@@ -387,7 +386,7 @@ function ESASPasienForm({ userRole: _userRole, onSubmit, onCancel }: ESASFormVar
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sky-700">Jenis Kelamin *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="bg-white/90 border-sky-300">
                           <SelectValue placeholder="Pilih jenis kelamin" />

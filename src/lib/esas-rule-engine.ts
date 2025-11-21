@@ -476,6 +476,78 @@ export class ESASRuleEngine {
 
     return frequencyMap[therapyType]?.[riskLevel] || frequencyMap.default[riskLevel]
   }
+
+  /**
+   * Determine what should be displayed based on highest score
+   * Sesuai requirement:
+   * - Score 1-3: Tampilkan video sesuai pertanyaan, TANPA teks intervensi
+   * - Score 4-6: Tampilkan teks evaluasi, TANPA video
+   * - Score 7-10: Tampilkan teks rujuk segera, TANPA video
+   */
+  static getDisplayLogic(highestScore: number): {
+    showVideos: boolean
+    showInterventionText: boolean
+    displayMessage?: string
+    messageType: 'video' | 'evaluation' | 'urgent'
+  } {
+    if (highestScore >= 1 && highestScore <= 3) {
+      return {
+        showVideos: true,
+        showInterventionText: false,
+        messageType: 'video'
+      }
+    } else if (highestScore >= 4 && highestScore <= 6) {
+      return {
+        showVideos: false,
+        showInterventionText: true,
+        displayMessage: 'Hubungi/Temukan fasilitas kesehatan terdekat untuk evaluasi lebih lanjut',
+        messageType: 'evaluation'
+      }
+    } else if (highestScore >= 7 && highestScore <= 10) {
+      return {
+        showVideos: false,
+        showInterventionText: true,
+        displayMessage: 'Segera rujuk ke Fasilitas Kesehatan atau Profesional untuk Penanganan Segera',
+        messageType: 'urgent'
+      }
+    } else {
+      // Score 0
+      return {
+        showVideos: false,
+        showInterventionText: false,
+        messageType: 'video'
+      }
+    }
+  }
+
+  /**
+   * Get simplified result data for display purposes
+   */
+  static getSimplifiedResult(highestScore: number, primaryQuestion: number): {
+    highestScore: number
+    primaryQuestion: number
+    primaryQuestionText: string
+    displayLogic: ReturnType<typeof ESASRuleEngine.getDisplayLogic>
+  } {
+    const questionTexts = {
+      1: 'Nyeri',
+      2: 'Lelah/Kekurangan Tenaga',
+      3: 'Kantuk/Gangguan Tidur',
+      4: 'Mual/Nausea',
+      5: 'Nafsu Makan',
+      6: 'Sesak/Pola Napas',
+      7: 'Sedih/Keputusasaan',
+      8: 'Cemas/Ansietas',
+      9: 'Perasaan Keseluruhan'
+    }
+
+    return {
+      highestScore,
+      primaryQuestion,
+      primaryQuestionText: questionTexts[primaryQuestion as keyof typeof questionTexts] || 'Unknown',
+      displayLogic: this.getDisplayLogic(highestScore)
+    }
+  }
 }
 
 // Helper function to get object values

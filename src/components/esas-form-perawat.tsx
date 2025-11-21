@@ -450,7 +450,7 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-green-700">Jenis Kelamin *</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger className="bg-white/90 border-green-300">
                                 <SelectValue placeholder="Pilih jenis kelamin" />
@@ -495,7 +495,7 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-green-700">Tipe Screening *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger className="bg-white/90 border-green-300">
                             <SelectValue placeholder="Pilih tipe screening" />

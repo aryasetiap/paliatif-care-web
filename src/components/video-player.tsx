@@ -118,10 +118,10 @@ export default function VideoPlayer({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+        className={`grid grid-cols-1 gap-6 ${showPlaylist ? 'lg:grid-cols-3' : 'lg:grid-cols-1'}`}
       >
         {/* Main Video Player */}
-        <div className="lg:col-span-2">
+        <div className={`${showPlaylist ? 'lg:col-span-2' : 'lg:col-span-1'}`}>
           <Card className="bg-white/90 backdrop-blur-md border-sky-200 overflow-hidden">
             <CardContent className="p-0">
               <div
@@ -210,13 +210,13 @@ export default function VideoPlayer({
         </div>
 
         {/* Video Playlist */}
-        {showPlaylist && videos.length > 1 && (
+        {showPlaylist && (
           <div className="lg:col-span-1">
             <Card className="bg-white/90 backdrop-blur-md border-sky-200 h-full">
               <CardContent className="p-4">
                 <h3 className="font-semibold text-sky-900 mb-4 flex items-center gap-2">
                   <Youtube className="w-5 h-5 text-red-500" />
-                  Daftar Video (2)
+                  Daftar Video ({videos.length})
                 </h3>
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {videos.map((video, index) => (
