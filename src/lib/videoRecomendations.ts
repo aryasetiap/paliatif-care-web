@@ -65,11 +65,11 @@ const RECOMMENDED_VIDEOS = {
   anxiety: [
     {
       id: 'anxiety-relief-1',
-      title: '8. Cemas - Terapi Murottal',
+      title: '8. Terapi Musik',
       description:
-        'Terapi Murottal sesuai intervensi keperawatan untuk ansietas. Putar audio murottal dengan volume lembut (40-50 dB) selama 10-20 menit. Amati ekspresi wajah, frekuensi napas, dan tanda relaksasi pasien selama terapi.',
-      thumbnailUrl: 'https://img.youtube.com/vi/y5JJt6x6HwU/mqdefault.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=y5JJt6x6HwU',
+        'Terapi musik sebagai intervensi keperawatan untuk membantu menurunkan kecemasan. Pasien diarahkan mendengarkan musik yang lembut, terstruktur, dan menenangkan selama 15–30 menit dalam suasana yang nyaman. Terapi ini bertujuan menurunkan ketegangan fisik, memperbaiki mood, serta memfasilitasi relaksasi melalui stimulasi sensorik yang positif.',
+      thumbnailUrl: 'https://img.youtube.com/vi/gl5dJA85nBc/mqdefault.jpg',
+      videoUrl: 'https://youtu.be/gl5dJA85nBc',
       duration: '15:30',
     },
   ],

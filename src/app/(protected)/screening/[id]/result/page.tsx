@@ -94,28 +94,26 @@ function getScoreColor(score: number) {
 
 // Helper function to normalize screening data format
 function normalizeScreeningData(data: any): ScreeningData {
+  // Extract patient info from the correct location
+  const patientInfo = data.esas_data?.patient_info || {}
+
+  // Create identity object from patient_info
+  const identity = {
+    name: patientInfo.patient_name || 'Tidak diketahui',
+    age: patientInfo.patient_age || 0,
+    gender: patientInfo.patient_gender || 'L',
+    facility_name: patientInfo.facility_name || '',
+  }
+
   return {
     ...data,
     esas_data: {
-      identity: data.esas_data?.identity || {
-        name: 'Tidak diketahui',
-        age: 0,
-        gender: 'L',
-        facility_name: '',
-      },
+      identity: data.esas_data?.identity || identity,
       questions: data.esas_data?.questions || {
-        '1': {
-          score: data.esas_data?.pain || 0,
-          text: 'Nyeri',
-          description: 'Nyeri ringan/sedang/berat',
-        },
-        '2': {
-          score: 0,
-          text: 'Lelah/Kekurangan Tenaga',
-          description: 'Kelelahan/Intoleransi Aktivitas',
-        },
+        '1': { score: 0, text: 'Nyeri', description: 'Nyeri ringan/sedang/berat' },
+        '2': { score: 0, text: 'Lelah/Kekurangan Tenaga', description: 'Kelelahan/Intoleransi Aktivitas' },
         '3': { score: 0, text: 'Kantuk/Gangguan Tidur', description: 'Gangguan Pola Tidur' },
-        '4': { score: data.esas_data?.nausea || 0, text: 'Mual/Nausea', description: 'Nausea' },
+        '4': { score: 0, text: 'Mual/Nausea', description: 'Nausea' },
         '5': { score: 0, text: 'Nafsu Makan', description: 'Resiko Defisit Nutrisi' },
         '6': { score: 0, text: 'Sesak/Pola Napas', description: 'Pola Napas Tidak Efektif' },
         '7': { score: 0, text: 'Sedih/Keputusasaan', description: 'Keputusasaan/Depresi' },
