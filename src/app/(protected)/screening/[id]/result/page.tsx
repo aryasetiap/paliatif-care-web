@@ -7,14 +7,16 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
+// import { ScrollArea } from '@/components/ui/scroll-area'
 
 import { createClient } from '@/lib/supabase'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
-import { BookOpen, Heart } from 'lucide-react'
+import { BookOpen, Heart, Play } from 'lucide-react'
 import '@/styles/modern-patterns.css'
+import VideoPlayer from '@/components/video-player'
+import { getRecommendedVideos, shouldShowVideos, formatESASScores } from '@/lib/videoRecomendations'
 
 interface ScreeningData {
   id: string
@@ -350,7 +352,7 @@ export default function ScreeningResultPage() {
         </motion.div>
 
         {/* Diagnosis and Intervention */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
@@ -420,7 +422,54 @@ export default function ScreeningResultPage() {
               </ScrollArea>
             </CardContent>
           </Card>
-        </motion.div>
+        </motion.div> */}
+
+        {/* Video Recommendations Section - Only show for scores 1-3 */}
+        {shouldShowVideos(screeningData.highest_score) && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mb-8"
+          >
+            <Card className="bg-white/90 backdrop-blur-md border-sky-200 overflow-hidden">
+              <CardHeader>
+                <CardTitle className="text-xl font-bold text-sky-900 flex items-center gap-2">
+                  <Play className="w-5 h-5 text-purple-500" />
+                  Video Terapi Rekomendasi
+                </CardTitle>
+                <CardDescription className="text-sky-600">
+                  Berdasarkan hasil screening Anda, berikut adalah video terapi yang dapat membantu
+                  mengelola gejala ringan
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                {(() => {
+                  const esasScores = formatESASScores(screeningData.esas_data)
+                  const recommendedVideos = getRecommendedVideos(
+                    esasScores,
+                    screeningData.highest_score
+                  )
+
+                  return recommendedVideos.length > 0 ? (
+                    <VideoPlayer
+                      videos={recommendedVideos}
+                      autoPlay={false}
+                      showPlaylist={recommendedVideos.length > 1}
+                    />
+                  ) : (
+                    <div className="text-center py-8">
+                      <Play className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600">
+                        Video rekomendasi tidak tersedia untuk gejala ini
+                      </p>
+                    </div>
+                  )
+                })()}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
         {/* Educational Resources Section */}
         <motion.div

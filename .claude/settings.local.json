@@ -39,7 +39,10 @@
       "mcp__supabase__apply_migration",
       "Bash(node:*)",
       "mcp__supabase__generate_typescript_types",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(tree:*)",
+      "Bash(src/app/globals.css)",
+      "Bash(npx eslint:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

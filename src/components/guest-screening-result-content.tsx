@@ -11,9 +11,9 @@ import { createClient } from '@/lib/supabase'
 import { useToast } from '@/hooks/use-toast'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Download } from 'lucide-react'
-import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
+import { ArrowLeft, Play } from 'lucide-react'
+import VideoPlayer from '@/components/video-player'
+import { getRecommendedVideos, shouldShowVideos, formatESASScores } from '@/lib/videoRecomendations'
 
 interface ESASScreeningResultContentProps {
   screeningId: string
@@ -67,108 +67,6 @@ export default function ESASScreeningResultContent({
       })
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  const handleDownloadPDF = async () => {
-    try {
-      const element = document.getElementById('screening-result-content')
-      if (!element) {
-        throw new Error('Content element not found')
-      }
-
-      // Show loading toast
-      toast({
-        title: 'Membuat PDF',
-        description: 'Sedang membuat dokumen PDF yang dioptimasi, mohon tunggu...',
-      })
-
-      // Create canvas with optimized settings for smaller PDF size
-      const canvas = await html2canvas(element, {
-        scale: 1.2, // Further reduced for better optimization
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        width: element.scrollWidth,
-        height: element.scrollHeight,
-        // Optimize for smaller file size
-        removeContainer: true,
-        imageTimeout: 0,
-        foreignObjectRendering: false, // Disable for better compatibility
-        onclone: (clonedDoc) => {
-          // Remove print:hidden elements and optimize for PDF
-          const printElements = clonedDoc.querySelectorAll('.print\\:hidden')
-          printElements.forEach((el) => el.remove())
-
-          // Optimize styles for PDF
-          const body = clonedDoc.body
-          if (body) {
-            body.style.background = '#ffffff'
-            body.style.color = '#000000'
-            body.style.fontFamily = 'Arial, sans-serif'
-          }
-
-          // Remove animations and transitions
-          const style = clonedDoc.createElement('style')
-          style.textContent = `
-            * { animation: none !important; transition: none !important; }
-            .motion-div { transform: none !important; opacity: 1 !important; }
-          `
-          clonedDoc.head.appendChild(style)
-        },
-      })
-
-      // Create PDF with optimized image settings
-      const imgData = canvas.toDataURL('image/jpeg', 0.8) // Use JPEG with 80% quality
-      const pdf = new jsPDF({
-        orientation: 'p',
-        unit: 'mm',
-        format: 'a4',
-        compress: true, // Enable compression
-      })
-
-      const imgWidth = 210 // A4 width in mm
-      const pageHeight = 297 // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width
-      let heightLeft = imgHeight
-
-      let position = 0
-
-      // Add image to PDF
-      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
-      heightLeft -= pageHeight
-
-      // Add new pages if needed
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight
-        pdf.addPage()
-        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
-        heightLeft -= pageHeight
-      }
-
-      // Generate filename
-      const patientName = (identity.name || 'Pasien').replace(/\s+/g, '_')
-      const date = new Date().toLocaleDateString('id-ID').replace(/\//g, '-')
-      const filename = `Hasil_Screening_ESAS_${patientName}_${date}.pdf`
-
-      // Save PDF
-      pdf.save(filename)
-
-      // Show success toast with optimization info
-      toast({
-        title: 'PDF Berhasil Diunduh',
-        description: 'File PDF yang dioptimasi telah berhasil dibuat (ukuran lebih kecil)',
-      })
-    } catch (error) {
-      toast({
-        title: 'Gagal Membuat PDF',
-        description:
-          error instanceof Error
-            ? error.message
-            : 'Terjadi kesalahan saat membuat file PDF. Silakan coba lagi.',
-        variant: 'destructive',
-      })
     }
   }
 
@@ -245,35 +143,6 @@ export default function ESASScreeningResultContent({
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-2 print:hidden">
-              {/* <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePrint}
-                  className="flex items-center gap-2"
-                >
-                  <Printer className="w-4 h-4" />
-                  Cetak
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDownloadPDF}
-                  className="flex items-center gap-2"
-                >
-                  <Download className="w-4 h-4" />
-                  PDF
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleShare}
-                  className="flex items-center gap-2"
-                >
-                  <Share2 className="w-4 h-4" />
-                  Bagikan
-                </Button>
-              </div> */}
               <Button
                 size="sm"
                 onClick={() =>
@@ -385,49 +254,8 @@ export default function ESASScreeningResultContent({
           </Card>
         </motion.div>
 
-        {/* ESAS Questions Results */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mb-8"
-        >
-          <Card className="bg-white/90 backdrop-blur-md border-sky-200">
-            <CardHeader>
-              <CardTitle className="text-xl text-sky-900">Hasil Pertanyaan ESAS</CardTitle>
-              <CardDescription className="text-sky-600">
-                Skor 0 (tidak ada keluhan) hingga 10 (keluhan terberat)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {Object.entries(questions).map(([key, score]: [string, unknown]) => {
-                  const numericScore = typeof score === 'number' ? score : Number(score) || 0
-                  return (
-                    <div key={key} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold text-gray-800">
-                          {key}. {getESASQuestionText(key)}
-                        </h4>
-                        <div className="flex items-center gap-2">
-                          <Badge className={`${getScoreColor(numericScore)} border`}>
-                            {numericScore} - {getScoreLevel(numericScore)}
-                          </Badge>
-                        </div>
-                      </div>
-                      <p className="text-sm text-gray-600">
-                        Tingkat keparahan: {getESASQuestionDescription(key, numericScore)}
-                      </p>
-                    </div>
-                  )
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div> */}
-
         {/* Recommendations */}
-        {recommendation && (
+        {/* {recommendation && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -473,36 +301,53 @@ export default function ESASScreeningResultContent({
               </CardContent>
             </Card>
           </motion.div>
-        )}
+        )} */}
 
-        {/* Disclaimer */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="mb-8"
-        >
-          <Card className="bg-yellow-50 border-yellow-200">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <h4 className="font-semibold text-yellow-800 mb-2">🏥 PENTING DIPERHATIKAN</h4>
-                <div className="text-yellow-700 text-sm space-y-2">
-                  <p>
-                    Hasil screening ini merupakan alat bantu penilaian awal dan{' '}
-                    <strong>bukan pengganti diagnosis medis profesional</strong>.
-                  </p>
-                  <p className="font-medium">⚠️ Segera hubungi fasilitas kesehatan jika:</p>
-                  <ul className="text-left max-w-md mx-auto space-y-1">
-                    <li>• Skor gejala ≥ 7 (keluhan berat)</li>
-                    <li>• Mengalami sesak napas yang berat</li>
-                    <li>• Nyeri yang tidak tertolong dengan obat</li>
-                    <li>• Perubahan kondisi yang mendadak</li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div> */}
+        {/* Video Recommendations Section - Only show for scores 1-3 */}
+        {shouldShowVideos(screening?.highest_score || 0) && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="mb-8"
+          >
+            <Card className="bg-white/90 backdrop-blur-md border-sky-200 overflow-hidden">
+              <CardHeader>
+                <CardTitle className="text-xl font-bold text-sky-900 flex items-center gap-2">
+                  <Play className="w-5 h-5 text-purple-500" />
+                  Video Terapi Rekomendasi
+                </CardTitle>
+                <CardDescription className="text-sky-600">
+                  Berdasarkan hasil screening Anda, berikut adalah video terapi yang dapat membantu
+                  mengelola gejala ringan
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                {(() => {
+                  const esasScores = screening ? formatESASScores(screening.esas_data) : []
+                  const recommendedVideos = screening
+                    ? getRecommendedVideos(esasScores, screening.highest_score)
+                    : []
+
+                  return recommendedVideos.length > 0 ? (
+                    <VideoPlayer
+                      videos={recommendedVideos}
+                      autoPlay={false}
+                      showPlaylist={recommendedVideos.length > 1}
+                    />
+                  ) : (
+                    <div className="text-center py-8">
+                      <Play className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600">
+                        Video rekomendasi tidak tersedia untuk gejala ini
+                      </p>
+                    </div>
+                  )
+                })()}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
         {/* Footer Actions */}
         <motion.div
@@ -518,10 +363,6 @@ export default function ESASScreeningResultContent({
           >
             <ArrowLeft className="w-4 h-4" />
             Screening Baru
-          </Button>
-          <Button onClick={handleDownloadPDF} className="flex items-center gap-2">
-            <Download className="w-4 h-4" />
-            Unduh Hasil (PDF)
           </Button>
         </motion.div>
       </div>
