@@ -53,12 +53,12 @@ const RECOMMENDED_VIDEOS = {
   nausea: [
     {
       id: 'nausea-relief-1',
-      title: 'Acupressure for Nausea Relief',
+      title: '4. Nausea',
       description:
-        'Teknik akupresur P6 (Neiguan) point untuk mengurangi mual dan muntah secara alami.',
-      thumbnailUrl: 'https://img.youtube.com/vi/y5JJt6x6HwU/mqdefault.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=y5JJt6x6HwU',
-      duration: '6:30',
+        'Teknik akupresur pada titik P6 (Neiguan) untuk membantu meredakan mual dan muntah secara alami. Metode ini dapat dilakukan secara mandiri dengan tekanan lembut yang aman, sehingga bermanfaat bagi pasien paliatif maupun kondisi mual lainnya.',
+      thumbnailUrl: 'https://img.youtube.com/vi/0Cg_B7vtM-I/mqdefault.jpg',
+      videoUrl: 'https://www.youtube.com/watch?v=0Cg_B7vtM-I',
+      duration: '06:55',
     },
   ],
   anxiety: [
