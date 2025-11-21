@@ -252,17 +252,47 @@ export default function HeaderNav() {
             )}
           </nav>
 
-          {/* Mobile menu button */}
-          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden transition-all duration-300 rounded-xl group text-white hover:bg-white/20 backdrop-blur-md"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
-          </motion.div>
+          {/* Mobile menu buttons */}
+          <div className="md:hidden flex items-center gap-2">
+            {/* Logout Button - Show only if authenticated */}
+            {isAuthenticated && (
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={`transition-all duration-300 rounded-xl group ${
+                    isScrolled
+                      ? 'bg-gray-800 text-white border border-gray-300 hover:bg-gray-700 shadow-lg'
+                      : 'bg-white/20 text-white border border-white/30 backdrop-blur-md hover:bg-white/30 hover:border-white/50 shadow-lg'
+                  }`}
+                  onClick={handleLogout}
+                  title="Logout"
+                >
+                  <LogOut className="h-5 w-5" />
+                </Button>
+              </motion.div>
+            )}
+
+            {/* Hamburger menu button */}
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`transition-all duration-300 rounded-xl group ${
+                  isScrolled
+                    ? 'bg-gray-800 text-white border border-gray-300 hover:bg-gray-700 shadow-lg'
+                    : 'bg-white/20 text-white border border-white/30 backdrop-blur-md hover:bg-white/30 hover:border-white/50 shadow-lg'
+                }`}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </Button>
+            </motion.div>
+          </div>
         </div>
 
         {/* Mobile Navigation */}
@@ -370,21 +400,6 @@ export default function HeaderNav() {
                       </div>
                       <span>Dashboard</span>
                     </Link>
-
-                    {/* Logout Button */}
-                    <Button
-                      variant="ghost"
-                      className="w-full space-x-2 flex items-center justify-start px-4 py-6 text-sm font-medium text-red-700 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors border border-red-300"
-                      onClick={() => {
-                        handleLogout()
-                        setIsMenuOpen(false)
-                      }}
-                    >
-                      <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/20 border border-red-400/30">
-                        <LogOut className="h-4 w-4 text-red-400" />
-                      </div>
-                      <span>Logout</span>
-                    </Button>
                   </>
                 ) : (
                   <>

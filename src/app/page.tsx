@@ -461,7 +461,7 @@ export default function Home() {
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-6">
                 <span className="text-sky-900">Tentang</span>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
-                  Sihat
+                  SIHAT
                 </span>
               </h2>
               <p className="text-lg md:text-xl text-sky-700 max-w-3xl mx-auto leading-relaxed">

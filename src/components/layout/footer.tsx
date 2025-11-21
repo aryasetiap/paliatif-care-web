@@ -24,7 +24,7 @@ const footerSections = {
   ],
   perusahaan: [
     {
-      name: 'Tentang Sihat',
+      name: 'Tentang SIHAT',
       href: '/about',
       description: 'Misi dan visi kami',
     },
