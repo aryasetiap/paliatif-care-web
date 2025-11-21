@@ -119,11 +119,11 @@ const RECOMMENDED_VIDEOS = {
   wellbeing: [
     {
       id: 'wellbeing-boost-1',
-      title: '9. Perasaan - Family Empowerment Session',
+      title: '9. Dukungan koping keluarga',
       description:
-        'Sesi Pemberdayaan Keluarga sesuai intervensi keperawatan untuk peningkatan koping keluarga. Orientasi 5 menit, latihan pernapasan bersama 5 menit, sesi refleksi positif 10 menit, doa/afirmasi bersama 5 menit, evaluasi ringan 5 menit.',
-      thumbnailUrl: 'https://img.youtube.com/vi/m6b0ziKW1pE/mqdefault.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=m6b0ziKW1pE',
+        'Edukasi dan pendampingan untuk meningkatkan kemampuan koping keluarga dalam merawat pasien. Intervensi meliputi pemberian informasi, dukungan emosional, serta strategi pemecahan masalah agar keluarga mampu beradaptasi, mengurangi stres, dan meningkatkan kesejahteraan selama proses perawatan.',
+      thumbnailUrl: 'https://img.youtube.com/vi/mfG65YoIWcw/mqdefault.jpg',
+      videoUrl: 'https://youtu.be/mfG65YoIWcw?si=GS4QpuXqqHpJ5NNY',
       duration: '25:00',
     },
   ],
