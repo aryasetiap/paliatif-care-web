@@ -230,19 +230,6 @@ export default function Home() {
                   <>
                     <Button
                       size="lg"
-                      className="relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group border-0 overflow-hidden"
-                      onClick={handleScreeningClick}
-                    >
-                      <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                      <div className="relative flex items-center">
-                        <Activity className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
-                        <span>Mulai Screening</span>
-                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                      </div>
-                    </Button>
-
-                    <Button
-                      size="lg"
                       className="relative bg-sky-800/20 backdrop-blur-md border border-sky-600/30 text-white hover:bg-sky-800/30 shadow-lg hover:shadow-sky-800/20 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group"
                       asChild
                     >
@@ -254,13 +241,10 @@ export default function Home() {
                         </div>
                       </Link>
                     </Button>
-                  </>
-                ) : (
-                  <>
                     <Button
                       size="lg"
                       className="relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group border-0 overflow-hidden"
-                      onClick={() => router.push('/screening/guest')}
+                      onClick={handleScreeningClick}
                     >
                       <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                       <div className="relative flex items-center">
@@ -269,7 +253,9 @@ export default function Home() {
                         <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
                       </div>
                     </Button>
-
+                  </>
+                ) : (
+                  <>
                     <Button
                       size="lg"
                       className="relative bg-sky-800/20 backdrop-blur-md border border-sky-600/30 text-white hover:bg-sky-800/30 shadow-lg hover:shadow-sky-800/20 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group"
@@ -282,6 +268,18 @@ export default function Home() {
                           <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
                         </div>
                       </Link>
+                    </Button>
+                    <Button
+                      size="lg"
+                      className="relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group border-0 overflow-hidden"
+                      onClick={() => router.push('/screening/guest')}
+                    >
+                      <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                      <div className="relative flex items-center">
+                        <Activity className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                        <span>Mulai Screening</span>
+                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                      </div>
                     </Button>
                   </>
                 )}

@@ -11,7 +11,7 @@ import { createClient } from '@/lib/supabase'
 import { useToast } from '@/hooks/use-toast'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Play } from 'lucide-react'
+import { ArrowLeft, Play, BookOpen, Heart } from 'lucide-react'
 import VideoPlayer from '@/components/video-player'
 import { getRecommendedVideos, formatESASScores } from '@/lib/videoRecomendations'
 import ESASRuleEngine from '@/lib/esas-rule-engine'
@@ -409,6 +409,120 @@ export default function ESASScreeningResultContent({
           <p className="text-lg font-medium text-sky-700">
             Untuk Pelayanan Lebih Lanjut Silahkan Hubungi Pelayanan Kesehatan Terdekat
           </p>
+        </motion.div>
+
+        {/* Educational Resources Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="my-8"
+        >
+          <Card className="bg-white/80 backdrop-blur-md border-sky-200">
+            <CardHeader>
+              <CardTitle className="text-xl text-sky-900 flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-blue-500" />
+                Edukasi Kesehatan Terkait
+              </CardTitle>
+              <CardDescription className="text-sky-600">
+                Pelajari lebih lanjut tentang penyakit dan perawatan paliatif untuk meningkatkan
+                pemahaman Anda
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  {
+                    name: 'Alzheimer',
+                    slug: 'alzheimer',
+                    bgColor: 'bg-purple-100 hover:bg-purple-200',
+                    borderColor: 'border-purple-300 hover:border-purple-400',
+                    textColor: 'text-purple-800',
+                    iconColor: 'text-purple-600',
+                  },
+                  {
+                    name: 'Kanker Payudara',
+                    slug: 'kanker-payudara',
+                    bgColor: 'bg-pink-100 hover:bg-pink-200',
+                    borderColor: 'border-pink-300 hover:border-pink-400',
+                    textColor: 'text-pink-800',
+                    iconColor: 'text-pink-600',
+                  },
+                  {
+                    name: 'Gagal Ginjal',
+                    slug: 'gagal-ginjal',
+                    bgColor: 'bg-blue-100 hover:bg-blue-200',
+                    borderColor: 'border-blue-300 hover:border-blue-400',
+                    textColor: 'text-blue-800',
+                    iconColor: 'text-blue-600',
+                  },
+                  {
+                    name: 'Diabetes',
+                    slug: 'diabetes',
+                    bgColor: 'bg-orange-100 hover:bg-orange-200',
+                    borderColor: 'border-orange-300 hover:border-orange-400',
+                    textColor: 'text-orange-800',
+                    iconColor: 'text-orange-600',
+                  },
+                  {
+                    name: 'Gagal Jantung',
+                    slug: 'gagal-jantung',
+                    bgColor: 'bg-red-100 hover:bg-red-200',
+                    borderColor: 'border-red-300 hover:border-red-400',
+                    textColor: 'text-red-800',
+                    iconColor: 'text-red-600',
+                  },
+                  {
+                    name: 'HIV & AIDS',
+                    slug: 'hiv-dan-aids',
+                    bgColor: 'bg-rose-100 hover:bg-rose-200',
+                    borderColor: 'border-rose-300 hover:border-rose-400',
+                    textColor: 'text-rose-800',
+                    iconColor: 'text-rose-600',
+                  },
+                  {
+                    name: 'PPOK',
+                    slug: 'ppok',
+                    bgColor: 'bg-cyan-100 hover:bg-cyan-200',
+                    borderColor: 'border-cyan-300 hover:border-cyan-400',
+                    textColor: 'text-cyan-800',
+                    iconColor: 'text-cyan-600',
+                  },
+                  {
+                    name: 'Stroke',
+                    slug: 'stroke',
+                    bgColor: 'bg-green-100 hover:bg-green-200',
+                    borderColor: 'border-green-300 hover:border-green-400',
+                    textColor: 'text-green-800',
+                    iconColor: 'text-green-600',
+                  },
+                ].map((disease, index) => (
+                  <motion.div
+                    key={disease.slug}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: 0.1 * index }}
+                    className="group"
+                  >
+                    <Button
+                      variant="outline"
+                      onClick={() => router.push(`/edukasi/${disease.slug}`)}
+                      className={`w-full h-16 ${disease.bgColor} ${disease.borderColor} transition-all duration-300 hover:scale-105 hover:shadow-lg`}
+                    >
+                      <div className="flex flex-col items-center gap-1">
+                        <Heart className={`w-4 h-4 ${disease.iconColor}`} />
+                        <span
+                          className={`text-xs font-semibold ${disease.textColor} group-hover:opacity-90 transition-opacity`}
+                        >
+                          {disease.name}
+                        </span>
+                      </div>
+                    </Button>
+                  </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Footer Actions */}

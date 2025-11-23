@@ -476,6 +476,18 @@ export default function ScreeningResultPage() {
           )
         })()}
 
+        {/* Reminder Paragraph */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="text-center my-6"
+        >
+          <p className="text-lg font-medium text-sky-700">
+            Untuk Pelayanan Lebih Lanjut Silahkan Hubungi Pelayanan Kesehatan Terdekat
+          </p>
+        </motion.div>
+
         {/* Educational Resources Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
