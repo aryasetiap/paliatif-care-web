@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -11,6 +11,7 @@ import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase'
 import '@/styles/modern-patterns.css'
+import { useAuthStore } from '@/lib/stores/authStore'
 
 interface DashboardStats {
   totalPatients: number
@@ -23,69 +24,196 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [recentActivities, setRecentActivities] = useState<any[]>([])
+  const { user, userRole } = useAuthStore()
 
-  useEffect(() => {
-    loadDashboardData()
-  }, [])
-
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     try {
       const supabase = createClient()
 
-      // Load total patients
-      const { count: totalPatients } = await supabase
-        .from('patients')
-        .select('*', { count: 'exact', head: true })
+      let totalPatients = 0
+      let totalScreenings = 0
+      let screeningsThisMonth = 0
+      let highRiskPatients: any[] = []
+      let activities: any[] = []
 
-      // Load total screenings
-      const { count: totalScreenings } = await supabase
-        .from('screenings')
-        .select('*', { count: 'exact', head: true })
+      // Filter based on user role
+      if (userRole === 'perawat') {
+        // For nurses: show only patients they created through their screenings
+        const { data: nurseScreenings } = await supabase
+          .from('screenings')
+          .select('patient_id')
+          .eq('user_id', user?.id)
+          .not('patient_id', 'is', null)
 
-      // Load screenings this month
-      const now = new Date()
-      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-        .toISOString()
-        .slice(0, 10)
-      const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-        .toISOString()
-        .slice(0, 10)
-      const { count: screeningsThisMonth } = await supabase
-        .from('screenings')
-        .select('*', { count: 'exact', head: true })
-        .gte('created_at', firstDayOfMonth)
-        .lte('created_at', lastDayOfMonth)
+        const uniquePatientIds = [
+          ...new Set(nurseScreenings?.map((s: any) => s.patient_id).filter(Boolean)),
+        ]
 
-      // Load high risk patients
-      const { data: highRiskPatients } = await supabase
-        .from('screenings')
-        .select('*, patients(name, age, gender)')
-        .in('risk_level', ['high', 'critical'])
-        .order('created_at', { ascending: false })
-        .limit(5)
+        // Load total patients for nurse
+        if (uniquePatientIds.length > 0) {
+          const { count } = await supabase
+            .from('patients')
+            .select('*', { count: 'exact', head: true })
+            .in('id', uniquePatientIds)
+          totalPatients = count || 0
+        }
 
-      // Load recent activities
-      const { data: activities } = await supabase
-        .from('screenings')
-        .select('*, patients(name)')
-        .order('created_at', { ascending: false })
-        .limit(5)
+        // Load total screenings for nurse
+        const { count: screeningCount } = await supabase
+          .from('screenings')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user?.id)
+        totalScreenings = screeningCount || 0
+
+        // Load screenings this month for nurse
+        const now = new Date()
+        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+          .toISOString()
+          .slice(0, 10)
+        const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+          .toISOString()
+          .slice(0, 10)
+
+        const { count: monthCount } = await supabase
+          .from('screenings')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user?.id)
+          .gte('created_at', firstDayOfMonth)
+          .lte('created_at', lastDayOfMonth)
+        screeningsThisMonth = monthCount || 0
+
+        // Load high risk patients for nurse
+        const { data: highRisk } = await supabase
+          .from('screenings')
+          .select('*, patients(name, age, gender)')
+          .eq('user_id', user?.id)
+          .in('risk_level', ['high', 'critical'])
+          .order('created_at', { ascending: false })
+          .limit(5)
+        highRiskPatients = highRisk || []
+
+        // Load recent activities for nurse
+        const { data: recent } = await supabase
+          .from('screenings')
+          .select('*, patients(name)')
+          .eq('user_id', user?.id)
+          .order('created_at', { ascending: false })
+          .limit(5)
+        activities = recent || []
+      } else if (userRole === 'admin') {
+        // For admin: show all data
+        const { count: patientCount } = await supabase
+          .from('patients')
+          .select('*', { count: 'exact', head: true })
+        totalPatients = patientCount || 0
+
+        const { count: screeningCount } = await supabase
+          .from('screenings')
+          .select('*', { count: 'exact', head: true })
+        totalScreenings = screeningCount || 0
+
+        // Load screenings this month
+        const now = new Date()
+        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+          .toISOString()
+          .slice(0, 10)
+        const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+          .toISOString()
+          .slice(0, 10)
+
+        const { count: monthCount } = await supabase
+          .from('screenings')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', firstDayOfMonth)
+          .lte('created_at', lastDayOfMonth)
+        screeningsThisMonth = monthCount || 0
+
+        // Load high risk patients for admin
+        const { data: highRisk } = await supabase
+          .from('screenings')
+          .select('*, patients(name, age, gender)')
+          .in('risk_level', ['high', 'critical'])
+          .order('created_at', { ascending: false })
+          .limit(5)
+        highRiskPatients = highRisk || []
+
+        // Load recent activities for admin
+        const { data: recent } = await supabase
+          .from('screenings')
+          .select('*, patients(name)')
+          .order('created_at', { ascending: false })
+          .limit(5)
+        activities = recent || []
+      } else if (userRole === 'pasien') {
+        // For pasien: show only their own data
+        const { count: patientCount } = await supabase
+          .from('patients')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user?.id)
+        totalPatients = patientCount || 0
+
+        const { count: screeningCount } = await supabase
+          .from('screenings')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user?.id)
+        totalScreenings = screeningCount || 0
+
+        // Load screenings this month for patient
+        const now = new Date()
+        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+          .toISOString()
+          .slice(0, 10)
+        const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+          .toISOString()
+          .slice(0, 10)
+
+        const { count: monthCount } = await supabase
+          .from('screenings')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user?.id)
+          .gte('created_at', firstDayOfMonth)
+          .lte('created_at', lastDayOfMonth)
+        screeningsThisMonth = monthCount || 0
+
+        // Load high risk patients for patient
+        const { data: highRisk } = await supabase
+          .from('screenings')
+          .select('*, patients(name, age, gender)')
+          .eq('user_id', user?.id)
+          .in('risk_level', ['high', 'critical'])
+          .order('created_at', { ascending: false })
+          .limit(5)
+        highRiskPatients = highRisk || []
+
+        // Load recent activities for patient
+        const { data: recent } = await supabase
+          .from('screenings')
+          .select('*, patients(name)')
+          .eq('user_id', user?.id)
+          .order('created_at', { ascending: false })
+          .limit(5)
+        activities = recent || []
+      }
 
       setStats({
-        totalPatients: totalPatients || 0,
-        totalScreenings: totalScreenings || 0,
-        screeningsThisMonth: screeningsThisMonth || 0,
-        highRiskPatients: highRiskPatients || [],
+        totalPatients,
+        totalScreenings,
+        screeningsThisMonth,
+        highRiskPatients,
       })
 
-      setRecentActivities(activities || [])
+      setRecentActivities(activities)
     } catch {
       // Silently handle error to prevent app crash
       // Error logged for debugging purposes if needed
     } finally {
       setLoading(false)
     }
-  }
+  }, [user, userRole])
+
+  useEffect(() => {
+    loadDashboardData()
+  }, [loadDashboardData])
 
   const getRiskLevelColor = (level: string) => {
     switch (level) {
