@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
-import AuthErrorBoundary from '@/components/auth-error-boundary'
+import { SessionProvider } from '@/components/auth-provider'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -64,10 +64,10 @@ export default function RootLayout({
     <html lang="id">
       <body className={inter.className}>
         <div className="min-h-screen bg-background font-sans antialiased">
-          <AuthErrorBoundary>
+          <SessionProvider>
             {children}
             <Toaster />
-          </AuthErrorBoundary>
+          </SessionProvider>
         </div>
       </body>
     </html>

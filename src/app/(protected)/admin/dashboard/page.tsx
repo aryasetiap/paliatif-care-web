@@ -103,12 +103,7 @@ export default function AdminDashboardPage() {
       // Load recent activities (simplified - just get recent screenings and users)
       const { data: recentScreenings } = await supabase
         .from('screenings')
-        .select(`
-          *,
-          profiles!inner(
-            full_name
-          )
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(5)
 
@@ -122,7 +117,7 @@ export default function AdminDashboardPage() {
         ...(recentScreenings?.map(s => ({
           id: s.id,
           type: 'screening' as const,
-          user_name: s.profiles?.full_name,
+          user_name: s.esas_data?.patient_info?.patient_name || 'Guest User',
           action: `Melakukan screening ${s.screening_type}`,
           created_at: s.created_at
         })) || []),
@@ -299,7 +294,7 @@ export default function AdminDashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8"
         >
           <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="text-center">
@@ -322,10 +317,54 @@ export default function AdminDashboardPage() {
           <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="text-center">
               <div className="mx-auto mb-2 p-3 bg-green-100 rounded-full group-hover:bg-green-200 transition-colors">
-                <ClipboardList className="h-6 w-6 text-green-600" />
+                <Users className="h-6 w-6 text-green-600" />
               </div>
-              <CardTitle className="text-lg">Data Screening</CardTitle>
-              <CardDescription>Lihat dan kelola semua data screening</CardDescription>
+              <CardTitle className="text-lg">Data Perawat</CardTitle>
+              <CardDescription>Lihat data perawat terdaftar</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                variant="outline"
+                className="w-full border-sky-300 text-sky-700 hover:bg-sky-50"
+                asChild
+              >
+                <Link href="/admin/nurses">
+                  Lihat Data
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-2 p-3 bg-purple-100 rounded-full group-hover:bg-purple-200 transition-colors">
+                <ClipboardList className="h-6 w-6 text-purple-600" />
+              </div>
+              <CardTitle className="text-lg">Data Pasien</CardTitle>
+              <CardDescription>Kelola informasi pasien</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                variant="outline"
+                className="w-full border-sky-300 text-sky-700 hover:bg-sky-50"
+                asChild
+              >
+                <Link href="/admin/patients">
+                  Lihat Data
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-2 p-3 bg-orange-100 rounded-full group-hover:bg-orange-200 transition-colors">
+                <Activity className="h-6 w-6 text-orange-600" />
+              </div>
+              <CardTitle className="text-lg">Riwayat Screening</CardTitle>
+              <CardDescription>Lihat semua data screening ESAS</CardDescription>
             </CardHeader>
             <CardContent>
               <Button
@@ -343,11 +382,11 @@ export default function AdminDashboardPage() {
 
           <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="text-center">
-              <div className="mx-auto mb-2 p-3 bg-purple-100 rounded-full group-hover:bg-purple-200 transition-colors">
-                <Download className="h-6 w-6 text-purple-600" />
+              <div className="mx-auto mb-2 p-3 bg-red-100 rounded-full group-hover:bg-red-200 transition-colors">
+                <Download className="h-6 w-6 text-red-600" />
               </div>
               <CardTitle className="text-lg">Export Data</CardTitle>
-              <CardDescription>Download data dalam format CSV/Excel</CardDescription>
+              <CardDescription>Download data dalam format Excel</CardDescription>
             </CardHeader>
             <CardContent>
               <Button

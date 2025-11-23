@@ -35,6 +35,7 @@ interface AuthActions {
   hasPermission: (permission: keyof (typeof ROLE_PERMISSIONS)[UserRole]) => boolean
   clearError: () => void
   setLoading: (loading: boolean) => void
+  setUser: (user: User) => void
 }
 
 export const useAuthStore = create<AuthState & AuthActions>()(
@@ -54,6 +55,11 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         set({ loading: true, error: null })
 
         try {
+          // Clear persistent storage first to ensure fresh state
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('auth-storage')
+          }
+
           const { user } = await signIn(email, password)
 
           // Clear any existing state to ensure fresh load
@@ -79,6 +85,28 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             } else {
               set({ userRole: 'pasien' })
             }
+          }
+
+          // CRITICAL: Double-check the role by directly querying the database one more time
+          // This ensures we have the most up-to-date role from the database
+          try {
+            const supabase = createClient()
+            const { data: freshProfile } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('id', user.id)
+              .single()
+
+            if (freshProfile?.role) {
+              const freshRole = freshProfile.role as UserRole
+              const permissions = ROLE_PERMISSIONS[freshRole]
+              set({
+                userRole: freshRole,
+                permissions,
+              })
+            }
+          } catch {
+            // Could not refresh role from database, using loaded role
           }
         } catch (error) {
           set({
@@ -144,15 +172,16 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 
           // Check if user session is valid
           if (!user) {
-            // Only clear auth state if it's a true auth failure (not network issues)
+            // More lenient session validation - check if we have existing state
             const currentState = get()
-            // If we have existing user data, might be a temporary issue - don't clear immediately
-            if (currentState.user) {
+
+            // If we have existing user data and no clear auth error, might be temporary
+            if (currentState.user && currentState.isAuthenticated) {
               set({ loading: false })
               return
             }
 
-            // Clear auth state if no existing user data
+            // Clear auth state only if no existing valid session
             set({
               user: null,
               profile: null,
@@ -174,14 +203,16 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           // Load profile if user exists
           await get().loadProfile()
         } catch (error) {
-          // Check if it's a network/temporary error vs auth error
+          // More lenient error handling - distinguish between auth and network errors
           const errorMessage = error instanceof Error ? error.message : String(error)
 
-          if (
+          const isAuthError =
             errorMessage.includes('Invalid session') ||
-            errorMessage.includes('session expired')
-          ) {
-            // Clear auth state for auth errors
+            errorMessage.includes('session expired') ||
+            errorMessage.includes('refresh_token_not_found') ||
+            errorMessage.includes('invalid claim')
+
+          if (isAuthError) {
             set({
               user: null,
               profile: null,
@@ -193,7 +224,21 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             })
           } else {
             // For network/temporary errors, keep existing session
-            set({ loading: false })
+            const currentState = get()
+            if (currentState.user) {
+              set({ loading: false })
+            } else {
+              // Only clear if we have no existing user
+              set({
+                user: null,
+                profile: null,
+                isAuthenticated: false,
+                userRole: null,
+                permissions: null,
+                loading: false,
+                error: null,
+              })
+            }
           }
         }
       },
@@ -203,117 +248,82 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         if (!user) return
 
         try {
+          // Try to get profile from database first
           const profile = await getProfile(user.id)
-          let userRole = profile?.role || null
 
-          // If no role in profile, try multiple fallbacks
-          if (!userRole) {
-            // Fallback 1: Check user metadata
-            if (user.user_metadata?.role) {
-              userRole = user.user_metadata.role as UserRole
-            }
-            // Fallback 2: Default to 'pasien'
-            else {
-              userRole = 'pasien'
-            }
+          if (profile && profile.role) {
+            // Profile exists and has role - use it directly
+            const userRole = profile.role as UserRole
+            const permissions = ROLE_PERMISSIONS[userRole]
+
+            set({
+              profile,
+              userRole,
+              permissions,
+            })
+            return
           }
 
-          const permissions = userRole ? ROLE_PERMISSIONS[userRole as UserRole] : null
-
-          set({
-            profile,
-            userRole,
-            permissions,
-          })
-        } catch {
-          // Profile doesn't exist, create it automatically
-          // Profile not found, creating automatically
-
-          // Get user metadata for role and name
-          const userMetadata = user?.user_metadata || {}
-          const fullName = userMetadata.full_name || 'Unknown User'
-
-          // CRITICAL FIX: Don't use fallback 'pasien' if we have a different role intent
-          // Check if there was a role passed during registration
-          const roleFromMetadata = userMetadata.role as UserRole
-          const role = roleFromMetadata || 'pasien' // Only fallback to pasien if no role in metadata
-
+          // If no valid profile from getProfile, try direct database query
           try {
             const supabase = createClient()
-
-            // First check if profile exists (avoid duplicate creation)
-            const { data: existingProfile } = await supabase
+            const { data: freshProfile } = await supabase
               .from('profiles')
               .select('id, full_name, role, created_at')
               .eq('id', user.id)
               .single()
 
-            if (existingProfile) {
-              // Profile already exists, using existing profile
-              const permissions = existingProfile.role
-                ? ROLE_PERMISSIONS[existingProfile.role as UserRole]
-                : null
+            if (freshProfile && freshProfile.role) {
+              const userRole = freshProfile.role as UserRole
+              const permissions = ROLE_PERMISSIONS[userRole]
 
               set({
-                profile: existingProfile,
-                userRole: existingProfile.role,
+                profile: freshProfile,
+                userRole,
                 permissions,
               })
               return
             }
+          } catch {}
 
-            // Profile doesn't exist, create it
-            const { error: createError } = await supabase.rpc('create_user_profile', {
-              p_user_id: user.id,
-              p_full_name: fullName,
-              p_role: role,
-            })
-
-            if (createError) {
-              // Fallback: Try direct insert
-              const { error: insertError } = await supabase.from('profiles').insert({
-                id: user.id,
-                full_name: fullName,
-                role: role,
-              })
-
-              if (insertError) {
-                // Auto profile creation failed
-                set({
-                  profile: null,
-                  userRole: null,
-                  permissions: null,
-                })
-              } else {
-                // Profile created successfully via direct insert
-                set({
-                  profile: { id: user.id, full_name: fullName, role, created_at: new Date().toISOString() },
-                  userRole: role,
-                  permissions: role ? ROLE_PERMISSIONS[role] : null,
-                })
-              }
-            } else {
-              // Retry loading the profile to ensure it was created correctly
-              const profile = await getProfile(user.id)
-              const finalRole: UserRole = profile?.role || role
-              const permissions = finalRole ? ROLE_PERMISSIONS[finalRole] : null
-
-              set({
-                profile,
-                userRole: finalRole,
-                permissions,
-              })
-
-              // Profile created successfully
-            }
-          } catch {
-            // Auto profile creation error
-            set({
-              profile: null,
-              userRole: null,
-              permissions: null,
-            })
+          // Fallback to metadata ONLY as last resort
+          let userRole = null
+          if (user.user_metadata?.role) {
+            userRole = user.user_metadata.role as UserRole
+          } else {
+            // Last resort: default to 'pasien' only if everything else fails
+            userRole = 'pasien'
           }
+
+          const permissions = userRole ? ROLE_PERMISSIONS[userRole as UserRole] : null
+          const fallbackProfile: Profile = {
+            id: user.id,
+            full_name: user.user_metadata?.full_name || 'Unknown User',
+            role: userRole as UserRole,
+            created_at: new Date().toISOString(),
+          }
+
+          set({
+            profile: fallbackProfile,
+            userRole: userRole as UserRole,
+            permissions,
+          })
+        } catch {
+          // Final fallback to metadata
+          const userRole = (user.user_metadata?.role as UserRole) || 'pasien'
+          const permissions = ROLE_PERMISSIONS[userRole]
+          const fallbackProfile: Profile = {
+            id: user.id,
+            full_name: user.user_metadata?.full_name || 'Unknown User',
+            role: userRole,
+            created_at: new Date().toISOString(),
+          }
+
+          set({
+            profile: fallbackProfile,
+            userRole: userRole as UserRole,
+            permissions,
+          })
         }
       },
 
@@ -379,6 +389,13 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       },
 
       setLoading: (loading: boolean) => set({ loading }),
+
+      setUser: (user: User) => {
+        set({
+          user,
+          isAuthenticated: true,
+        })
+      },
     }),
     {
       name: 'auth-storage',
@@ -390,25 +407,30 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         permissions: state.permissions,
       }),
       onRehydrateStorage: () => (state) => {
-        // Reload user data when store rehydrates, but with better error handling
-        if (state?.isAuthenticated && typeof window !== 'undefined') {
-          // Add longer delay to avoid immediate API calls on rehydration
-          setTimeout(() => {
-            // Check if user still exists before loading
-            if (state?.user) {
-              state.loadUser().catch((error) => {
-                // Don't immediately logout on refresh - let middleware handle session validation
-                // Only logout if it's a critical auth error
-                if (
-                  error?.message?.includes('Invalid session') ||
-                  error?.message?.includes('session expired')
-                ) {
-                  state.logout()
-                }
-                // For other errors (network issues, race conditions), keep the session
-              })
+        // Reload user data when store rehydrates, but with much better error handling
+        if (state?.isAuthenticated && state?.user && typeof window !== 'undefined') {
+          // Gentle revalidation - don't be aggressive about logging out
+          setTimeout(async () => {
+            try {
+              // Only attempt to load user if we have a valid user object
+              if (state?.user?.id) {
+                await state.loadUser()
+              }
+            } catch (error) {
+              // Only logout for clear authentication errors, not network issues
+              const errorMessage = error instanceof Error ? error.message : String(error)
+              const isAuthError =
+                errorMessage.includes('Invalid session') ||
+                errorMessage.includes('session expired') ||
+                errorMessage.includes('refresh_token_not_found')
+
+              if (isAuthError) {
+                await state.logout()
+              } else {
+                // For network/temporary errors, keep the session alive
+              }
             }
-          }, 500) // Increased delay to 500ms
+          }, 1000) // Increased delay to allow for stable app state
         }
       },
     }

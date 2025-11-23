@@ -159,14 +159,7 @@ export default function DataExportContent() {
     let screeningsData: any[] = []
     if (exportOptions.dataType === 'screenings' || exportOptions.dataType === 'all') {
       const { data: screenings } = await query
-        .select(`
-          *,
-          profiles!inner(
-            full_name,
-            email,
-            role
-          )
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
 
       screeningsData = screenings || []
@@ -181,7 +174,7 @@ export default function DataExportContent() {
           if (s.is_guest) {
             return exportOptions.userRole === 'guest'
           }
-          return s.profiles?.role === exportOptions.userRole
+          return s.esas_data?.user_role === exportOptions.userRole
         })
       }
     }
@@ -237,9 +230,9 @@ export default function DataExportContent() {
       'Usia Pasien': screening.esas_data?.identity?.age || '',
       'Gender Pasien': screening.esas_data?.identity?.gender === 'L' ? 'Laki-laki' : 'Perempuan',
       'Fasilitas': screening.esas_data?.identity?.facility_name || '',
-      'Pengguna': screening.is_guest ? 'Tamu' : screening.profiles?.full_name || '',
-      'Role Pengguna': screening.is_guest ? 'Tamu' : screening.profiles?.role || '',
-      'Email Pengguna': screening.is_guest ? '-' : screening.profiles?.email || '',
+      'Pengguna': screening.is_guest ? 'Tamu' : screening.esas_data?.patient_info?.patient_name || 'Unknown User',
+      'Role Pengguna': screening.is_guest ? 'Tamu' : screening.esas_data?.user_role || 'Unknown',
+      'Email Pengguna': screening.is_guest ? '-' : 'N/A',
       'Skor Tertinggi': screening.highest_score,
       'Tingkat Risiko': screening.risk_level,
       'Pertanyaan Utama': screening.primary_question,

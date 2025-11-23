@@ -22,75 +22,41 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { format } from 'date-fns'
 import { id as idLocale } from 'date-fns/locale'
 import {
   Search,
   Download,
-  Eye,
   MoreHorizontal,
   ChevronLeft,
   ChevronRight,
-  Calendar as CalendarIcon,
-  User,
-  AlertTriangle,
-  TrendingUp,
   Filter,
   X,
   FileText,
   Activity,
+  AlertTriangle,
+  TrendingUp,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useAuthStore } from '@/lib/stores/authStore'
 import { useToast } from '@/hooks/use-toast'
 import * as XLSX from 'xlsx'
-import '@/styles/modern-patterns.css'
 
 interface ScreeningData {
   id: string
   created_at: string
-  updated_at: string
   screening_type: string
   status: string
   risk_level: string
   highest_score: number
   primary_question: number
-  esas_data: {
-    identity?: {
-      name: string
-      age: number
-      gender: string
-      facility_name?: string
-    }
-  }
-  recommendation?: {
-    diagnosis: string
-    action_required: string
-    priority: number
-    therapy_type?: string
-    frequency?: string
-  }
+  esas_data: any
+  recommendation?: any
   user_id?: string
   patient_id?: string
   guest_identifier?: string
   is_guest: boolean
-  profiles?: {
-    full_name: string
-  }
-  patients?: {
-    name: string
-    age: number
-    gender: string
-  }
 }
 
 interface ScreeningStats {
@@ -153,13 +119,11 @@ export default function ScreeningManagementContent() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [riskLevelFilter, setRiskLevelFilter] = useState<string>('all')
-  const [screeningTypeFilter, setScreeningTypeFilter] = useState<string>('all')
   const [userTypeFilter, setUserTypeFilter] = useState<'all' | 'guest' | 'user'>('all')
   const [sortBy, setSortBy] = useState<'created_at' | 'highest_score' | 'primary_question'>(
     'created_at'
   )
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
-  const [dateFilter, setDateFilter] = useState<{ from?: Date; to?: Date }>({})
   const [currentPage, setCurrentPage] = useState(1)
   const [totalItems, setTotalItems] = useState(0)
   const [showFilters, setShowFilters] = useState(false)
@@ -172,29 +136,12 @@ export default function ScreeningManagementContent() {
       setLoading(true)
       const supabase = createClient()
 
-      // Build base query with joins
-      let query = supabase.from('screenings').select(
-        `
-          *,
-          profiles!screenings_user_id_fkey (
-            full_name
-          ),
-          patients!screenings_patient_id_fkey (
-            name,
-            age,
-            gender
-          )
-        `,
-        { count: 'exact' }
-      )
+      // Build base query
+      let query = supabase.from('screenings').select('*', { count: 'exact' })
 
       // Apply filters
       if (riskLevelFilter !== 'all') {
         query = query.eq('risk_level', riskLevelFilter)
-      }
-
-      if (screeningTypeFilter !== 'all') {
-        query = query.eq('screening_type', screeningTypeFilter)
       }
 
       if (userTypeFilter !== 'all') {
@@ -205,58 +152,27 @@ export default function ScreeningManagementContent() {
         }
       }
 
-      // Apply date filters
-      if (dateFilter.from) {
-        query = query.gte('created_at', dateFilter.from.toISOString())
-      }
-      if (dateFilter.to) {
-        query = query.lte('created_at', dateFilter.to.toISOString())
-      }
-
       // Apply search
       if (searchTerm) {
         query = query.or(`
-          esas_data->>identity->>name.ilike.%${searchTerm}%,
-          profiles.full_name.ilike.%${searchTerm}%,
-          patients.name.ilike.%${searchTerm}%,
-          guest_identifier.ilike.%${searchTerm}%
+          guest_identifier.ilike.%${searchTerm}%,
+          esas_data->>identity->>name.ilike.%${searchTerm}%
         `)
       }
 
       // Apply sorting
       query = query.order(sortBy, { ascending: sortOrder === 'asc' })
 
-      // Get total count with separate query to avoid conflicts
-      let countQuery = supabase.from('screenings').select('*', { count: 'exact', head: true })
-
-      // Apply same filters to count query
-      if (searchTerm) {
-        countQuery = countQuery.or(`
-          esas_data->>identity->>name.ilike.%${searchTerm}%,
-          guest_identifier.ilike.%${searchTerm}%
-        `)
-      }
-
-      if (riskLevelFilter !== 'all') {
-        countQuery = countQuery.eq('risk_level', riskLevelFilter)
-      }
-
-      if (userTypeFilter !== 'all') {
-        countQuery = countQuery.eq('is_guest', userTypeFilter === 'guest')
-      }
-
-      const { count: totalCount } = await countQuery
-      setTotalItems(totalCount || 0)
-
       // Get paginated data
       const from = (currentPage - 1) * ITEMS_PER_PAGE
       const to = from + ITEMS_PER_PAGE - 1
 
-      const { data: screeningsData, error } = await query.range(from, to)
+      const { data: screeningsData, error, count } = await query.range(from, to)
 
       if (error) throw error
 
       setScreenings(screeningsData || [])
+      setTotalItems(count || 0)
 
       // Calculate stats
       const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
@@ -296,7 +212,7 @@ export default function ScreeningManagementContent() {
       const { data: scoresData } = await supabase.from('screenings').select('highest_score')
       const avgScore =
         (scoresData || [])?.reduce((sum, s) => sum + (s.highest_score || 0), 0) /
-        (scoresData?.length || 1)
+          (scoresData?.length || 1) || 0
 
       setStats({
         totalScreenings: totalScreenings.count || 0,
@@ -316,17 +232,7 @@ export default function ScreeningManagementContent() {
     } finally {
       setLoading(false)
     }
-  }, [
-    searchTerm,
-    riskLevelFilter,
-    screeningTypeFilter,
-    userTypeFilter,
-    sortBy,
-    sortOrder,
-    dateFilter,
-    currentPage,
-    toast,
-  ])
+  }, [searchTerm, riskLevelFilter, userTypeFilter, sortBy, sortOrder, currentPage, toast])
 
   useEffect(() => {
     if (!user || userRole !== 'admin') {
@@ -341,24 +247,11 @@ export default function ScreeningManagementContent() {
       const supabase = createClient()
 
       // Get all screenings data for export
-      let query = supabase.from('screenings').select(`
-          *,
-          profiles!screenings_user_id_fkey (
-            full_name
-          ),
-          patients!screenings_patient_id_fkey (
-            name,
-            age,
-            gender
-          )
-        `)
+      let query = supabase.from('screenings').select('*')
 
       // Apply filters to export
       if (riskLevelFilter !== 'all') {
         query = query.eq('risk_level', riskLevelFilter)
-      }
-      if (screeningTypeFilter !== 'all') {
-        query = query.eq('screening_type', screeningTypeFilter)
       }
       if (userTypeFilter !== 'all') {
         if (userTypeFilter === 'guest') {
@@ -367,18 +260,10 @@ export default function ScreeningManagementContent() {
           query = query.eq('is_guest', false)
         }
       }
-      if (dateFilter.from) {
-        query = query.gte('created_at', dateFilter.from.toISOString())
-      }
-      if (dateFilter.to) {
-        query = query.lte('created_at', dateFilter.to.toISOString())
-      }
       if (searchTerm) {
         query = query.or(`
-          esas_data->>identity->>name.ilike.%${searchTerm}%,
-          profiles.full_name.ilike.%${searchTerm}%,
-          patients.name.ilike.%${searchTerm}%,
-          guest_identifier.ilike.%${searchTerm}%
+          guest_identifier.ilike.%${searchTerm}%,
+          esas_data->>identity->>name.ilike.%${searchTerm}%
         `)
       }
 
@@ -390,9 +275,9 @@ export default function ScreeningManagementContent() {
       const excelData =
         exportData?.map((screening) => ({
           ID: screening.id,
-          'Nama Pasien': screening.esas_data?.identity?.name || screening.patients?.name || 'Tamu',
-          Umur: screening.esas_data?.identity?.age || screening.patients?.age || 'N/A',
-          Gender: screening.esas_data?.identity?.gender || screening.patients?.gender || 'N/A',
+          'Nama Pasien': screening.esas_data?.identity?.name || 'Tamu',
+          Umur: screening.esas_data?.identity?.age || 'N/A',
+          Gender: screening.esas_data?.identity?.gender || 'N/A',
           Fasilitas: screening.esas_data?.identity?.facility_name || 'N/A',
           'Tipe Screening': screening.screening_type,
           Status: screening.status,
@@ -404,7 +289,7 @@ export default function ScreeningManagementContent() {
           Terapi: screening.recommendation?.therapy_type || 'N/A',
           Frekuensi: screening.recommendation?.frequency || 'N/A',
           'Tipe User': screening.is_guest ? 'Tamu' : 'Terdaftar',
-          User: screening.profiles?.full_name || screening.guest_identifier || 'N/A',
+          User: screening.guest_identifier || 'N/A',
           'Tanggal Screening': format(new Date(screening.created_at), 'dd/MM/yyyy HH:mm', {
             locale: idLocale,
           }),
@@ -437,32 +322,24 @@ export default function ScreeningManagementContent() {
   const resetFilters = () => {
     setSearchTerm('')
     setRiskLevelFilter('all')
-    setScreeningTypeFilter('all')
     setUserTypeFilter('all')
     setSortBy('created_at')
     setSortOrder('desc')
-    setDateFilter({})
     setCurrentPage(1)
   }
 
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE)
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'N/A'
+  const formatDate = (dateString: string) => {
     return format(new Date(dateString), 'dd/MM/yyyy HH:mm', { locale: idLocale })
   }
 
   const getPatientName = (screening: ScreeningData) => {
-    return screening.esas_data?.identity?.name || screening.patients?.name || 'Tamu'
+    return screening.esas_data?.identity?.name || 'Tamu'
   }
 
   const getUserName = (screening: ScreeningData) => {
-    return screening.profiles?.full_name || screening.guest_identifier || 'N/A'
-  }
-
-  const viewDetails = (screening: ScreeningData) => {
-    // Navigate to screening details page or open modal
-    router.push(`/screening/${screening.id}`)
+    return screening.guest_identifier || 'N/A'
   }
 
   return (
@@ -535,59 +412,6 @@ export default function ScreeningManagementContent() {
         </Card>
       </div>
 
-      {/* Additional Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-blue-600">User Terdaftar</p>
-                <p className="text-2xl font-bold text-blue-900">{stats?.userScreenings || 0}</p>
-              </div>
-              <User className="h-6 w-6 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-purple-600">Tamu</p>
-                <p className="text-2xl font-bold text-purple-900">{stats?.guestScreenings || 0}</p>
-              </div>
-              <User className="h-6 w-6 text-purple-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-green-600">Rata-rata Skor</p>
-                <p className="text-2xl font-bold text-green-900">{stats?.averageScore || 0}</p>
-              </div>
-              <TrendingUp className="h-6 w-6 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-r from-orange-50 to-orange-100 border-orange-200">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-orange-600">Perlu Perhatian</p>
-                <p className="text-2xl font-bold text-orange-900">
-                  {(stats?.highRiskScreenings || 0) + (stats?.criticalRiskScreenings || 0)}
-                </p>
-              </div>
-              <AlertTriangle className="h-6 w-6 text-orange-500" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Search and Filters */}
       <Card className="mb-6">
         <CardContent className="p-6">
@@ -622,7 +446,7 @@ export default function ScreeningManagementContent() {
           </div>
 
           {showFilters && (
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-6 gap-4 pt-4 border-t">
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t">
               <div>
                 <label className="text-sm font-medium mb-2 block">Urutkan</label>
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
@@ -685,56 +509,6 @@ export default function ScreeningManagementContent() {
                     <SelectItem value="guest">Tamu</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">Tanggal Dari</label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dateFilter.from
-                        ? format(dateFilter.from, 'PPP', { locale: idLocale })
-                        : 'Pilih tanggal'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={dateFilter.from}
-                      onSelect={(date) => setDateFilter((prev) => ({ ...prev, from: date }))}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">Tanggal Sampai</label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dateFilter.to
-                        ? format(dateFilter.to, 'PPP', { locale: idLocale })
-                        : 'Pilih tanggal'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={dateFilter.to}
-                      onSelect={(date) => setDateFilter((prev) => ({ ...prev, to: date }))}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
               </div>
             </div>
           )}
@@ -822,13 +596,6 @@ export default function ScreeningManagementContent() {
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => viewDetails(screening)}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                Lihat Detail
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
                       </TableRow>

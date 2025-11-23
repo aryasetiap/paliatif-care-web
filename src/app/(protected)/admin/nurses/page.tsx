@@ -1,12 +1,12 @@
 import HeaderNav from '@/components/ui/header-nav'
-import ScreeningManagementContent from '@/components/admin-screening-management-simple'
+import NurseManagementContent from '@/components/admin-nurse-management-simple'
 import { Footer } from '@/components/layout/footer'
 
-export default function AdminScreeningsPage() {
+export default function AdminNursesPage() {
   return (
     <div className="relative min-h-screen">
       <HeaderNav />
-      <ScreeningManagementContent />
+      <NurseManagementContent />
       <Footer />
     </div>
   )
