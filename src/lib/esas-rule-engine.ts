@@ -479,10 +479,10 @@ export class ESASRuleEngine {
 
   /**
    * Determine what should be displayed based on highest score
-   * Sesuai requirement:
-   * - Score 1-3: Tampilkan video sesuai pertanyaan, TANPA teks intervensi
-   * - Score 4-6: Tampilkan teks evaluasi, TANPA video
-   * - Score 7-10: Tampilkan teks rujuk segera, TANPA video
+   * Updated requirement:
+   * - Score 1-10: Tampilkan video sesuai pertanyaan (untuk semua gejala yang dijawab)
+   * - Score 4-6: Tampilkan video + teks evaluasi
+   * - Score 7-10: Tampilkan video + teks rujuk segera
    */
   static getDisplayLogic(highestScore: number): {
     showVideos: boolean
@@ -498,14 +498,14 @@ export class ESASRuleEngine {
       }
     } else if (highestScore >= 4 && highestScore <= 6) {
       return {
-        showVideos: false,
+        showVideos: true, // Show videos for moderate symptoms too
         showInterventionText: true,
         displayMessage: 'Hubungi/Temukan fasilitas kesehatan terdekat untuk evaluasi lebih lanjut',
         messageType: 'evaluation'
       }
     } else if (highestScore >= 7 && highestScore <= 10) {
       return {
-        showVideos: false,
+        showVideos: true, // Show videos for severe symptoms too
         showInterventionText: true,
         displayMessage: 'Segera rujuk ke Fasilitas Kesehatan atau Profesional untuk Penanganan Segera',
         messageType: 'urgent'

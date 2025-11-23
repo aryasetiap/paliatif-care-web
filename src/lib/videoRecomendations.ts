@@ -135,21 +135,21 @@ interface ESASQuestionScore {
   score: number
 }
 
-// Function to get recommended videos based on highest ESAS scores
+// Function to get recommended videos based on answered questions
 export function getRecommendedVideos(
   esasScores: ESASQuestionScore[],
   highestScore: number
 ): VideoData[] {
-  // Only show videos for scores 1-3 (mild symptoms)
-  if (highestScore > 3 || highestScore === 0) {
+  // Show videos for any answered questions with scores 1-10
+  if (highestScore === 0) {
     return []
   }
 
   const recommendedVideos: VideoData[] = []
 
-  // Get questions with highest scores (1-3 range)
-  const highScoreQuestions = esasScores
-    .filter((score) => score.score > 0 && score.score <= 3)
+  // Get questions with any score (1-10 range)
+  const answeredQuestions = esasScores
+    .filter((score) => score.score > 0)
     .sort((a, b) => b.score - a.score)
 
   // Map question IDs to symptom categories
@@ -165,20 +165,22 @@ export function getRecommendedVideos(
     9: 'wellbeing', // Wellbeing
   }
 
-  // Add videos for high-scoring symptoms (max 2 videos per category, max 4 total)
-  let videoCount = 0
-  for (const question of highScoreQuestions) {
-    if (videoCount >= 4) break
+  // Add all videos for answered symptoms (no limit, but avoid duplicates)
+  const seenVideoIds = new Set<string>()
 
+  for (const question of answeredQuestions) {
     const symptomCategory = symptomMapping[question.questionId]
 
     if (symptomCategory && RECOMMENDED_VIDEOS[symptomCategory]) {
       const categoryVideos = RECOMMENDED_VIDEOS[symptomCategory]
 
-      // Add up to 2 videos from this category
-      const videosToAdd = categoryVideos.slice(0, Math.min(2, 4 - videoCount))
-      recommendedVideos.push(...videosToAdd)
-      videoCount += videosToAdd.length
+      // Add all videos from this category (avoiding duplicates)
+      for (const video of categoryVideos) {
+        if (!seenVideoIds.has(video.id)) {
+          recommendedVideos.push(video)
+          seenVideoIds.add(video.id)
+        }
+      }
     }
   }
 
@@ -187,7 +189,7 @@ export function getRecommendedVideos(
 
 // Function to check if videos should be shown
 export function shouldShowVideos(highestScore: number): boolean {
-  return highestScore > 0 && highestScore <= 3
+  return highestScore > 0
 }
 
 // Function to format ESAS scores for video recommendations

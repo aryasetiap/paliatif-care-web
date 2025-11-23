@@ -439,7 +439,7 @@ export default function ScreeningResultPage() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="mb-8"
             >
-              {/* Video Section - Only for scores 1-3 */}
+              {/* Video Section - For all answered questions with scores 1-10 */}
               {displayLogic.showVideos && recommendedVideos.length > 0 && (
                 <Card className="bg-white/90 backdrop-blur-md border-sky-200 overflow-hidden">
                   <CardHeader>
@@ -544,7 +544,7 @@ export default function ScreeningResultPage() {
                 </Card>
               )}
 
-              {/* No Videos Available Message - Only for scores 1-3 with no matching videos */}
+              {/* No Videos Available Message - For answered questions with no matching videos */}
               {displayLogic.showVideos && recommendedVideos.length === 0 && (
                 <Card className="bg-white/90 backdrop-blur-md border-sky-200">
                   <CardContent className="text-center py-8">
