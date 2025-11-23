@@ -8,55 +8,48 @@ export interface VideoData {
   duration: string
 }
 
-// Sample YouTube video URLs - these can be replaced with actual therapeutic/palliative care videos
-// Sesuai dengan ESAS Rule Engine di esas-rule-engine.ts
 const RECOMMENDED_VIDEOS = {
   pain: [
     {
       id: 'pain-relief-1',
       title: '1. Nyeri - Terapi Akupresur',
-      description:
-        'Teknik akupresur sesuai intervensi keperawatan untuk nyeri kronis. Lakukan penekanan menggunakan ujung jari dengan tekanan lembut tapi mantap dan gerakan memutar kecil selama 1–2 menit pada titik nyeri. Ulangi 2–3 kali sehari atau setiap kali nyeri muncul.',
+      description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/q9oB6nsTz5o/mqdefault.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=q9oB6nsTz5o',
-      duration: '12:22',
+      duration: '12:21',
     },
     {
       id: 'pain-relief-2',
       title: '1. Nyeri - Kompres Hangat',
-      description:
-        'Kompres hangat membantu meningkatkan aliran darah, mengurangi ketegangan otot, serta meredakan rasa nyeri secara bertahap. Gunakan handuk hangat atau heating pad pada area yang sakit selama 15 hingga 20 menit untuk mendapatkan hasil yang optimal.',
+      description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/W5JzONtaOvM/mqdefault.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=W5JzONtaOvM',
-      duration: '02:59',
+      duration: '02:58',
     },
   ],
   fatigue: [
     {
       id: 'fatigue-management-1',
       title: '2. Lelah - Slow Deep Breathing (SDB)',
-      description:
-        'Teknik Slow Deep Breathing sesuai intervensi untuk intoleransi aktivitas. Ambil posisi duduk tegak, tarik napas perlahan melalui hidung 6 detik, tahan 6 detik, hembuskan perlahan melalui mulut 6 detik. Ulangi selama 15 menit, dua kali sehari (pagi dan sore).',
+      description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/JJHPQW_dd3k/mqdefault.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=JJHPQW_dd3k',
-      duration: '08:44',
+      duration: '08:43',
     },
     {
       id: 'fatigue-management-2',
       title: '2. Lelah - Pijat Kaki untuk Sirkulasi',
-      description:
-        'Teknik pijat kaki sederhana untuk membantu meningkatkan sirkulasi, merilekskan otot, dan mengurangi rasa lelah. Metode ini bermanfaat bagi pasien paliatif untuk meningkatkan kenyamanan dan menambah energi.',
+      description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/8OxiCWzU6Lc/mqdefault.jpg',
       videoUrl: 'https://youtu.be/8OxiCWzU6Lc',
-      duration: '06:31',
+      duration: '06:30',
     },
   ],
   nausea: [
     {
       id: 'nausea-relief-1',
       title: '4. Nausea - Aromaterapi (Jahe, Peppermint)',
-      description:
-        'Aromaterapi sesuai intervensi keperawatan untuk nausea. Teteskan 1-2 tetes minyak esensial jahe atau peppermint ke tisu, dekatkan ke hidung 10-15 cm, hirup pelan-pelan selama 3-5 menit. Alternatif: teteskan ke air hangat dan hirup uapnya.',
+      description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/0Cg_B7vtM-I/mqdefault.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=0Cg_B7vtM-I',
       duration: '06:55',
@@ -66,11 +59,10 @@ const RECOMMENDED_VIDEOS = {
     {
       id: 'anxiety-relief-1',
       title: '8. Terapi Musik',
-      description:
-        'Terapi musik sebagai intervensi keperawatan untuk membantu menurunkan kecemasan. Pasien diarahkan mendengarkan musik yang lembut, terstruktur, dan menenangkan selama 15–30 menit dalam suasana yang nyaman. Terapi ini bertujuan menurunkan ketegangan fisik, memperbaiki mood, serta memfasilitasi relaksasi melalui stimulasi sensorik yang positif.',
+      description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/gl5dJA85nBc/mqdefault.jpg',
       videoUrl: 'https://youtu.be/gl5dJA85nBc',
-      duration: '15:30',
+      duration: '01:44',
     },
   ],
   depression: [
@@ -80,15 +72,14 @@ const RECOMMENDED_VIDEOS = {
       description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/3el279wtEM0/mqdefault.jpg',
       videoUrl: 'https://youtu.be/3el279wtEM0?si=-8BuNWoD9O6FaXXG',
-      duration: '12:45',
+      duration: '01:35',
     },
   ],
   sleep: [
     {
       id: 'sleep-improvement-1',
       title: '3. Gangguan Tidur - Aromaterapi Lavender',
-      description:
-        'Aromaterapi Lavender sesuai intervensi keperawatan untuk gangguan pola tidur. Teteskan 2 tetes minyak esensial lavender ke kassa 2x2 cm, tempelkan di kerah pakaian 20 cm dari hidung, 1 jam sebelum tidur. Hirup aroma secara alami tanpa perlu menarik napas dalam.',
+      description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/LRhG-5ODq6E/mqdefault.jpg',
       videoUrl: 'https://youtu.be/LRhG-5ODq6E',
       duration: '01:56',
@@ -98,8 +89,7 @@ const RECOMMENDED_VIDEOS = {
     {
       id: 'appetite-stimulation-1',
       title: '5. Defisit Nutrisi',
-      description:
-        'Intervensi keperawatan untuk risiko defisit nutrisi dengan fokus pada peningkatan asupan makanan. Edukasi pasien mengenai makanan tinggi nutrisi, bantu memilih porsi kecil namun sering, dan ciptakan lingkungan makan yang nyaman. Pantau berat badan, nafsu makan, serta catat asupan harian untuk menilai efektivitas intervensi.',
+      description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/MM2JUSKLnqk/mqdefault.jpg',
       videoUrl: 'https://youtu.be/MM2JUSKLnqk?si=L_Ho-9LcXQfQQNGZ',
       duration: '07:15',
@@ -109,22 +99,20 @@ const RECOMMENDED_VIDEOS = {
     {
       id: 'breathing-improvement-1',
       title: '6. Pola Napas (Terapi kipas genggam)',
-      description:
-        'Intervensi keperawatan untuk mengatasi gangguan pola napas melalui terapi kipas genggam. Terapi ini membantu mengurangi sesak dengan memberikan aliran udara ke wajah untuk merangsang reseptor trigeminal, sehingga meningkatkan rasa lega saat bernapas. Pantau frekuensi napas, kenyamanan pasien, serta respon terhadap intervensi.',
+      description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/uQkkimVP6Z0/mqdefault.jpg',
       videoUrl: 'https://youtu.be/uQkkimVP6Z0?si=vCA8eh7JVOsAN968',
-      duration: '10:15',
+      duration: '03:56',
     },
   ],
   wellbeing: [
     {
       id: 'wellbeing-boost-1',
       title: '9. Dukungan koping keluarga',
-      description:
-        'Edukasi dan pendampingan untuk meningkatkan kemampuan koping keluarga dalam merawat pasien. Intervensi meliputi pemberian informasi, dukungan emosional, serta strategi pemecahan masalah agar keluarga mampu beradaptasi, mengurangi stres, dan meningkatkan kesejahteraan selama proses perawatan.',
+      description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/mfG65YoIWcw/mqdefault.jpg',
       videoUrl: 'https://youtu.be/mfG65YoIWcw?si=GS4QpuXqqHpJ5NNY',
-      duration: '25:00',
+      duration: '04:08',
     },
   ],
 }
