@@ -83,7 +83,7 @@ export function PatientFormDialog({
     resolver: zodResolver(patientFormSchema),
     defaultValues: {
       name: patient?.name || '',
-      age: patient?.age || 0,
+      age: patient?.age || '' as any,
       gender: (patient?.gender as 'L' | 'P' | undefined) || undefined,
       facility_name: patient?.facility_name || '',
       notes: '',
@@ -214,12 +214,15 @@ export function PatientFormDialog({
                     <FormControl>
                       <Input
                         type="number"
-                        placeholder="0"
+                        placeholder="Usia"
                         min="0"
                         max="150"
-                        {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                        className="bg-white/90 border-sky-300 focus:border-blue-500"
+                        value={field.value || ''}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          field.onChange(value === '' ? 0 : parseInt(value) || 0)
+                        }}
+                        className="bg-white/90 border-sky-300 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none"
                       />
                     </FormControl>
                     <FormMessage />

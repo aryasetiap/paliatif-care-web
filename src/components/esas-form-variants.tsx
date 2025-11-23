@@ -255,7 +255,7 @@ function ESASPasienForm({ userRole: _userRole, onSubmit, onCancel }: ESASFormVar
     defaultValues: {
       patient_info: {
         patient_name: profile?.full_name || '',
-        patient_age: 0, // Will be calculated or entered
+        patient_age: '' as any, // Will be calculated or entered
         patient_gender: 'L', // Default
         facility_name: '',
         screening_type: 'initial',
@@ -369,10 +369,13 @@ function ESASPasienForm({ userRole: _userRole, onSubmit, onCancel }: ESASFormVar
                     <FormControl>
                       <Input
                         type="number"
-                        placeholder="Masukkan usia Anda"
-                        {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                        className="bg-white/90 border-sky-300"
+                        placeholder="Usia"
+                        value={field.value || ''}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          field.onChange(value === '' ? 0 : parseInt(value) || 0)
+                        }}
+                        className="bg-white/90 border-sky-300 [appearance:textfield] [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none"
                       />
                     </FormControl>
                     <FormMessage />

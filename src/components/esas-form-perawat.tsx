@@ -64,7 +64,7 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
     defaultValues: {
       patient_info: {
         patient_name: '',
-        patient_age: 0,
+        patient_age: '' as any,
         patient_gender: 'L',
         facility_name: '',
         screening_type: 'initial',
@@ -433,10 +433,13 @@ function ESASPerawatForm({ onSubmit, onCancel }: ESASPerawatFormProps) {
                           <FormControl>
                             <Input
                               type="number"
-                              placeholder="Usia pasien"
-                              {...field}
-                              onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                              className="bg-white/90 border-green-300"
+                              placeholder="Usia"
+                              value={field.value || ''}
+                              onChange={(e) => {
+                                const value = e.target.value
+                                field.onChange(value === '' ? 0 : parseInt(value) || 0)
+                              }}
+                              className="bg-white/90 border-green-300 [appearance:textfield] [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none"
                             />
                           </FormControl>
                           <FormMessage />
