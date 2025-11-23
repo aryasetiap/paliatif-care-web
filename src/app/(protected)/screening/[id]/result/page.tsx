@@ -61,37 +61,6 @@ interface ScreeningData {
   updated_at: string
 }
 
-const RISK_LEVEL_CONFIG = {
-  low: {
-    color: 'bg-green-100 text-green-800 border-green-200',
-    label: 'Rendah',
-    description: 'Gejala ringan, monitoring rutin',
-  },
-  medium: {
-    color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    label: 'Sedang',
-    description: 'Gejala sedang, perlu evaluasi lebih lanjut',
-  },
-  high: {
-    color: 'bg-red-100 text-red-800 border-red-200',
-    label: 'Tinggi',
-    description: 'Gejala berat, perlu penanganan segera',
-  },
-  critical: {
-    color: 'bg-red-200 text-red-900 border-red-300',
-    label: 'Kritis',
-    description: 'Gejala kritis, segera rujuk ke fasilitas kesehatan',
-  },
-}
-
-function getScoreColor(score: number) {
-  if (score === 0) return 'bg-gray-100 text-gray-800'
-  if (score >= 1 && score <= 3) return 'bg-green-100 text-green-800'
-  if (score >= 4 && score <= 6) return 'bg-yellow-100 text-yellow-800'
-  if (score >= 7 && score <= 10) return 'bg-red-100 text-red-800'
-  return 'bg-gray-100 text-gray-800'
-}
-
 // Helper function to normalize screening data format
 function normalizeScreeningData(data: any): ScreeningData {
   // Extract patient info from the correct location
@@ -111,7 +80,11 @@ function normalizeScreeningData(data: any): ScreeningData {
       identity: data.esas_data?.identity || identity,
       questions: data.esas_data?.questions || {
         '1': { score: 0, text: 'Nyeri', description: 'Nyeri ringan/sedang/berat' },
-        '2': { score: 0, text: 'Lelah/Kekurangan Tenaga', description: 'Kelelahan/Intoleransi Aktivitas' },
+        '2': {
+          score: 0,
+          text: 'Lelah/Kekurangan Tenaga',
+          description: 'Kelelahan/Intoleransi Aktivitas',
+        },
         '3': { score: 0, text: 'Kantuk/Gangguan Tidur', description: 'Gangguan Pola Tidur' },
         '4': { score: 0, text: 'Mual/Nausea', description: 'Nausea' },
         '5': { score: 0, text: 'Nafsu Makan', description: 'Resiko Defisit Nutrisi' },
@@ -226,10 +199,6 @@ export default function ScreeningResultPage() {
     )
   }
 
-  const riskConfig =
-    RISK_LEVEL_CONFIG[screeningData.risk_level as keyof typeof RISK_LEVEL_CONFIG] ||
-    RISK_LEVEL_CONFIG.low
-
   return (
     <div className="relative min-h-screen">
       <HeaderNav />
@@ -313,115 +282,148 @@ export default function ScreeningResultPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-1 mb-6" // lg:grid-cols-3 gap-6
-        >
-          <Card className="lg:col-span-1 bg-white/90 backdrop-blur-md border border-sky-200 shadow-md rounded-xl transition-all duration-300 hover:shadow-lg">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xl font-bold text-sky-900 flex items-center gap-2">
-                <Heart className="w-5 h-5 text-red-400" />
-                Hasil Evaluasi
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <label className="text-sm font-medium text-sky-600">Skor Tertinggi</label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span
-                      className={`text-4xl font-extrabold ${getScoreColor(screeningData.highest_score).split(' ')[0]} drop-shadow`}
-                    >
-                      {screeningData.highest_score}
-                    </span>
-                    <span className="text-base text-sky-600 font-semibold">/ 10</span>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-sky-600">Tingkat Risiko</label>
-                  <div className="mt-1">
-                    <Badge
-                      className={`px-3 py-1 rounded-full text-base font-semibold ${riskConfig.color} border`}
-                    >
-                      {riskConfig.label}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Diagnosis and Intervention */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="grid grid-cols-1 mb-6" // lg:grid-cols-2 gap-6
+          className="mb-6"
         >
           <Card className="bg-white/90 backdrop-blur-md border border-sky-200 shadow-md rounded-xl transition-all duration-300 hover:shadow-lg">
             <CardHeader>
               <CardTitle className="text-xl font-bold text-sky-900 flex items-center gap-2">
-                <Heart className="w-5 h-5 text-blue-400" />
-                Intervensi Keperawatan
+                <Heart className="w-5 h-5 text-red-400" />
+                Ringkasan Penilaian
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="max-h-[260px]">
-                {screeningData.recommendation?.intervention_steps &&
-                screeningData.recommendation.intervention_steps.length > 0 ? (
-                  <ol className="space-y-4">
-                    {screeningData.recommendation.intervention_steps.map((step, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <span className="flex-shrink-0 w-7 h-7 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-base font-semibold shadow-sm border border-blue-200">
-                          {index + 1}
+              <p className="text-sm text-gray-600 mb-4">
+                Dari hasil screening, Anda berisiko mengalami masalah pada:
+              </p>
+              <div className="space-y-3">
+                {(() => {
+                  const esasScores = screeningData.esas_data?.questions || {}
+                  const symptoms = [
+                    {
+                      key: '1',
+                      name: 'Nyeri',
+                      score:
+                        typeof esasScores['1'] === 'object'
+                          ? esasScores['1']?.score
+                          : esasScores['1'] || screeningData.esas_data?.pain || 0,
+                    },
+                    {
+                      key: '2',
+                      name: 'Kelelahan',
+                      score:
+                        typeof esasScores['2'] === 'object'
+                          ? esasScores['2']?.score
+                          : esasScores['2'] || screeningData.esas_data?.tiredness || 0,
+                    },
+                    {
+                      key: '3',
+                      name: 'Gangguan tidur',
+                      score:
+                        typeof esasScores['3'] === 'object'
+                          ? esasScores['3']?.score
+                          : esasScores['3'] || screeningData.esas_data?.drowsiness || 0,
+                    },
+                    {
+                      key: '4',
+                      name: 'Mual (Nausea)',
+                      score:
+                        typeof esasScores['4'] === 'object'
+                          ? esasScores['4']?.score
+                          : esasScores['4'] || screeningData.esas_data?.nausea || 0,
+                    },
+                    {
+                      key: '5',
+                      name: 'Tidak nafsu makan',
+                      score:
+                        typeof esasScores['5'] === 'object'
+                          ? esasScores['5']?.score
+                          : esasScores['5'] || screeningData.esas_data?.lack_of_appetite || 0,
+                    },
+                    {
+                      key: '6',
+                      name: 'Sesak',
+                      score:
+                        typeof esasScores['6'] === 'object'
+                          ? esasScores['6']?.score
+                          : esasScores['6'] || screeningData.esas_data?.shortness_of_breath || 0,
+                    },
+                    {
+                      key: '7',
+                      name: 'Depresi',
+                      score:
+                        typeof esasScores['7'] === 'object'
+                          ? esasScores['7']?.score
+                          : esasScores['7'] || screeningData.esas_data?.depression || 0,
+                    },
+                    {
+                      key: '8',
+                      name: 'Kecemasan (Ansietas)',
+                      score:
+                        typeof esasScores['8'] === 'object'
+                          ? esasScores['8']?.score
+                          : esasScores['8'] || screeningData.esas_data?.anxiety || 0,
+                    },
+                    {
+                      key: '9',
+                      name: 'Cara Anda dan keluarga menghadapi masalah',
+                      score:
+                        typeof esasScores['9'] === 'object'
+                          ? esasScores['9']?.score
+                          : esasScores['9'] || screeningData.esas_data?.wellbeing || 0,
+                    },
+                  ]
+
+                  const getSeverityCategory = (score: number) => {
+                    if (score === 0) return null
+                    if (score >= 1 && score <= 3)
+                      return {
+                        label: 'Ringan',
+                        color: 'bg-green-100 text-green-800 border-green-200',
+                      }
+                    if (score >= 4 && score <= 6)
+                      return {
+                        label: 'Sedang',
+                        color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                      }
+                    if (score >= 7 && score <= 10)
+                      return { label: 'Berat', color: 'bg-red-100 text-red-800 border-red-200' }
+                    return null
+                  }
+
+                  const filteredSymptoms = symptoms.filter((symptom) => symptom.score > 0)
+
+                  if (filteredSymptoms.length === 0) {
+                    return (
+                      <div className="text-center py-6 text-gray-500">
+                        <p>Tidak ada gejala yang dilaporkan (semua skor = 0)</p>
+                      </div>
+                    )
+                  }
+
+                  return filteredSymptoms.map((symptom, index) => {
+                    const severity = getSeverityCategory(symptom.score)
+                    if (!severity) return null
+
+                    return (
+                      <div
+                        key={symptom.key}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      >
+                        <span className="font-medium text-gray-700">
+                          {index + 1}. {symptom.name} kategori
                         </span>
-                        <span className="text-sm md:text-base text-sky-800 leading-relaxed font-medium">
-                          {step}
-                        </span>
-                      </li>
-                    ))}
-                  </ol>
-                ) : screeningData.recommendation?.actions &&
-                  screeningData.recommendation.actions.length > 0 ? (
-                  <ol className="space-y-4">
-                    {screeningData.recommendation.actions.map((step, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <span className="flex-shrink-0 w-7 h-7 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-base font-semibold shadow-sm border border-blue-200">
-                          {index + 1}
-                        </span>
-                        <span className="text-sm md:text-base text-sky-800 leading-relaxed font-medium">
-                          {step}
-                        </span>
-                      </li>
-                    ))}
-                  </ol>
-                ) : (
-                  <div className="text-sm md:text-base text-sky-600 italic">
-                    <p className="mb-2">Intervensi tidak tersedia dalam data</p>
-                    <p className="text-xs text-sky-500">Rekomendasi default:</p>
-                    <ul className="mt-2 space-y-2">
-                      <li className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-blue-300 rounded-full inline-block" />
-                        Monitor tingkat nyeri pasien
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-blue-300 rounded-full inline-block" />
-                        Lakukan asesmen nyeri secara berkala
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-blue-300 rounded-full inline-block" />
-                        Berikan edukasi tentang manajemen nyeri
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-blue-300 rounded-full inline-block" />
-                        Dokumentasikan respon terhadap intervensi
-                      </li>
-                    </ul>
-                  </div>
-                )}
-              </ScrollArea>
+                        <div className="flex items-center gap-2">
+                          {/* <span className="text-sm text-gray-600">{symptom.score}/10</span> */}
+                          <Badge className={severity.color}>{severity.label}</Badge>
+                        </div>
+                      </div>
+                    )
+                  })
+                })()}
+              </div>
             </CardContent>
           </Card>
-        </motion.div> */}
+        </motion.div>
 
         {/* Dynamic Content Section - Based on ESAS Score Logic */}
         {(() => {
@@ -443,11 +445,10 @@ export default function ScreeningResultPage() {
                   <CardHeader>
                     <CardTitle className="text-xl font-bold text-sky-900 flex items-center gap-2">
                       <Play className="w-5 h-5 text-purple-500" />
-                      Video Terapi Rekomendasi
+                      Rekomendasi Video Terapi
                     </CardTitle>
                     <CardDescription className="text-sky-600">
-                      Berdasarkan hasil screening Anda, berikut adalah video terapi yang dapat
-                      membantu mengelola gejala ringan
+                      Berikut adalah latihan yang dapat anda lakukan :
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-6">

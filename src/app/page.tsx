@@ -158,7 +158,7 @@ export default function Home() {
         <HeaderNav />
 
         {/* Hero Content - Left Text, Right Image */}
-        <div className="relative z-10 container mx-auto px-4 pt-8">
+        <div className="relative z-10 container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-120px)] md:min-h-[calc(100vh-140px)] lg:min-h-[calc(100vh-160px)] pb-24">
             {/* Left Side - Text Content */}
             <motion.div
@@ -207,9 +207,13 @@ export default function Home() {
                     SIHAT adalah Skrining Informasi Holistik Asuhan Paliatif Terpadu dengan
                     pendekatan holistik yang bertujuan untuk meningkatkan kenyamanan serta
                     ketenangan pasien dan keluarga dengan cara mengurangi ketidaknyamanan pasien
-                    melalui pengkajian yang tepat, seperti penatalaksanaan nyeri, manajemen gejala,
-                    dan dukungan psikososial maupun spiritual.
+                    melalui pengkajian yang tepat.
                     <br />
+                    <br />
+                    <span className="text-red-600 font-medium">
+                      Berkenankah jika data anda kami simpan? Jika berkanan silahkan masuk atau
+                      daftar jika belum memiliki akun.
+                    </span>
                     <br />
                   </p>
                 </motion.div>
@@ -255,6 +259,19 @@ export default function Home() {
                   <>
                     <Button
                       size="lg"
+                      className="relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group border-0 overflow-hidden"
+                      onClick={() => router.push('/screening/guest')}
+                    >
+                      <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                      <div className="relative flex items-center">
+                        <Activity className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                        <span>Mulai Screening</span>
+                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                      </div>
+                    </Button>
+
+                    <Button
+                      size="lg"
                       className="relative bg-sky-800/20 backdrop-blur-md border border-sky-600/30 text-white hover:bg-sky-800/30 shadow-lg hover:shadow-sky-800/20 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group"
                       asChild
                     >
@@ -265,19 +282,6 @@ export default function Home() {
                           <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
                         </div>
                       </Link>
-                    </Button>
-
-                    <Button
-                      size="lg"
-                      className="relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 px-8 py-4 text-base font-semibold w-full sm:w-auto group border-0 overflow-hidden"
-                      onClick={() => router.push('/screening/guest')}
-                    >
-                      <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                      <div className="relative flex items-center">
-                        <Activity className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
-                        <span>Mulai Screening</span>
-                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                      </div>
                     </Button>
                   </>
                 )}
