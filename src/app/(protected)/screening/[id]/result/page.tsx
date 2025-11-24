@@ -13,7 +13,7 @@ import { createClient } from '@/lib/supabase'
 import HeaderNav from '@/components/ui/header-nav'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
-import { BookOpen, Heart, Play } from 'lucide-react'
+import { BookOpen, Heart, Play, AlertTriangle } from 'lucide-react'
 import '@/styles/modern-patterns.css'
 import VideoPlayer from '@/components/video-player'
 import { getRecommendedVideos, formatESASScores } from '@/lib/videoRecomendations'
@@ -483,9 +483,12 @@ export default function ScreeningResultPage() {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="text-center my-6"
         >
-          <p className="text-lg font-medium text-sky-700">
-            Untuk Pelayanan Lebih Lanjut Silahkan Hubungi Pelayanan Kesehatan Terdekat
-          </p>
+          <div className="flex items-center justify-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-amber-500" />
+            <p className="text-lg font-medium text-sky-700">
+              Untuk Pelayanan Lebih Lanjut Silahkan Hubungi Pelayanan Kesehatan Terdekat
+            </p>
+          </div>
         </motion.div>
 
         {/* Educational Resources Section */}

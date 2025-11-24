@@ -11,7 +11,7 @@ import { createClient } from '@/lib/supabase'
 import { useToast } from '@/hooks/use-toast'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Play, BookOpen, Heart } from 'lucide-react'
+import { ArrowLeft, Play, BookOpen, Heart, AlertTriangle } from 'lucide-react'
 import VideoPlayer from '@/components/video-player'
 import { getRecommendedVideos, formatESASScores } from '@/lib/videoRecomendations'
 import ESASRuleEngine from '@/lib/esas-rule-engine'
@@ -406,9 +406,12 @@ export default function ESASScreeningResultContent({
           transition={{ duration: 0.6, delay: 0.6 }}
           className="text-center mb-6"
         >
-          <p className="text-lg font-medium text-sky-700">
-            Untuk Pelayanan Lebih Lanjut Silahkan Hubungi Pelayanan Kesehatan Terdekat
-          </p>
+          <div className="flex items-center justify-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-amber-500" />
+            <p className="text-lg font-medium text-sky-700">
+              Untuk Pelayanan Lebih Lanjut Silahkan Hubungi Pelayanan Kesehatan Terdekat
+            </p>
+          </div>
         </motion.div>
 
         {/* Educational Resources Section */}
