@@ -40,7 +40,6 @@ import {
   X,
   FileText,
   Activity,
-  AlertTriangle,
   TrendingUp,
   Info,
 } from 'lucide-react'
@@ -158,7 +157,7 @@ export default function ScreeningManagementContent() {
     } // Debounce: don't fetch more than once per second
 
     const supabase = createClient()
-    const uniqueIds = [...new Set(userIds)].filter(id => id) // Remove duplicates and empty strings
+    const uniqueIds = [...new Set(userIds)].filter((id) => id) // Remove duplicates and empty strings
 
     if (uniqueIds.length === 0) return {}
 
@@ -191,11 +190,11 @@ export default function ScreeningManagementContent() {
 
       // Convert to lookup object
       const lookup: { [key: string]: { full_name: string; email: string } } = {}
-      allUserData.forEach(user => {
+      allUserData.forEach((user) => {
         if (user.id) {
           lookup[user.id] = {
             full_name: user.full_name || 'Unknown User',
-            email: user.email || ''
+            email: user.email || '',
           }
         }
       })
@@ -254,8 +253,8 @@ export default function ScreeningManagementContent() {
 
       // Fetch user data for non-guest screenings (only if we have any)
       const userIds = (screeningsData || [])
-        .filter(screening => !screening.is_guest && screening.user_id)
-        .map(screening => screening.user_id!)
+        .filter((screening) => !screening.is_guest && screening.user_id)
+        .map((screening) => screening.user_id!)
         .slice(0, 20) // Limit to first 20 users to prevent overloading
 
       if (userIds.length > 0) {
@@ -265,9 +264,7 @@ export default function ScreeningManagementContent() {
       // Calculate stats - optimized to single query
       const [statsResult] = await Promise.all([
         // Get all data needed for stats in one query
-        supabase
-          .from('screenings')
-          .select('risk_level, highest_score, created_at, is_guest')
+        supabase.from('screenings').select('risk_level, highest_score, created_at, is_guest'),
       ])
 
       if (statsResult.error) throw statsResult.error
@@ -277,14 +274,19 @@ export default function ScreeningManagementContent() {
       const monthStartISO = monthStart.toISOString()
 
       const totalScreenings = allScreenings.length
-      const screeningsThisMonth = allScreenings.filter(s => s.created_at >= monthStartISO).length
-      const highRiskScreenings = allScreenings.filter(s => s.risk_level === 'high').length
-      const criticalRiskScreenings = allScreenings.filter(s => s.risk_level === 'critical').length
-      const guestScreenings = allScreenings.filter(s => s.is_guest === true).length
-      const userScreenings = allScreenings.filter(s => s.is_guest === false).length
-      const avgScore = totalScreenings > 0
-        ? Math.round((allScreenings.reduce((sum, s) => sum + (s.highest_score || 0), 0) / totalScreenings) * 10) / 10
-        : 0
+      const screeningsThisMonth = allScreenings.filter((s) => s.created_at >= monthStartISO).length
+      const highRiskScreenings = allScreenings.filter((s) => s.risk_level === 'high').length
+      const criticalRiskScreenings = allScreenings.filter((s) => s.risk_level === 'critical').length
+      const guestScreenings = allScreenings.filter((s) => s.is_guest === true).length
+      const userScreenings = allScreenings.filter((s) => s.is_guest === false).length
+      const avgScore =
+        totalScreenings > 0
+          ? Math.round(
+              (allScreenings.reduce((sum, s) => sum + (s.highest_score || 0), 0) /
+                totalScreenings) *
+                10
+            ) / 10
+          : 0
 
       setStats({
         totalScreenings,
@@ -348,8 +350,8 @@ export default function ScreeningManagementContent() {
       // Fetch user data for export
       const exportUserIds = exportData
         ? exportData
-            .filter(screening => !screening.is_guest && screening.user_id)
-            .map(screening => screening.user_id!)
+            .filter((screening) => !screening.is_guest && screening.user_id)
+            .map((screening) => screening.user_id!)
         : []
 
       if (exportUserIds.length > 0) {
@@ -370,34 +372,39 @@ export default function ScreeningManagementContent() {
         const esasScores = screening.esas_data?.questions || {}
 
         // Generate a meaningful patient ID from screening data
-        const patientId = screening.patient_id ||
-                         (screening.is_guest ?
-                           `GUEST-${screening.guest_identifier?.slice(-8) || screening.id?.slice(-8)}` :
-                           screening.user_id || 'N/A')
+        const patientId =
+          screening.patient_id ||
+          (screening.is_guest
+            ? `GUEST-${screening.guest_identifier?.slice(-8) || screening.id?.slice(-8)}`
+            : screening.user_id || 'N/A')
 
         return {
-          'id_screening': screening.id || 'N/A',
-          'id_pasien': patientId,
-          'nama_pasien': screening.esas_data?.identity?.name || 'Tamu',
-          'usia': screening.esas_data?.identity?.age || 'N/A',
-          'jenis_kelamin': screening.esas_data?.identity?.gender || 'N/A',
-          'tingkat_resiko': getRiskText(screening.risk_level),
-          'pertanyaan_1': esasScores['1'] || 'N/A',
-          'pertanyaan_2': esasScores['2'] || 'N/A',
-          'pertanyaan_3': esasScores['3'] || 'N/A',
-          'pertanyaan_4': esasScores['4'] || 'N/A',
-          'pertanyaan_5': esasScores['5'] || 'N/A',
-          'pertanyaan_6': esasScores['6'] || 'N/A',
-          'pertanyaan_7': esasScores['7'] || 'N/A',
-          'pertanyaan_8': esasScores['8'] || 'N/A',
-          'pertanyaan_9': esasScores['9'] || 'N/A',
+          id_screening: screening.id || 'N/A',
+          id_pasien: patientId,
+          nama_pasien: screening.esas_data?.identity?.name || 'Tamu',
+          usia: screening.esas_data?.identity?.age || 'N/A',
+          jenis_kelamin: screening.esas_data?.identity?.gender || 'N/A',
+          tingkat_resiko: getRiskText(screening.risk_level),
+          'Seberapa besar keluhan nyeri yang Anda alami saat ini?': esasScores['1'] || 'N/A',
+          'Seberapa besar keluhan lelah atau kekurangan tenaga yang Anda alami saat ini?':
+            esasScores['2'] || 'N/A',
+          'Apakah Anda saat ini mengalami rasa kantuk atau sulit menahan kantuk?':
+            esasScores['3'] || 'N/A',
+          'Seberapa besar mual atau rasa ingin muntah yang Anda alami saat ini?':
+            esasScores['4'] || 'N/A',
+          'Seberapa berkurang nafsu makan yang Anda alami saat ini?': esasScores['5'] || 'N/A',
+          'Apakah Anda saat ini mengalami sesak saat bernapas?': esasScores['6'] || 'N/A',
+          'Seberapa sedih, murung atau kehilangan semangat Anda saat ini?':
+            esasScores['7'] || 'N/A',
+          'Seberapa besar Anda mengalami cemas atau khawatir saat ini?': esasScores['8'] || 'N/A',
+          'Secara keseluruhan, bagaimana perasaan Anda saat ini?': esasScores['9'] || 'N/A',
         }
       })
 
       // Create questions reference data
       const questionReference = Object.entries(DETAILED_QUESTIONS).map(([number, question]) => ({
-        'Pertanyaan': `pertanyaan_${number}`,
-        'Deskripsi': question
+        Pertanyaan: `pertanyaan_${number}`,
+        Deskripsi: question,
       }))
 
       // Create Excel workbook with multiple sheets
@@ -409,25 +416,25 @@ export default function ScreeningManagementContent() {
 
       // Auto-size columns for better readability
       const columnWidths = {
-        'id_screening': 25,
-        'id_pasien': 25,
-        'nama_pasien': 20,
-        'usia': 8,
-        'jenis_kelamin': 12,
-        'tingkat_resiko': 15,
-        'pertanyaan_1': 12,
-        'pertanyaan_2': 12,
-        'pertanyaan_3': 12,
-        'pertanyaan_4': 12,
-        'pertanyaan_5': 12,
-        'pertanyaan_6': 12,
-        'pertanyaan_7': 12,
-        'pertanyaan_8': 12,
-        'pertanyaan_9': 12,
+        id_screening: 25,
+        id_pasien: 25,
+        nama_pasien: 20,
+        usia: 8,
+        jenis_kelamin: 12,
+        tingkat_resiko: 15,
+        'Seberapa besar keluhan nyeri yang Anda alami saat ini?': 12,
+        'Seberapa besar keluhan lelah atau kekurangan tenaga yang Anda alami saat ini?': 12,
+        'Apakah Anda saat ini mengalami rasa kantuk atau sulit menahan kantuk?': 12,
+        'Seberapa besar mual atau rasa ingin muntah yang Anda alami saat ini?': 12,
+        'Seberapa berkurang nafsu makan yang Anda alami saat ini?': 12,
+        'Apakah Anda saat ini mengalami sesak saat bernapas?': 12,
+        'Seberapa sedih, murung atau kehilangan semangat Anda saat ini?': 12,
+        'Seberapa besar Anda mengalami cemas atau khawatir saat ini?': 12,
+        'Secara keseluruhan, bagaimana perasaan Anda saat ini?': 12,
       }
 
-      const colWidthsData = Object.keys(columnWidths).map(key => ({
-        wch: columnWidths[key as keyof typeof columnWidths]
+      const colWidthsData = Object.keys(columnWidths).map((key) => ({
+        wch: columnWidths[key as keyof typeof columnWidths],
       }))
       const colWidthsQuestions = [{ wch: 15 }, { wch: 80 }]
       wsData['!cols'] = colWidthsData
@@ -471,7 +478,6 @@ export default function ScreeningManagementContent() {
     return screening.esas_data?.identity?.name || 'Tamu'
   }
 
-  
   const handleViewDetail = (screening: ScreeningData) => {
     // Navigate to detail page or open modal
     router.push(`/admin/screenings/${screening.id}`)
@@ -491,7 +497,7 @@ export default function ScreeningManagementContent() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -518,7 +524,7 @@ export default function ScreeningManagementContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -530,9 +536,9 @@ export default function ScreeningManagementContent() {
               <AlertTriangle className="h-8 w-8 text-orange-500" />
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
-        <Card>
+        {/* <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -544,7 +550,7 @@ export default function ScreeningManagementContent() {
               <AlertTriangle className="h-8 w-8 text-red-500" />
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Search and Filters */}
@@ -792,31 +798,49 @@ export default function ScreeningManagementContent() {
                               {getRiskText(screening.risk_level)}
                             </Badge>
                           </TableCell>
-                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['1'] || 0)}`}>
+                          <TableCell
+                            className={`text-center font-medium ${getScoreColor(esasScores['1'] || 0)}`}
+                          >
                             {esasScores['1'] || '-'}
                           </TableCell>
-                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['2'] || 0)}`}>
+                          <TableCell
+                            className={`text-center font-medium ${getScoreColor(esasScores['2'] || 0)}`}
+                          >
                             {esasScores['2'] || '-'}
                           </TableCell>
-                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['3'] || 0)}`}>
+                          <TableCell
+                            className={`text-center font-medium ${getScoreColor(esasScores['3'] || 0)}`}
+                          >
                             {esasScores['3'] || '-'}
                           </TableCell>
-                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['4'] || 0)}`}>
+                          <TableCell
+                            className={`text-center font-medium ${getScoreColor(esasScores['4'] || 0)}`}
+                          >
                             {esasScores['4'] || '-'}
                           </TableCell>
-                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['5'] || 0)}`}>
+                          <TableCell
+                            className={`text-center font-medium ${getScoreColor(esasScores['5'] || 0)}`}
+                          >
                             {esasScores['5'] || '-'}
                           </TableCell>
-                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['6'] || 0)}`}>
+                          <TableCell
+                            className={`text-center font-medium ${getScoreColor(esasScores['6'] || 0)}`}
+                          >
                             {esasScores['6'] || '-'}
                           </TableCell>
-                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['7'] || 0)}`}>
+                          <TableCell
+                            className={`text-center font-medium ${getScoreColor(esasScores['7'] || 0)}`}
+                          >
                             {esasScores['7'] || '-'}
                           </TableCell>
-                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['8'] || 0)}`}>
+                          <TableCell
+                            className={`text-center font-medium ${getScoreColor(esasScores['8'] || 0)}`}
+                          >
                             {esasScores['8'] || '-'}
                           </TableCell>
-                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['9'] || 0)}`}>
+                          <TableCell
+                            className={`text-center font-medium ${getScoreColor(esasScores['9'] || 0)}`}
+                          >
                             {esasScores['9'] || '-'}
                           </TableCell>
                           <TableCell>
