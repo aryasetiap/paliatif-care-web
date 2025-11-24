@@ -12,7 +12,7 @@ const RECOMMENDED_VIDEOS = {
   pain: [
     {
       id: 'pain-relief-1',
-      title: '1. Nyeri - Terapi Akupresur',
+      title: '1. Nyeri - Kompres Hangat',
       description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/q9oB6nsTz5o/mqdefault.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=q9oB6nsTz5o',
@@ -20,7 +20,7 @@ const RECOMMENDED_VIDEOS = {
     },
     {
       id: 'pain-relief-2',
-      title: '1. Nyeri - Kompres Hangat',
+      title: '1. Nyeri - Terapi Kognitif Distraksi Nyeri',
       description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/W5JzONtaOvM/mqdefault.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=W5JzONtaOvM',
@@ -30,7 +30,7 @@ const RECOMMENDED_VIDEOS = {
   fatigue: [
     {
       id: 'fatigue-management-1',
-      title: '2. Lelah - Slow Deep Breathing (SDB)',
+      title: '2. Keletihan - Pijat Kaki',
       description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/JJHPQW_dd3k/mqdefault.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=JJHPQW_dd3k',
@@ -38,7 +38,7 @@ const RECOMMENDED_VIDEOS = {
     },
     {
       id: 'fatigue-management-2',
-      title: '2. Lelah - Pijat Kaki untuk Sirkulasi',
+      title: '2. Keletihan - Intoleransi aktifitas terapi jalan',
       description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/8OxiCWzU6Lc/mqdefault.jpg',
       videoUrl: 'https://youtu.be/8OxiCWzU6Lc',
@@ -48,7 +48,7 @@ const RECOMMENDED_VIDEOS = {
   nausea: [
     {
       id: 'nausea-relief-1',
-      title: '4. Nausea - Aromaterapi (Jahe, Peppermint)',
+      title: '4. Nausea',
       description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/0Cg_B7vtM-I/mqdefault.jpg',
       videoUrl: 'https://www.youtube.com/watch?v=0Cg_B7vtM-I',
@@ -68,7 +68,7 @@ const RECOMMENDED_VIDEOS = {
   depression: [
     {
       id: 'depression-support-1',
-      title: '7. Terapi HOPE untuk Keputusasaan',
+      title: '7. Terapi HOPE',
       description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/3el279wtEM0/mqdefault.jpg',
       videoUrl: 'https://youtu.be/3el279wtEM0?si=-8BuNWoD9O6FaXXG',
@@ -78,7 +78,7 @@ const RECOMMENDED_VIDEOS = {
   sleep: [
     {
       id: 'sleep-improvement-1',
-      title: '3. Gangguan Tidur - Aromaterapi Lavender',
+      title: '3. Gangguan Pola Tidur - Terapi aromaterapi',
       description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/LRhG-5ODq6E/mqdefault.jpg',
       videoUrl: 'https://youtu.be/LRhG-5ODq6E',
@@ -88,7 +88,7 @@ const RECOMMENDED_VIDEOS = {
   appetite: [
     {
       id: 'appetite-stimulation-1',
-      title: '5. Defisit Nutrisi',
+      title: '5. Defisit Nutrisi (Manajemen Nutrisi)',
       description: '',
       thumbnailUrl: 'https://img.youtube.com/vi/MM2JUSKLnqk/mqdefault.jpg',
       videoUrl: 'https://youtu.be/MM2JUSKLnqk?si=L_Ho-9LcXQfQQNGZ',
