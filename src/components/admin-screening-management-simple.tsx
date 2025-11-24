@@ -350,14 +350,14 @@ export default function ScreeningManagementContent() {
         Frekuensi: screening.recommendation?.frequency || 'N/A',
         'Tipe User': screening.is_guest ? 'Tamu' : 'Terdaftar',
         User: screening.is_guest
-          ? (screening.guest_identifier
-            ? (screening.guest_identifier.length > 20
-              ? `Guest (${screening.guest_identifier.slice(-8)})`
-              : screening.guest_identifier)
-            : 'Tamu')
+          ? (screening.guest_identifier && /^[a-zA-Z\s]+$/.test(screening.guest_identifier)
+            ? screening.guest_identifier
+            : (screening.esas_data?.identity?.name && screening.esas_data.identity.name !== 'Tamu'
+              ? `${screening.esas_data.identity.name} (Tamu)`
+              : 'Tamu'))
           : (screening.user_id && exportUserLookup[screening.user_id])
             ? exportUserLookup[screening.user_id].full_name
-            : `User: ${screening.user_id?.slice(-8) || 'Unknown'}`,
+            : `User (${screening.user_id?.slice(-8) || 'Unknown'})`,
         'Tanggal Screening': screening.created_at
           ? format(new Date(screening.created_at), 'dd/MM/yyyy HH:mm', { locale: idLocale })
           : 'N/A',
@@ -412,39 +412,33 @@ export default function ScreeningManagementContent() {
   }
 
   const getUserName = (screening: ScreeningData) => {
-    // Debug logging
-    console.log('Screening data:', {
-      id: screening.id,
-      is_guest: screening.is_guest,
-      guest_identifier: screening.guest_identifier,
-      user_id: screening.user_id,
-      patient_name: screening.esas_data?.identity?.name
-    })
-
-    // For guest users, format guest identifier better
-    if (screening.is_guest) {
-      if (screening.guest_identifier) {
-        // If it's a UUID-like string, show a more friendly format
-        if (screening.guest_identifier.length > 20) {
-          return `Guest (${screening.guest_identifier.slice(-8)})`
-        }
-        // If it's a name-like string, show as is
-        if (/^[a-zA-Z\s]+$/.test(screening.guest_identifier)) {
-          return screening.guest_identifier
-        }
-        // Default fallback
-        return `Guest (${screening.guest_identifier.slice(-8)})`
+    // Priority 1: Registered users (not guest) with user lookup
+    if (!screening.is_guest && screening.user_id) {
+      if (userLookup[screening.user_id]) {
+        return userLookup[screening.user_id].full_name
       }
+      return `User (${screening.user_id.slice(-8)})`
+    }
+
+    // Priority 2: Guest users with meaningful identifiers
+    if (screening.is_guest) {
+      // If guest identifier exists and looks like a real name
+      if (screening.guest_identifier && /^[a-zA-Z\s]+$/.test(screening.guest_identifier)) {
+        return screening.guest_identifier
+      }
+
+      // If no meaningful identifier, use patient name as reference
+      const patientName = screening.esas_data?.identity?.name
+      if (patientName && patientName !== 'Tamu') {
+        return `${patientName} (Tamu)`
+      }
+
+      // Fallback to generic guest
       return 'Tamu'
     }
 
-    // For registered users, use lookup data or fallback
-    if (screening.user_id && userLookup[screening.user_id]) {
-      return userLookup[screening.user_id].full_name
-    }
-
-    // Fallback to user_id format if not found in lookup
-    return screening.user_id ? `User: ${screening.user_id.slice(-8)}` : 'Terdaftar'
+    // Fallback
+    return screening.user_id ? `User (${screening.user_id.slice(-8)})` : 'Unknown'
   }
 
   const handleViewDetail = (screening: ScreeningData) => {
@@ -673,7 +667,10 @@ export default function ScreeningManagementContent() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">
+                          <Badge
+                            variant={screening.is_guest ? "secondary" : "default"}
+                            className={screening.is_guest ? "bg-orange-100 text-orange-800" : "bg-blue-100 text-blue-800"}
+                          >
                             {screening.is_guest ? 'Tamu' : 'Terdaftar'}
                           </Badge>
                         </TableCell>
