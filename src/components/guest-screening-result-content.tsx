@@ -404,14 +404,31 @@ export default function ESASScreeningResultContent({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-center mb-6"
+          className="text-center mb-6 px-4 sm:px-0"
         >
-          <div className="flex items-center justify-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-amber-500" />
-            <p className="text-lg font-medium text-sky-700">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+            <AlertTriangle className="w-10 h-10 sm:w-10 sm:h-10 text-amber-500 flex-shrink-0" />
+            <p className="text-base sm:text-lg font-medium text-sky-700 leading-relaxed text-center sm:text-left">
               Untuk Pelayanan Lebih Lanjut Silahkan Hubungi Pelayanan Kesehatan Terdekat
             </p>
           </div>
+        </motion.div>
+
+        {/* Footer Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="flex flex-col sm:flex-row gap-4 justify-center print:hidden"
+        >
+          <Button
+            onClick={() => router.push('/screening/guest')}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Screening Baru
+          </Button>
         </motion.div>
 
         {/* Educational Resources Section */}
@@ -526,23 +543,6 @@ export default function ESASScreeningResultContent({
               </div>
             </CardContent>
           </Card>
-        </motion.div>
-
-        {/* Footer Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center print:hidden"
-        >
-          <Button
-            onClick={() => router.push('/screening/guest')}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Screening Baru
-          </Button>
         </motion.div>
       </div>
 

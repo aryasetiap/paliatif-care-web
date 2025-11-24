@@ -481,14 +481,38 @@ export default function ScreeningResultPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-center my-6"
+          className="text-center my-6 px-4 sm:px-0"
         >
-          <div className="flex items-center justify-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-amber-500" />
-            <p className="text-lg font-medium text-sky-700">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+            <AlertTriangle className="w-10 h-10 sm:w-10 sm:h-10 text-amber-500 flex-shrink-0" />
+            <p className="text-base sm:text-lg font-medium text-sky-700 leading-relaxed text-center sm:text-left">
               Untuk Pelayanan Lebih Lanjut Silahkan Hubungi Pelayanan Kesehatan Terdekat
             </p>
           </div>
+        </motion.div>
+
+        {/* Action Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.7 }}
+          className="mt-8 flex flex-col sm:flex-row gap-4 justify-center"
+        >
+          <Button
+            variant="outline"
+            onClick={() => router.push('/pasien/dashboard')}
+            className="flex items-center gap-2 border-sky-300 text-sky-700 hover:bg-sky-50"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+            Kembali ke Dashboard
+          </Button>
         </motion.div>
 
         {/* Educational Resources Section */}
@@ -603,30 +627,6 @@ export default function ScreeningResultPage() {
               </div>
             </CardContent>
           </Card>
-        </motion.div>
-
-        {/* Action Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="mt-8 flex flex-col sm:flex-row gap-4 justify-center"
-        >
-          <Button
-            variant="outline"
-            onClick={() => router.push('/pasien/dashboard')}
-            className="flex items-center gap-2 border-sky-300 text-sky-700 hover:bg-sky-50"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              />
-            </svg>
-            Kembali ke Dashboard
-          </Button>
         </motion.div>
       </div>
 
