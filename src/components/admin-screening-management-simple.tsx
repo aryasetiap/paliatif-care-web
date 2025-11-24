@@ -385,19 +385,18 @@ export default function ScreeningManagementContent() {
           usia: screening.esas_data?.identity?.age || 'N/A',
           jenis_kelamin: screening.esas_data?.identity?.gender || 'N/A',
           tingkat_resiko: getRiskText(screening.risk_level),
-          'Seberapa besar keluhan nyeri yang Anda alami saat ini?': esasScores['1'] || 'N/A',
+          'Seberapa besar keluhan nyeri yang Anda alami saat ini?': esasScores['1'] || '0',
           'Seberapa besar keluhan lelah atau kekurangan tenaga yang Anda alami saat ini?':
-            esasScores['2'] || 'N/A',
+            esasScores['2'] || '0',
           'Apakah Anda saat ini mengalami rasa kantuk atau sulit menahan kantuk?':
-            esasScores['3'] || 'N/A',
+            esasScores['3'] || '0',
           'Seberapa besar mual atau rasa ingin muntah yang Anda alami saat ini?':
-            esasScores['4'] || 'N/A',
-          'Seberapa berkurang nafsu makan yang Anda alami saat ini?': esasScores['5'] || 'N/A',
-          'Apakah Anda saat ini mengalami sesak saat bernapas?': esasScores['6'] || 'N/A',
-          'Seberapa sedih, murung atau kehilangan semangat Anda saat ini?':
-            esasScores['7'] || 'N/A',
-          'Seberapa besar Anda mengalami cemas atau khawatir saat ini?': esasScores['8'] || 'N/A',
-          'Secara keseluruhan, bagaimana perasaan Anda saat ini?': esasScores['9'] || 'N/A',
+            esasScores['4'] || '0',
+          'Seberapa berkurang nafsu makan yang Anda alami saat ini?': esasScores['5'] || '0',
+          'Apakah Anda saat ini mengalami sesak saat bernapas?': esasScores['6'] || '0',
+          'Seberapa sedih, murung atau kehilangan semangat Anda saat ini?': esasScores['7'] || '0',
+          'Seberapa besar Anda mengalami cemas atau khawatir saat ini?': esasScores['8'] || '0',
+          'Secara keseluruhan, bagaimana perasaan Anda saat ini?': esasScores['9'] || '0',
         }
       })
 
@@ -801,47 +800,47 @@ export default function ScreeningManagementContent() {
                           <TableCell
                             className={`text-center font-medium ${getScoreColor(esasScores['1'] || 0)}`}
                           >
-                            {esasScores['1'] || '-'}
+                            {esasScores['1'] || '0'}
                           </TableCell>
                           <TableCell
                             className={`text-center font-medium ${getScoreColor(esasScores['2'] || 0)}`}
                           >
-                            {esasScores['2'] || '-'}
+                            {esasScores['2'] || '0'}
                           </TableCell>
                           <TableCell
                             className={`text-center font-medium ${getScoreColor(esasScores['3'] || 0)}`}
                           >
-                            {esasScores['3'] || '-'}
+                            {esasScores['3'] || '0'}
                           </TableCell>
                           <TableCell
                             className={`text-center font-medium ${getScoreColor(esasScores['4'] || 0)}`}
                           >
-                            {esasScores['4'] || '-'}
+                            {esasScores['4'] || '0'}
                           </TableCell>
                           <TableCell
                             className={`text-center font-medium ${getScoreColor(esasScores['5'] || 0)}`}
                           >
-                            {esasScores['5'] || '-'}
+                            {esasScores['5'] || '0'}
                           </TableCell>
                           <TableCell
                             className={`text-center font-medium ${getScoreColor(esasScores['6'] || 0)}`}
                           >
-                            {esasScores['6'] || '-'}
+                            {esasScores['6'] || '0'}
                           </TableCell>
                           <TableCell
                             className={`text-center font-medium ${getScoreColor(esasScores['7'] || 0)}`}
                           >
-                            {esasScores['7'] || '-'}
+                            {esasScores['7'] || '0'}
                           </TableCell>
                           <TableCell
                             className={`text-center font-medium ${getScoreColor(esasScores['8'] || 0)}`}
                           >
-                            {esasScores['8'] || '-'}
+                            {esasScores['8'] || '0'}
                           </TableCell>
                           <TableCell
                             className={`text-center font-medium ${getScoreColor(esasScores['9'] || 0)}`}
                           >
-                            {esasScores['9'] || '-'}
+                            {esasScores['9'] || '0'}
                           </TableCell>
                           <TableCell>
                             <div className="text-sm whitespace-nowrap">
