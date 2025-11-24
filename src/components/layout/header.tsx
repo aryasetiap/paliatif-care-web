@@ -18,6 +18,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Menu, User, Settings, LogOut, FileText, Activity } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { motion } from 'framer-motion'
+import { useAuthStore } from '@/lib/stores/authStore'
 
 interface HeaderProps {
   user?: {
@@ -30,13 +31,24 @@ interface HeaderProps {
 export function Header({ user }: HeaderProps) {
   const pathname = usePathname()
   const { toast } = useToast()
+  const { logout } = useAuthStore()
 
-  const handleLogout = () => {
-    toast({
-      title: 'Berhasil keluar',
-      description: 'Anda telah keluar dari sistem.',
-    })
-    // Implement logout logic here
+  const handleLogout = async () => {
+    try {
+      await logout()
+      toast({
+        title: 'Berhasil keluar',
+        description: 'Anda telah keluar dari sistem.',
+      })
+      // Redirect to home page after logout
+      window.location.href = '/'
+    } catch {
+      toast({
+        title: 'Gagal keluar',
+        description: 'Terjadi kesalahan saat mencoba keluar.',
+        variant: 'destructive'
+      })
+    }
   }
 
   const navigation = [
@@ -236,6 +248,17 @@ interface MobileNavProps {
 
 function MobileNav({ navigation }: MobileNavProps) {
   const pathname = usePathname()
+  const { logout } = useAuthStore()
+
+  const handleMobileLogout = async () => {
+    try {
+      await logout()
+      // Redirect to home page after logout
+      window.location.href = '/'
+    } catch {
+      // Silently handle logout error in mobile nav
+    }
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -317,6 +340,33 @@ function MobileNav({ navigation }: MobileNavProps) {
             </motion.div>
           )
         })}
+
+        {/* Logout Button in Mobile Navigation */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: navigation.length * 0.05 }}
+        >
+          <button
+            onClick={handleMobileLogout}
+            className="w-full flex items-center space-x-4 rounded-xl px-4 py-4 text-sm font-medium transition-all duration-200 group text-red-600 hover:text-red-700 hover:bg-red-50/80 border border-transparent hover:border-red-100"
+          >
+            <motion.div
+              animate={{ scale: 1 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors bg-red-100 text-red-600 group-hover:bg-red-200"
+            >
+              <LogOut className="h-5 w-5" />
+            </motion.div>
+            <div className="flex flex-col leading-tight flex-1 text-left">
+              <span className="font-medium">Keluar</span>
+              <span className="text-xs text-red-500 leading-tight">
+                Keluar dari sistem
+              </span>
+            </div>
+          </button>
+        </motion.div>
       </nav>
 
       {/* Footer */}
