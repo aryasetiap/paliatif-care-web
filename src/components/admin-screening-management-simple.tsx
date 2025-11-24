@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
@@ -42,6 +42,7 @@ import {
   Activity,
   AlertTriangle,
   TrendingUp,
+  Info,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useAuthStore } from '@/lib/stores/authStore'
@@ -80,16 +81,17 @@ interface ScreeningStats {
 
 const ITEMS_PER_PAGE = 20
 const RISK_LEVELS = ['low', 'medium', 'high', 'critical']
-const QUESTION_MAP: { [key: number]: string } = {
-  1: 'Nyeri',
-  2: 'Lelah',
-  3: 'Tidur',
-  4: 'Mual',
-  5: 'Nafsu Makan',
-  6: 'Sesak',
-  7: 'Sedih',
-  8: 'Cemas',
-  9: 'Perasaan Keseluruhan',
+
+const DETAILED_QUESTIONS: { [key: number]: string } = {
+  1: 'Seberapa besar keluhan nyeri yang Anda alami saat ini?',
+  2: 'Seberapa besar keluhan lelah atau kekurangan tenaga yang Anda alami saat ini?',
+  3: 'Apakah Anda saat ini mengalami rasa kantuk atau sulit menahan kantuk?',
+  4: 'Seberapa besar mual atau rasa ingin muntah yang Anda alami saat ini?',
+  5: 'Seberapa berkurang nafsu makan yang Anda alami saat ini?',
+  6: 'Apakah Anda saat ini mengalami sesak saat bernapas?',
+  7: 'Seberapa sedih, murung atau kehilangan semangat Anda saat ini?',
+  8: 'Seberapa besar Anda mengalami cemas atau khawatir saat ini?',
+  9: 'Secara keseluruhan, bagaimana perasaan Anda saat ini?',
 }
 
 const getRiskBadgeVariant = (level: string) => {
@@ -126,7 +128,6 @@ export default function ScreeningManagementContent() {
   const [screenings, setScreenings] = useState<ScreeningData[]>([])
   const [stats, setStats] = useState<ScreeningStats | null>(null)
   const [loading, setLoading] = useState(true)
-  const [userLookup, setUserLookup] = useState<{ [key: string]: { full_name: string; email: string } }>({})
   const [searchTerm, setSearchTerm] = useState('')
   const [riskLevelFilter, setRiskLevelFilter] = useState<string>('all')
   const [userTypeFilter, setUserTypeFilter] = useState<'all' | 'guest' | 'user'>('all')
@@ -141,23 +142,56 @@ export default function ScreeningManagementContent() {
   const { toast } = useToast()
   const router = useRouter()
 
+  // Refs to prevent multiple simultaneous requests
+  const isFetchingRef = useRef(false)
+  const lastFetchTimeRef = useRef(0)
+
   const fetchUserData = async (userIds: string[]) => {
+    // Prevent multiple simultaneous requests
+    if (isFetchingRef.current) {
+      return {}
+    }
+
+    const now = Date.now()
+    if (now - lastFetchTimeRef.current < 1000) {
+      return {}
+    } // Debounce: don't fetch more than once per second
+
     const supabase = createClient()
     const uniqueIds = [...new Set(userIds)].filter(id => id) // Remove duplicates and empty strings
 
     if (uniqueIds.length === 0) return {}
 
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, email')
-        .in('id', uniqueIds)
+    isFetchingRef.current = true
+    lastFetchTimeRef.current = now
 
-      if (error) throw error
+    try {
+      // Limit to 10 users per request to avoid query timeouts
+      const batchSize = 10
+      const allUserData: any[] = []
+
+      for (let i = 0; i < uniqueIds.length; i += batchSize) {
+        const batch = uniqueIds.slice(i, i + batchSize)
+
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .in('id', batch)
+          .limit(batchSize)
+
+        if (error) {
+          // Continue with empty data for this batch instead of throwing
+          continue
+        }
+
+        if (data) {
+          allUserData.push(...data)
+        }
+      }
 
       // Convert to lookup object
       const lookup: { [key: string]: { full_name: string; email: string } } = {}
-      data?.forEach(user => {
+      allUserData.forEach(user => {
         if (user.id) {
           lookup[user.id] = {
             full_name: user.full_name || 'Unknown User',
@@ -167,9 +201,11 @@ export default function ScreeningManagementContent() {
       })
 
       return lookup
-    } catch (error) {
-      console.error('Error fetching user data:', error)
+    } catch {
+      // Silently handle errors to prevent browser console errors
       return {}
+    } finally {
+      isFetchingRef.current = false
     }
   }
 
@@ -216,14 +252,14 @@ export default function ScreeningManagementContent() {
       setScreenings(screeningsData || [])
       setTotalItems(count || 0)
 
-      // Fetch user data for non-guest screenings
+      // Fetch user data for non-guest screenings (only if we have any)
       const userIds = (screeningsData || [])
         .filter(screening => !screening.is_guest && screening.user_id)
         .map(screening => screening.user_id!)
+        .slice(0, 20) // Limit to first 20 users to prevent overloading
 
       if (userIds.length > 0) {
-        const userData = await fetchUserData(userIds)
-        setUserLookup(userData)
+        await fetchUserData(userIds)
       }
 
       // Calculate stats - optimized to single query
@@ -260,7 +296,6 @@ export default function ScreeningManagementContent() {
         averageScore: avgScore,
       })
     } catch (error) {
-      console.error('Error fetching screenings:', error)
       toast({
         title: 'Error',
         description: error instanceof Error ? error.message : 'Gagal memuat data screening',
@@ -307,7 +342,6 @@ export default function ScreeningManagementContent() {
       const { data: exportData, error } = await query
 
       if (error) {
-        console.error('Export error:', error)
         throw new Error(`Gagal mengambil data: ${error.message}`)
       }
 
@@ -318,9 +352,8 @@ export default function ScreeningManagementContent() {
             .map(screening => screening.user_id!)
         : []
 
-      let exportUserLookup: { [key: string]: { full_name: string; email: string } } = {}
       if (exportUserIds.length > 0) {
-        exportUserLookup = await fetchUserData(exportUserIds)
+        await fetchUserData(exportUserIds.slice(0, 50)) // Limit export to 50 users
       }
 
       if (!exportData || exportData.length === 0) {
@@ -332,45 +365,73 @@ export default function ScreeningManagementContent() {
         return
       }
 
-      // Transform data for Excel with proper null handling
-      const excelData = exportData.map((screening) => ({
-        ID: screening.id || 'N/A',
-        'Nama Pasien': screening.esas_data?.identity?.name || 'Tamu',
-        Umur: screening.esas_data?.identity?.age || 'N/A',
-        Gender: screening.esas_data?.identity?.gender || 'N/A',
-        Fasilitas: screening.esas_data?.identity?.facility_name || 'N/A',
-        'Tipe Screening': screening.screening_type || 'N/A',
-        Status: screening.status || 'N/A',
-        'Tingkat Risiko': getRiskText(screening.risk_level),
-        'Skor Tertinggi': screening.highest_score || 0,
-        'Masalah Utama': QUESTION_MAP[screening.primary_question] || 'N/A',
-        Diagnosis: screening.recommendation?.diagnosis || 'N/A',
-        Tindakan: screening.recommendation?.action_required || 'N/A',
-        Terapi: screening.recommendation?.therapy_type || 'N/A',
-        Frekuensi: screening.recommendation?.frequency || 'N/A',
-        'Tipe User': screening.is_guest ? 'Tamu' : 'Terdaftar',
-        User: screening.is_guest
-          ? (screening.guest_identifier && /^[a-zA-Z\s]+$/.test(screening.guest_identifier)
-            ? screening.guest_identifier
-            : (screening.esas_data?.identity?.name && screening.esas_data.identity.name !== 'Tamu'
-              ? `${screening.esas_data.identity.name} (Tamu)`
-              : 'Tamu'))
-          : (screening.user_id && exportUserLookup[screening.user_id])
-            ? exportUserLookup[screening.user_id].full_name
-            : `User (${screening.user_id?.slice(-8) || 'Unknown'})`,
-        'Tanggal Screening': screening.created_at
-          ? format(new Date(screening.created_at), 'dd/MM/yyyy HH:mm', { locale: idLocale })
-          : 'N/A',
+      // Transform data for Excel with requested format and detailed questions
+      const excelData = exportData.map((screening) => {
+        const esasScores = screening.esas_data?.questions || {}
+
+        // Generate a meaningful patient ID from screening data
+        const patientId = screening.patient_id ||
+                         (screening.is_guest ?
+                           `GUEST-${screening.guest_identifier?.slice(-8) || screening.id?.slice(-8)}` :
+                           screening.user_id || 'N/A')
+
+        return {
+          'id_screening': screening.id || 'N/A',
+          'id_pasien': patientId,
+          'nama_pasien': screening.esas_data?.identity?.name || 'Tamu',
+          'usia': screening.esas_data?.identity?.age || 'N/A',
+          'jenis_kelamin': screening.esas_data?.identity?.gender || 'N/A',
+          'tingkat_resiko': getRiskText(screening.risk_level),
+          'pertanyaan_1': esasScores['1'] || 'N/A',
+          'pertanyaan_2': esasScores['2'] || 'N/A',
+          'pertanyaan_3': esasScores['3'] || 'N/A',
+          'pertanyaan_4': esasScores['4'] || 'N/A',
+          'pertanyaan_5': esasScores['5'] || 'N/A',
+          'pertanyaan_6': esasScores['6'] || 'N/A',
+          'pertanyaan_7': esasScores['7'] || 'N/A',
+          'pertanyaan_8': esasScores['8'] || 'N/A',
+          'pertanyaan_9': esasScores['9'] || 'N/A',
+        }
+      })
+
+      // Create questions reference data
+      const questionReference = Object.entries(DETAILED_QUESTIONS).map(([number, question]) => ({
+        'Pertanyaan': `pertanyaan_${number}`,
+        'Deskripsi': question
       }))
 
-      // Create Excel workbook with proper formatting
-      const ws = XLSX.utils.json_to_sheet(excelData)
+      // Create Excel workbook with multiple sheets
+      const wsData = XLSX.utils.json_to_sheet(excelData)
+      const wsQuestions = XLSX.utils.json_to_sheet(questionReference)
       const wb = XLSX.utils.book_new()
-      XLSX.utils.book_append_sheet(wb, ws, 'Data Screening')
+      XLSX.utils.book_append_sheet(wb, wsData, 'Data Screening')
+      XLSX.utils.book_append_sheet(wb, wsQuestions, 'Referensi Pertanyaan')
 
       // Auto-size columns for better readability
-      const colWidths = Object.keys(excelData[0] || {}).map(() => ({ wch: 15 }))
-      ws['!cols'] = colWidths
+      const columnWidths = {
+        'id_screening': 25,
+        'id_pasien': 25,
+        'nama_pasien': 20,
+        'usia': 8,
+        'jenis_kelamin': 12,
+        'tingkat_resiko': 15,
+        'pertanyaan_1': 12,
+        'pertanyaan_2': 12,
+        'pertanyaan_3': 12,
+        'pertanyaan_4': 12,
+        'pertanyaan_5': 12,
+        'pertanyaan_6': 12,
+        'pertanyaan_7': 12,
+        'pertanyaan_8': 12,
+        'pertanyaan_9': 12,
+      }
+
+      const colWidthsData = Object.keys(columnWidths).map(key => ({
+        wch: columnWidths[key as keyof typeof columnWidths]
+      }))
+      const colWidthsQuestions = [{ wch: 15 }, { wch: 80 }]
+      wsData['!cols'] = colWidthsData
+      wsQuestions['!cols'] = colWidthsQuestions
 
       // Generate filename with date
       const fileName = `Data_Screening_${format(new Date(), 'dd-MM-yyyy_HH-mm', { locale: idLocale })}.xlsx`
@@ -380,10 +441,9 @@ export default function ScreeningManagementContent() {
 
       toast({
         title: 'Export Berhasil',
-        description: `Data ${exportData.length} screening berhasil di-export ke ${fileName}`,
+        description: `Data ${exportData.length} screening berhasil di-export ke ${fileName} dengan 2 worksheet`,
       })
     } catch (error) {
-      console.error('Export failed:', error)
       toast({
         title: 'Export Gagal',
         description: error instanceof Error ? error.message : 'Gagal mengexport data ke Excel',
@@ -411,36 +471,7 @@ export default function ScreeningManagementContent() {
     return screening.esas_data?.identity?.name || 'Tamu'
   }
 
-  const getUserName = (screening: ScreeningData) => {
-    // Priority 1: Registered users (not guest) with user lookup
-    if (!screening.is_guest && screening.user_id) {
-      if (userLookup[screening.user_id]) {
-        return userLookup[screening.user_id].full_name
-      }
-      return `User (${screening.user_id.slice(-8)})`
-    }
-
-    // Priority 2: Guest users with meaningful identifiers
-    if (screening.is_guest) {
-      // If guest identifier exists and looks like a real name
-      if (screening.guest_identifier && /^[a-zA-Z\s]+$/.test(screening.guest_identifier)) {
-        return screening.guest_identifier
-      }
-
-      // If no meaningful identifier, use patient name as reference
-      const patientName = screening.esas_data?.identity?.name
-      if (patientName && patientName !== 'Tamu') {
-        return `${patientName} (Tamu)`
-      }
-
-      // Fallback to generic guest
-      return 'Tamu'
-    }
-
-    // Fallback
-    return screening.user_id ? `User (${screening.user_id.slice(-8)})` : 'Unknown'
-  }
-
+  
   const handleViewDetail = (screening: ScreeningData) => {
     // Navigate to detail page or open modal
     router.push(`/admin/screenings/${screening.id}`)
@@ -643,76 +674,174 @@ export default function ScreeningManagementContent() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead>ID Screening</TableHead>
                       <TableHead>Pasien</TableHead>
-                      <TableHead>Tipe</TableHead>
-                      <TableHead>Risiko</TableHead>
-                      <TableHead>Skor</TableHead>
-                      <TableHead>Masalah Utama</TableHead>
-                      <TableHead>User</TableHead>
+                      <TableHead>Usia</TableHead>
+                      <TableHead>Gender</TableHead>
+                      <TableHead>Tingkat Risiko</TableHead>
+                      <TableHead className="relative group">
+                        <div className="flex items-center gap-1">
+                          P1
+                          <Info className="h-3 w-3 text-gray-400 cursor-help" />
+                        </div>
+                        <div className="absolute hidden group-hover:block z-10 bg-gray-900 text-white text-xs rounded p-2 -top-8 left-0 w-48">
+                          Nyeri: Seberapa besar keluhan nyeri yang Anda alami?
+                        </div>
+                      </TableHead>
+                      <TableHead className="relative group">
+                        <div className="flex items-center gap-1">
+                          P2
+                          <Info className="h-3 w-3 text-gray-400 cursor-help" />
+                        </div>
+                        <div className="absolute hidden group-hover:block z-10 bg-gray-900 text-white text-xs rounded p-2 -top-8 left-0 w-48">
+                          Lelah: Seberapa besar keluhan lelah yang Anda alami?
+                        </div>
+                      </TableHead>
+                      <TableHead className="relative group">
+                        <div className="flex items-center gap-1">
+                          P3
+                          <Info className="h-3 w-3 text-gray-400 cursor-help" />
+                        </div>
+                        <div className="absolute hidden group-hover:block z-10 bg-gray-900 text-white text-xs rounded p-2 -top-8 left-0 w-48">
+                          Tidur: Apakah Anda mengalami rasa kantuk?
+                        </div>
+                      </TableHead>
+                      <TableHead className="relative group">
+                        <div className="flex items-center gap-1">
+                          P4
+                          <Info className="h-3 w-3 text-gray-400 cursor-help" />
+                        </div>
+                        <div className="absolute hidden group-hover:block z-10 bg-gray-900 text-white text-xs rounded p-2 -top-8 left-0 w-48">
+                          Mual: Seberapa besar mual yang Anda alami?
+                        </div>
+                      </TableHead>
+                      <TableHead className="relative group">
+                        <div className="flex items-center gap-1">
+                          P5
+                          <Info className="h-3 w-3 text-gray-400 cursor-help" />
+                        </div>
+                        <div className="absolute hidden group-hover:block z-10 bg-gray-900 text-white text-xs rounded p-2 -top-8 left-0 w-48">
+                          Nafsu Makan: Seberapa berkurang nafsu makan Anda?
+                        </div>
+                      </TableHead>
+                      <TableHead className="relative group">
+                        <div className="flex items-center gap-1">
+                          P6
+                          <Info className="h-3 w-3 text-gray-400 cursor-help" />
+                        </div>
+                        <div className="absolute hidden group-hover:block z-10 bg-gray-900 text-white text-xs rounded p-2 -top-8 left-0 w-48">
+                          Sesak: Apakah Anda mengalami sesak saat bernapas?
+                        </div>
+                      </TableHead>
+                      <TableHead className="relative group">
+                        <div className="flex items-center gap-1">
+                          P7
+                          <Info className="h-3 w-3 text-gray-400 cursor-help" />
+                        </div>
+                        <div className="absolute hidden group-hover:block z-10 bg-gray-900 text-white text-xs rounded p-2 -top-8 left-0 w-48">
+                          Sedih: Seberapa sedih atau murung Anda saat ini?
+                        </div>
+                      </TableHead>
+                      <TableHead className="relative group">
+                        <div className="flex items-center gap-1">
+                          P8
+                          <Info className="h-3 w-3 text-gray-400 cursor-help" />
+                        </div>
+                        <div className="absolute hidden group-hover:block z-10 bg-gray-900 text-white text-xs rounded p-2 -top-8 left-0 w-48">
+                          Cemas: Seberapa besar Anda mengalami cemas?
+                        </div>
+                      </TableHead>
+                      <TableHead className="relative group">
+                        <div className="flex items-center gap-1">
+                          P9
+                          <Info className="h-3 w-3 text-gray-400 cursor-help" />
+                        </div>
+                        <div className="absolute hidden group-hover:block z-10 bg-gray-900 text-white text-xs rounded p-2 -top-8 left-0 w-48">
+                          Perasaan: Bagaimana perasaan Anda secara keseluruhan?
+                        </div>
+                      </TableHead>
                       <TableHead>Tanggal</TableHead>
                       <TableHead>Aksi</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {screenings.map((screening) => (
-                      <TableRow key={screening.id}>
-                        <TableCell>
-                          <div>
+                    {screenings.map((screening) => {
+                      const esasScores = screening.esas_data?.questions || {}
+                      const getScoreColor = (score: number) => {
+                        if (score <= 3) return 'text-green-600'
+                        if (score <= 6) return 'text-yellow-600'
+                        return 'text-red-600'
+                      }
+
+                      return (
+                        <TableRow key={screening.id}>
+                          <TableCell className="font-mono text-xs">
+                            {screening.id?.slice(-8)}
+                          </TableCell>
+                          <TableCell>
                             <div className="font-medium">{getPatientName(screening)}</div>
-                            {screening.esas_data?.identity?.facility_name && (
-                              <div className="text-sm text-gray-500">
-                                {screening.esas_data.identity.facility_name}
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={screening.is_guest ? "secondary" : "default"}
-                            className={screening.is_guest ? "bg-orange-100 text-orange-800" : "bg-blue-100 text-blue-800"}
-                          >
-                            {screening.is_guest ? 'Tamu' : 'Terdaftar'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={getRiskBadgeVariant(screening.risk_level)}>
-                            {getRiskText(screening.risk_level)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-center">
-                            <span className="font-bold text-lg">{screening.highest_score}</span>
-                            <div className="text-xs text-gray-500">/10</div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">
-                            {QUESTION_MAP[screening.primary_question] || 'N/A'}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">{getUserName(screening)}</div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">{formatDate(screening.created_at)}</div>
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleViewDetail(screening)}>
-                                <FileText className="mr-2 h-4 w-4" />
-                                Lihat Detail
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                          </TableCell>
+                          <TableCell>{screening.esas_data?.identity?.age || 'N/A'}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline">
+                              {screening.esas_data?.identity?.gender || 'N/A'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={getRiskBadgeVariant(screening.risk_level)}>
+                              {getRiskText(screening.risk_level)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['1'] || 0)}`}>
+                            {esasScores['1'] || '-'}
+                          </TableCell>
+                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['2'] || 0)}`}>
+                            {esasScores['2'] || '-'}
+                          </TableCell>
+                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['3'] || 0)}`}>
+                            {esasScores['3'] || '-'}
+                          </TableCell>
+                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['4'] || 0)}`}>
+                            {esasScores['4'] || '-'}
+                          </TableCell>
+                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['5'] || 0)}`}>
+                            {esasScores['5'] || '-'}
+                          </TableCell>
+                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['6'] || 0)}`}>
+                            {esasScores['6'] || '-'}
+                          </TableCell>
+                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['7'] || 0)}`}>
+                            {esasScores['7'] || '-'}
+                          </TableCell>
+                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['8'] || 0)}`}>
+                            {esasScores['8'] || '-'}
+                          </TableCell>
+                          <TableCell className={`text-center font-medium ${getScoreColor(esasScores['9'] || 0)}`}>
+                            {esasScores['9'] || '-'}
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm whitespace-nowrap">
+                              {formatDate(screening.created_at)}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleViewDetail(screening)}>
+                                  <FileText className="mr-2 h-4 w-4" />
+                                  Lihat Detail
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
                   </TableBody>
                 </Table>
               </div>

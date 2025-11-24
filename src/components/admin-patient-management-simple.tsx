@@ -119,9 +119,7 @@ export default function PatientManagementContent() {
 
       const [statsResult] = await Promise.all([
         // Get all data needed for stats in one query
-        supabase
-          .from('patients')
-          .select('id, age, gender, created_at')
+        supabase.from('patients').select('id, age, gender, created_at'),
       ])
 
       if (statsResult.error) throw statsResult.error
@@ -130,12 +128,13 @@ export default function PatientManagementContent() {
       const monthStartISO = monthStart.toISOString()
 
       const totalPatients = allPatients.length
-      const newPatientsThisMonth = allPatients.filter(p => p.created_at >= monthStartISO).length
+      const newPatientsThisMonth = allPatients.filter((p) => p.created_at >= monthStartISO).length
       const maleCount = allPatients.filter((p) => p.gender === 'L').length
       const femaleCount = allPatients.filter((p) => p.gender === 'P').length
-      const avgAge = totalPatients > 0
-        ? Math.round(allPatients.reduce((sum, p) => sum + (p.age || 0), 0) / totalPatients)
-        : 0
+      const avgAge =
+        totalPatients > 0
+          ? Math.round(allPatients.reduce((sum, p) => sum + (p.age || 0), 0) / totalPatients)
+          : 0
 
       setStats({
         totalPatients,
@@ -145,7 +144,6 @@ export default function PatientManagementContent() {
         femaleCount,
       })
     } catch (error) {
-      console.error('Error fetching patients:', error)
       toast({
         title: 'Error',
         description: error instanceof Error ? error.message : 'Gagal memuat data pasien',
@@ -178,7 +176,6 @@ export default function PatientManagementContent() {
       const { data: exportData, error } = await query
 
       if (error) {
-        console.error('Export error:', error)
         throw new Error(`Gagal mengambil data: ${error.message}`)
       }
 
@@ -191,26 +188,16 @@ export default function PatientManagementContent() {
         return
       }
 
-      // Transform data for Excel
+      // Transform data for Excel with requested format
       const excelData = exportData.map((patient) => ({
-        ID: patient.id || 'N/A',
-        'Nama Lengkap': patient.name || 'N/A',
-        Umur: patient.age || 0,
-        'Jenis Kelamin': patient.gender === 'L' ? 'Laki-laki' : patient.gender === 'P' ? 'Perempuan' : 'N/A',
-        'No. Telepon': patient.phone || 'N/A',
-        Alamat: patient.address || 'N/A',
-        Fasilitas: patient.facility_name || 'N/A',
-        'Kontak Darurat': patient.emergency_contact || 'N/A',
-        'Telepon Darurat': patient.emergency_phone || 'N/A',
-        'Riwayat Medis': patient.medical_history || 'N/A',
-        Alergi: patient.allergies || 'N/A',
-        'Obat Saat Ini': patient.current_medications || 'N/A',
-        'Tanggal Daftar': patient.created_at
+        create_at: patient.created_at
           ? format(new Date(patient.created_at), 'dd/MM/yyyy HH:mm', { locale: idLocale })
           : 'N/A',
-        'Terakhir Diupdate': patient.updated_at
-          ? format(new Date(patient.updated_at), 'dd/MM/yyyy HH:mm', { locale: idLocale })
-          : 'N/A',
+        id_pasien: patient.id || 'N/A',
+        nama_pasien: patient.name || 'N/A',
+        usia: patient.age || 0,
+        jenis_kelamin:
+          patient.gender === 'L' ? 'Laki-laki' : patient.gender === 'P' ? 'Perempuan' : 'N/A',
       }))
 
       // Create Excel workbook with proper formatting
@@ -233,7 +220,6 @@ export default function PatientManagementContent() {
         description: `Data ${exportData.length} pasien berhasil di-export ke ${fileName}`,
       })
     } catch (error) {
-      console.error('Export failed:', error)
       toast({
         title: 'Export Gagal',
         description: error instanceof Error ? error.message : 'Gagal mengexport data ke Excel',
@@ -446,9 +432,7 @@ export default function PatientManagementContent() {
                   <TableBody>
                     {patients.map((patient) => (
                       <TableRow key={patient.id}>
-                        <TableCell className="font-medium">
-                          {patient.name}
-                        </TableCell>
+                        <TableCell className="font-medium">{patient.name}</TableCell>
                         <TableCell>{patient.age} th</TableCell>
                         <TableCell>
                           <Badge className={getGenderBadgeVariant(patient.gender)}>

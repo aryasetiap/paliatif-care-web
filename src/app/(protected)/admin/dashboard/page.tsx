@@ -10,8 +10,6 @@ import {
   UserCog,
   ClipboardList,
   Activity,
-  Download,
-  Eye,
   Shield,
   BarChart3,
   TrendingUp,
@@ -144,7 +142,7 @@ export default function AdminDashboardPage() {
       try {
         const { data: screeningsData } = await supabase
           .from('screenings')
-          .select('id, esas_data, patients, screening_type, created_at')
+          .select('id, esas_data, screening_type, created_at, is_guest, guest_identifier')
           .order('created_at', { ascending: false })
           .limit(5)
         recentScreenings = screeningsData || []
@@ -372,9 +370,9 @@ export default function AdminDashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8"
+          className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-6 mb-8"
         >
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
+          {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="text-center">
               <div className="mx-auto mb-2 p-3 bg-blue-100 rounded-full group-hover:bg-blue-200 transition-colors">
                 <UserCog className="h-6 w-6 text-blue-600" />
@@ -390,7 +388,7 @@ export default function AdminDashboardPage() {
                 </Link>
               </Button>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="text-center">
@@ -458,7 +456,7 @@ export default function AdminDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
+          {/* <Card className="bg-white/80 backdrop-blur-md border-sky-200 hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="text-center">
               <div className="mx-auto mb-2 p-3 bg-red-100 rounded-full group-hover:bg-red-200 transition-colors">
                 <Download className="h-6 w-6 text-red-600" />
@@ -478,7 +476,7 @@ export default function AdminDashboardPage() {
                 </Link>
               </Button>
             </CardContent>
-          </Card>
+          </Card> */}
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

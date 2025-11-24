@@ -43,6 +43,7 @@ interface Nurse {
   full_name: string
   role: string
   created_at: string
+  patient_count?: number
 }
 
 interface NurseStats {
@@ -89,7 +90,32 @@ export default function NurseManagementContent() {
 
       if (error) throw error
 
-      setNurses(nursesData || [])
+      // Get patient count for each nurse
+      const nurseIds = nursesData?.map((nurse) => nurse.id) || []
+      let patientCounts: { [key: string]: number } = {}
+
+      if (nurseIds.length > 0) {
+        const { data: patients } = await supabase
+          .from('patients')
+          .select('user_id')
+          .in('user_id', nurseIds)
+
+        patientCounts = nurseIds.reduce(
+          (acc, nurseId) => {
+            acc[nurseId] = patients?.filter((p) => p.user_id === nurseId).length || 0
+            return acc
+          },
+          {} as { [key: string]: number }
+        )
+      }
+
+      const nursesWithCount =
+        nursesData?.map((nurse) => ({
+          ...nurse,
+          patient_count: patientCounts[nurse.id] || 0,
+        })) || []
+
+      setNurses(nursesWithCount)
       setTotalItems(count || 0)
 
       // Calculate stats
@@ -140,15 +166,34 @@ export default function NurseManagementContent() {
 
       if (error) throw error
 
-      // Transform data for Excel
+      // Get patient count for export data
+      const exportNurseIds = exportData?.map((nurse) => nurse.id) || []
+      let exportPatientCounts: { [key: string]: number } = {}
+
+      if (exportNurseIds.length > 0) {
+        const { data: exportPatients } = await supabase
+          .from('patients')
+          .select('user_id')
+          .in('user_id', exportNurseIds)
+
+        exportPatientCounts = exportNurseIds.reduce(
+          (acc, nurseId) => {
+            acc[nurseId] = exportPatients?.filter((p) => p.user_id === nurseId).length || 0
+            return acc
+          },
+          {} as { [key: string]: number }
+        )
+      }
+
+      // Transform data for Excel with requested format
       const excelData =
         exportData?.map((nurse) => ({
-          ID: nurse.id,
-          'Nama Lengkap': nurse.full_name,
-          Role: nurse.role,
-          'Tanggal Daftar': format(new Date(nurse.created_at), 'dd/MM/yyyy HH:mm', {
+          create_at: format(new Date(nurse.created_at), 'dd/MM/yyyy HH:mm', {
             locale: idLocale,
           }),
+          id_perawat: nurse.id,
+          nama_perawat: nurse.full_name,
+          jumlah_pasien: exportPatientCounts[nurse.id] || 0,
         })) || []
 
       // Create Excel workbook
@@ -332,6 +377,7 @@ export default function NurseManagementContent() {
                   <TableRow>
                     <TableHead>Nama Lengkap</TableHead>
                     <TableHead>Role</TableHead>
+                    <TableHead>Jumlah Pasien</TableHead>
                     <TableHead>Tanggal Daftar</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -341,6 +387,13 @@ export default function NurseManagementContent() {
                       <TableCell className="font-medium">{nurse.full_name}</TableCell>
                       <TableCell>
                         <Badge className="bg-green-100 text-green-800">{nurse.role}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-center">
+                          <span className="font-bold text-blue-600">
+                            {nurse.patient_count || 0}
+                          </span>
+                        </div>
                       </TableCell>
                       <TableCell>{formatDate(nurse.created_at)}</TableCell>
                     </TableRow>
