@@ -17,6 +17,7 @@ import {
   TrendingUp,
   AlertTriangle,
   ChevronRight,
+  RefreshCw,
 } from 'lucide-react'
 import Link from 'next/link'
 import HeaderNav from '@/components/ui/header-nav'
@@ -25,6 +26,21 @@ import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase'
 import { useAuthStore } from '@/lib/stores/authStore'
 import '@/styles/modern-patterns.css'
+
+// Helper function untuk format tanggal
+const formatDateTime = (dateString: string | null | undefined) => {
+  if (!dateString) return 'N/A'
+  try {
+    return new Date(dateString).toLocaleString('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  } catch {
+    return 'Invalid Date'
+  }
+}
 
 interface AdminStats {
   totalUsers: number
@@ -55,6 +71,7 @@ export default function AdminDashboardPage() {
   const [userStats, setUserStats] = useState<UserStats | null>(null)
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const router = useRouter()
   const { user, userRole } = useAuthStore()
 
@@ -67,8 +84,13 @@ export default function AdminDashboardPage() {
     loadAdminData()
   }, [user, userRole, router])
 
-  const loadAdminData = async () => {
+  const loadAdminData = async (isRefresh = false) => {
     try {
+      if (isRefresh) {
+        setRefreshing(true)
+      } else {
+        setLoading(true)
+      }
       const supabase = createClient()
 
       // Load total counts
@@ -78,14 +100,26 @@ export default function AdminDashboardPage() {
         { count: totalScreenings },
         { count: activeUsers },
         { count: screeningsThisMonth },
-        { count: highRiskScreenings }
+        { count: highRiskScreenings },
       ] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('patients').select('*', { count: 'exact', head: true }),
         supabase.from('screenings').select('*', { count: 'exact', head: true }),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()),
-        supabase.from('screenings').select('*', { count: 'exact', head: true }).gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
-        supabase.from('screenings').select('*', { count: 'exact', head: true }).in('risk_level', ['high', 'critical'])
+        supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()),
+        supabase
+          .from('screenings')
+          .select('*', { count: 'exact', head: true })
+          .gte(
+            'created_at',
+            new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
+          ),
+        supabase
+          .from('screenings')
+          .select('*', { count: 'exact', head: true })
+          .in('risk_level', ['high', 'critical']),
       ])
 
       // Load user stats by role
@@ -94,41 +128,55 @@ export default function AdminDashboardPage() {
         .select('role')
         .not('role', 'is', null)
 
-      const userStatsData = usersByRole?.reduce((acc, user) => {
-        const role = user.role as 'admin' | 'perawat' | 'pasien'
-        acc[`${role}_count`] = (acc[`${role}_count`] || 0) + 1
-        return acc
-      }, { admin_count: 0, perawat_count: 0, pasien_count: 0 }) || { admin_count: 0, perawat_count: 0, pasien_count: 0 }
+      const userStatsData = usersByRole?.reduce(
+        (acc, user) => {
+          const role = user.role as 'admin' | 'perawat' | 'pasien'
+          acc[`${role}_count`] = (acc[`${role}_count`] || 0) + 1
+          return acc
+        },
+        { admin_count: 0, perawat_count: 0, pasien_count: 0 }
+      ) || { admin_count: 0, perawat_count: 0, pasien_count: 0 }
 
-      // Load recent activities (simplified - just get recent screenings and users)
-      const { data: recentScreenings } = await supabase
-        .from('screenings')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(5)
+      // Load recent activities with better error handling
+      let recentScreenings: any[] = []
+      let recentUsers: any[] = []
 
-      const { data: recentUsers } = await supabase
-        .from('profiles')
-        .select('full_name, created_at')
-        .order('created_at', { ascending: false })
-        .limit(3)
+      try {
+        const { data: screeningsData } = await supabase
+          .from('screenings')
+          .select('id, esas_data, patients, screening_type, created_at')
+          .order('created_at', { ascending: false })
+          .limit(5)
+        recentScreenings = screeningsData || []
+      } catch {}
+
+      try {
+        const { data: usersData } = await supabase
+          .from('profiles')
+          .select('full_name, created_at')
+          .order('created_at', { ascending: false })
+          .limit(3)
+        recentUsers = usersData || []
+      } catch {}
 
       const activities: RecentActivity[] = [
-        ...(recentScreenings?.map(s => ({
+        ...recentScreenings.map((s) => ({
           id: s.id,
           type: 'screening' as const,
-          user_name: s.esas_data?.patient_info?.patient_name || 'Guest User',
-          action: `Melakukan screening ${s.screening_type}`,
-          created_at: s.created_at
-        })) || []),
-        ...(recentUsers?.map(u => ({
+          user_name: s.esas_data?.identity?.name || s.patients?.name || 'Guest User',
+          action: `Melakukan screening ${s.screening_type || 'ESAS'}`,
+          created_at: s.created_at,
+        })),
+        ...recentUsers.map((u) => ({
           id: u.full_name + u.created_at,
           type: 'user' as const,
           user_name: u.full_name,
           action: 'Pengguna baru bergabung',
-          created_at: u.created_at
-        })) || [])
-      ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5)
+          created_at: u.created_at,
+        })),
+      ]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 5)
 
       setStats({
         totalUsers: totalUsers || 0,
@@ -142,9 +190,23 @@ export default function AdminDashboardPage() {
       setUserStats(userStatsData)
       setRecentActivities(activities)
     } catch {
-      // Error logged silently for debugging
+      // Set default values on error to prevent UI from breaking
+      setStats({
+        totalUsers: 0,
+        totalPatients: 0,
+        totalScreenings: 0,
+        activeUsers: 0,
+        screeningsThisMonth: 0,
+        highRiskScreenings: 0,
+      })
+      setUserStats({ admin_count: 0, perawat_count: 0, pasien_count: 0 })
+      setRecentActivities([])
     } finally {
-      setLoading(false)
+      if (isRefresh) {
+        setRefreshing(false)
+      } else {
+        setLoading(false)
+      }
     }
   }
 
@@ -173,15 +235,25 @@ export default function AdminDashboardPage() {
         >
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-sky-900 mb-2">
-                Dashboard Admin
-              </h1>
+              <h1 className="text-3xl font-bold text-sky-900 mb-2">Dashboard Admin</h1>
               <p className="text-sky-600">Kelola Sistem Paliatif Care</p>
             </div>
-            <Badge className="bg-purple-100 text-purple-800 border-purple-200 text-sm px-3 py-1">
-              <Shield className="mr-1 h-3 w-3" />
-              Administrator
-            </Badge>
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => loadAdminData(true)}
+                disabled={refreshing}
+                className="border-sky-300 text-sky-700 hover:bg-sky-50"
+              >
+                <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+                {refreshing ? 'Memperbarui...' : 'Perbarui'}
+              </Button>
+              <Badge className="bg-purple-100 text-purple-800 border-purple-200 text-sm px-3 py-1">
+                <Shield className="mr-1 h-3 w-3" />
+                Administrator
+              </Badge>
+            </div>
           </div>
         </motion.div>
 
@@ -236,7 +308,9 @@ export default function AdminDashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-sky-600">Risiko Tinggi</p>
-                  <p className="text-3xl font-bold text-sky-900">{stats?.highRiskScreenings || 0}</p>
+                  <p className="text-3xl font-bold text-sky-900">
+                    {stats?.highRiskScreenings || 0}
+                  </p>
                   <p className="text-xs text-sky-500 mt-1">Perlu perhatian</p>
                 </div>
                 <AlertTriangle className="h-8 w-8 text-red-500" />
@@ -269,7 +343,9 @@ export default function AdminDashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-green-600">Perawat</p>
-                  <p className="text-2xl font-bold text-green-900">{userStats?.perawat_count || 0}</p>
+                  <p className="text-2xl font-bold text-green-900">
+                    {userStats?.perawat_count || 0}
+                  </p>
                 </div>
                 <Users className="h-6 w-6 text-green-500" />
               </div>
@@ -281,7 +357,9 @@ export default function AdminDashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-purple-600">Pasien</p>
-                  <p className="text-2xl font-bold text-purple-900">{userStats?.pasien_count || 0}</p>
+                  <p className="text-2xl font-bold text-purple-900">
+                    {userStats?.pasien_count || 0}
+                  </p>
                 </div>
                 <Users className="h-6 w-6 text-purple-500" />
               </div>
@@ -301,14 +379,14 @@ export default function AdminDashboardPage() {
               <div className="mx-auto mb-2 p-3 bg-blue-100 rounded-full group-hover:bg-blue-200 transition-colors">
                 <UserCog className="h-6 w-6 text-blue-600" />
               </div>
-              <CardTitle className="text-lg">Kelola Pengguna</CardTitle>
-              <CardDescription>Atur hak akses dan role pengguna</CardDescription>
+              <CardTitle className="text-lg">Kelola Perawat</CardTitle>
+              <CardDescription>Atur data dan informasi perawat</CardDescription>
             </CardHeader>
             <CardContent>
               <Button asChild className="w-full">
-                <Link href="/admin/users">
+                <Link href="/admin/nurses">
                   <Eye className="mr-2 h-4 w-4" />
-                  Kelola Pengguna
+                  Kelola Perawat
                 </Link>
               </Button>
             </CardContent>
@@ -394,7 +472,7 @@ export default function AdminDashboardPage() {
                 className="w-full border-sky-300 text-sky-700 hover:bg-sky-50"
                 asChild
               >
-                <Link href="/admin/export">
+                <Link href="/admin/screenings">
                   Export Data
                   <ChevronRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -425,21 +503,21 @@ export default function AdminDashboardPage() {
                   ) : (
                     recentActivities.map((activity) => (
                       <div key={activity.id} className="flex items-center space-x-4">
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${
-                          activity.type === 'user' ? 'bg-blue-600' :
-                          activity.type === 'screening' ? 'bg-green-600' : 'bg-purple-600'
-                        }`}></div>
+                        <div
+                          className={`w-3 h-3 rounded-full flex-shrink-0 ${
+                            activity.type === 'user'
+                              ? 'bg-blue-600'
+                              : activity.type === 'screening'
+                                ? 'bg-green-600'
+                                : 'bg-purple-600'
+                          }`}
+                        ></div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-sky-900 truncate">
                             {activity.user_name} - {activity.action}
                           </p>
                           <p className="text-xs text-sky-600">
-                            {new Date(activity.created_at).toLocaleString('id-ID', {
-                              day: 'numeric',
-                              month: 'short',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
+                            {formatDateTime(activity.created_at)}
                           </p>
                         </div>
                       </div>
@@ -489,7 +567,9 @@ export default function AdminDashboardPage() {
                   <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <AlertTriangle className="h-5 w-5 text-orange-500" />
-                      <span className="text-sm font-medium text-sky-900">Screening Risiko Tinggi</span>
+                      <span className="text-sm font-medium text-sky-900">
+                        Screening Risiko Tinggi
+                      </span>
                     </div>
                     <span className="text-lg font-bold text-orange-600">
                       {stats?.highRiskScreenings || 0}

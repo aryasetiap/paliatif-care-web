@@ -22,7 +22,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { format } from 'date-fns'
 import { id as idLocale } from 'date-fns/locale'
 import {
@@ -57,6 +62,10 @@ interface ScreeningData {
   patient_id?: string
   guest_identifier?: string
   is_guest: boolean
+  profiles?: {
+    full_name?: string
+    email?: string
+  }
 }
 
 interface ScreeningStats {
@@ -117,6 +126,7 @@ export default function ScreeningManagementContent() {
   const [screenings, setScreenings] = useState<ScreeningData[]>([])
   const [stats, setStats] = useState<ScreeningStats | null>(null)
   const [loading, setLoading] = useState(true)
+  const [userLookup, setUserLookup] = useState<{ [key: string]: { full_name: string; email: string } }>({})
   const [searchTerm, setSearchTerm] = useState('')
   const [riskLevelFilter, setRiskLevelFilter] = useState<string>('all')
   const [userTypeFilter, setUserTypeFilter] = useState<'all' | 'guest' | 'user'>('all')
@@ -130,6 +140,38 @@ export default function ScreeningManagementContent() {
   const { user, userRole } = useAuthStore()
   const { toast } = useToast()
   const router = useRouter()
+
+  const fetchUserData = async (userIds: string[]) => {
+    const supabase = createClient()
+    const uniqueIds = [...new Set(userIds)].filter(id => id) // Remove duplicates and empty strings
+
+    if (uniqueIds.length === 0) return {}
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .in('id', uniqueIds)
+
+      if (error) throw error
+
+      // Convert to lookup object
+      const lookup: { [key: string]: { full_name: string; email: string } } = {}
+      data?.forEach(user => {
+        if (user.id) {
+          lookup[user.id] = {
+            full_name: user.full_name || 'Unknown User',
+            email: user.email || ''
+          }
+        }
+      })
+
+      return lookup
+    } catch (error) {
+      console.error('Error fetching user data:', error)
+      return {}
+    }
+  }
 
   const fetchScreenings = useCallback(async () => {
     try {
@@ -174,59 +216,54 @@ export default function ScreeningManagementContent() {
       setScreenings(screeningsData || [])
       setTotalItems(count || 0)
 
-      // Calculate stats
-      const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      // Fetch user data for non-guest screenings
+      const userIds = (screeningsData || [])
+        .filter(screening => !screening.is_guest && screening.user_id)
+        .map(screening => screening.user_id!)
 
-      const [
+      if (userIds.length > 0) {
+        const userData = await fetchUserData(userIds)
+        setUserLookup(userData)
+      }
+
+      // Calculate stats - optimized to single query
+      const [statsResult] = await Promise.all([
+        // Get all data needed for stats in one query
+        supabase
+          .from('screenings')
+          .select('risk_level, highest_score, created_at, is_guest')
+      ])
+
+      if (statsResult.error) throw statsResult.error
+
+      const allScreenings = statsResult.data || []
+      const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      const monthStartISO = monthStart.toISOString()
+
+      const totalScreenings = allScreenings.length
+      const screeningsThisMonth = allScreenings.filter(s => s.created_at >= monthStartISO).length
+      const highRiskScreenings = allScreenings.filter(s => s.risk_level === 'high').length
+      const criticalRiskScreenings = allScreenings.filter(s => s.risk_level === 'critical').length
+      const guestScreenings = allScreenings.filter(s => s.is_guest === true).length
+      const userScreenings = allScreenings.filter(s => s.is_guest === false).length
+      const avgScore = totalScreenings > 0
+        ? Math.round((allScreenings.reduce((sum, s) => sum + (s.highest_score || 0), 0) / totalScreenings) * 10) / 10
+        : 0
+
+      setStats({
         totalScreenings,
         screeningsThisMonth,
         highRiskScreenings,
         criticalRiskScreenings,
         guestScreenings,
         userScreenings,
-      ] = await Promise.all([
-        supabase.from('screenings').select('*', { count: 'exact', head: true }),
-        supabase
-          .from('screenings')
-          .select('*', { count: 'exact', head: true })
-          .gte('created_at', monthStart.toISOString()),
-        supabase
-          .from('screenings')
-          .select('*', { count: 'exact', head: true })
-          .eq('risk_level', 'high'),
-        supabase
-          .from('screenings')
-          .select('*', { count: 'exact', head: true })
-          .eq('risk_level', 'critical'),
-        supabase
-          .from('screenings')
-          .select('*', { count: 'exact', head: true })
-          .eq('is_guest', true),
-        supabase
-          .from('screenings')
-          .select('*', { count: 'exact', head: true })
-          .eq('is_guest', false),
-      ])
-
-      // Get average score
-      const { data: scoresData } = await supabase.from('screenings').select('highest_score')
-      const avgScore =
-        (scoresData || [])?.reduce((sum, s) => sum + (s.highest_score || 0), 0) /
-          (scoresData?.length || 1) || 0
-
-      setStats({
-        totalScreenings: totalScreenings.count || 0,
-        screeningsThisMonth: screeningsThisMonth.count || 0,
-        highRiskScreenings: highRiskScreenings.count || 0,
-        criticalRiskScreenings: criticalRiskScreenings.count || 0,
-        guestScreenings: guestScreenings.count || 0,
-        userScreenings: userScreenings.count || 0,
-        averageScore: Math.round(avgScore * 10) / 10,
+        averageScore: avgScore,
       })
-    } catch {
+    } catch (error) {
+      console.error('Error fetching screenings:', error)
       toast({
         title: 'Error',
-        description: 'Gagal memuat data screening',
+        description: error instanceof Error ? error.message : 'Gagal memuat data screening',
         variant: 'destructive',
       })
     } finally {
@@ -269,36 +306,71 @@ export default function ScreeningManagementContent() {
 
       const { data: exportData, error } = await query
 
-      if (error) throw error
+      if (error) {
+        console.error('Export error:', error)
+        throw new Error(`Gagal mengambil data: ${error.message}`)
+      }
 
-      // Transform data for Excel
-      const excelData =
-        exportData?.map((screening) => ({
-          ID: screening.id,
-          'Nama Pasien': screening.esas_data?.identity?.name || 'Tamu',
-          Umur: screening.esas_data?.identity?.age || 'N/A',
-          Gender: screening.esas_data?.identity?.gender || 'N/A',
-          Fasilitas: screening.esas_data?.identity?.facility_name || 'N/A',
-          'Tipe Screening': screening.screening_type,
-          Status: screening.status,
-          'Tingkat Risiko': getRiskText(screening.risk_level),
-          'Skor Tertinggi': screening.highest_score,
-          'Masalah Utama': QUESTION_MAP[screening.primary_question] || 'N/A',
-          Diagnosis: screening.recommendation?.diagnosis || 'N/A',
-          Tindakan: screening.recommendation?.action_required || 'N/A',
-          Terapi: screening.recommendation?.therapy_type || 'N/A',
-          Frekuensi: screening.recommendation?.frequency || 'N/A',
-          'Tipe User': screening.is_guest ? 'Tamu' : 'Terdaftar',
-          User: screening.guest_identifier || 'N/A',
-          'Tanggal Screening': format(new Date(screening.created_at), 'dd/MM/yyyy HH:mm', {
-            locale: idLocale,
-          }),
-        })) || []
+      // Fetch user data for export
+      const exportUserIds = exportData
+        ? exportData
+            .filter(screening => !screening.is_guest && screening.user_id)
+            .map(screening => screening.user_id!)
+        : []
 
-      // Create Excel workbook
+      let exportUserLookup: { [key: string]: { full_name: string; email: string } } = {}
+      if (exportUserIds.length > 0) {
+        exportUserLookup = await fetchUserData(exportUserIds)
+      }
+
+      if (!exportData || exportData.length === 0) {
+        toast({
+          title: 'Info',
+          description: 'Tidak ada data untuk di-export',
+          variant: 'default',
+        })
+        return
+      }
+
+      // Transform data for Excel with proper null handling
+      const excelData = exportData.map((screening) => ({
+        ID: screening.id || 'N/A',
+        'Nama Pasien': screening.esas_data?.identity?.name || 'Tamu',
+        Umur: screening.esas_data?.identity?.age || 'N/A',
+        Gender: screening.esas_data?.identity?.gender || 'N/A',
+        Fasilitas: screening.esas_data?.identity?.facility_name || 'N/A',
+        'Tipe Screening': screening.screening_type || 'N/A',
+        Status: screening.status || 'N/A',
+        'Tingkat Risiko': getRiskText(screening.risk_level),
+        'Skor Tertinggi': screening.highest_score || 0,
+        'Masalah Utama': QUESTION_MAP[screening.primary_question] || 'N/A',
+        Diagnosis: screening.recommendation?.diagnosis || 'N/A',
+        Tindakan: screening.recommendation?.action_required || 'N/A',
+        Terapi: screening.recommendation?.therapy_type || 'N/A',
+        Frekuensi: screening.recommendation?.frequency || 'N/A',
+        'Tipe User': screening.is_guest ? 'Tamu' : 'Terdaftar',
+        User: screening.is_guest
+          ? (screening.guest_identifier
+            ? (screening.guest_identifier.length > 20
+              ? `Guest (${screening.guest_identifier.slice(-8)})`
+              : screening.guest_identifier)
+            : 'Tamu')
+          : (screening.user_id && exportUserLookup[screening.user_id])
+            ? exportUserLookup[screening.user_id].full_name
+            : `User: ${screening.user_id?.slice(-8) || 'Unknown'}`,
+        'Tanggal Screening': screening.created_at
+          ? format(new Date(screening.created_at), 'dd/MM/yyyy HH:mm', { locale: idLocale })
+          : 'N/A',
+      }))
+
+      // Create Excel workbook with proper formatting
       const ws = XLSX.utils.json_to_sheet(excelData)
       const wb = XLSX.utils.book_new()
       XLSX.utils.book_append_sheet(wb, ws, 'Data Screening')
+
+      // Auto-size columns for better readability
+      const colWidths = Object.keys(excelData[0] || {}).map(() => ({ wch: 15 }))
+      ws['!cols'] = colWidths
 
       // Generate filename with date
       const fileName = `Data_Screening_${format(new Date(), 'dd-MM-yyyy_HH-mm', { locale: idLocale })}.xlsx`
@@ -308,12 +380,13 @@ export default function ScreeningManagementContent() {
 
       toast({
         title: 'Export Berhasil',
-        description: `Data screening berhasil di-export ke ${fileName}`,
+        description: `Data ${exportData.length} screening berhasil di-export ke ${fileName}`,
       })
-    } catch {
+    } catch (error) {
+      console.error('Export failed:', error)
       toast({
         title: 'Export Gagal',
-        description: 'Gagal mengexport data ke Excel',
+        description: error instanceof Error ? error.message : 'Gagal mengexport data ke Excel',
         variant: 'destructive',
       })
     }
@@ -339,7 +412,44 @@ export default function ScreeningManagementContent() {
   }
 
   const getUserName = (screening: ScreeningData) => {
-    return screening.guest_identifier || 'N/A'
+    // Debug logging
+    console.log('Screening data:', {
+      id: screening.id,
+      is_guest: screening.is_guest,
+      guest_identifier: screening.guest_identifier,
+      user_id: screening.user_id,
+      patient_name: screening.esas_data?.identity?.name
+    })
+
+    // For guest users, format guest identifier better
+    if (screening.is_guest) {
+      if (screening.guest_identifier) {
+        // If it's a UUID-like string, show a more friendly format
+        if (screening.guest_identifier.length > 20) {
+          return `Guest (${screening.guest_identifier.slice(-8)})`
+        }
+        // If it's a name-like string, show as is
+        if (/^[a-zA-Z\s]+$/.test(screening.guest_identifier)) {
+          return screening.guest_identifier
+        }
+        // Default fallback
+        return `Guest (${screening.guest_identifier.slice(-8)})`
+      }
+      return 'Tamu'
+    }
+
+    // For registered users, use lookup data or fallback
+    if (screening.user_id && userLookup[screening.user_id]) {
+      return userLookup[screening.user_id].full_name
+    }
+
+    // Fallback to user_id format if not found in lookup
+    return screening.user_id ? `User: ${screening.user_id.slice(-8)}` : 'Terdaftar'
+  }
+
+  const handleViewDetail = (screening: ScreeningData) => {
+    // Navigate to detail page or open modal
+    router.push(`/admin/screenings/${screening.id}`)
   }
 
   return (
@@ -596,6 +706,12 @@ export default function ScreeningManagementContent() {
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleViewDetail(screening)}>
+                                <FileText className="mr-2 h-4 w-4" />
+                                Lihat Detail
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
                       </TableRow>

@@ -41,15 +41,20 @@ import * as XLSX from 'xlsx'
 
 interface Patient {
   id: string
+  user_id: string
   name: string
   age: number
   gender: string
-  phone?: string
-  address?: string
-  facility_name?: string
-  emergency_contact?: string
-  emergency_phone?: string
+  phone?: string | null
+  address?: string | null
+  facility_name?: string | null
+  emergency_contact?: string | null
+  emergency_phone?: string | null
+  medical_history?: string | null
+  allergies?: string | null
+  current_medications?: string | null
   created_at: string
+  updated_at?: string | null
 }
 
 interface PatientStats {
@@ -109,36 +114,41 @@ export default function PatientManagementContent() {
       setPatients(patientsData || [])
       setTotalItems(count || 0)
 
-      // Calculate stats
+      // Calculate stats - optimized query
       const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
 
-      const [totalPatients, newPatientsThisMonth] = await Promise.all([
-        supabase.from('patients').select('*', { count: 'exact', head: true }),
+      const [statsResult] = await Promise.all([
+        // Get all data needed for stats in one query
         supabase
           .from('patients')
-          .select('*', { count: 'exact', head: true })
-          .gte('created_at', monthStart.toISOString()),
+          .select('id, age, gender, created_at')
       ])
 
-      // Get gender distribution and average age
-      const { data: allPatients } = await supabase.from('patients').select('age, gender')
+      if (statsResult.error) throw statsResult.error
 
-      const maleCount = allPatients?.filter((p) => p.gender === 'L').length || 0
-      const femaleCount = allPatients?.filter((p) => p.gender === 'P').length || 0
-      const avgAge =
-        (allPatients || [])?.reduce((sum, p) => sum + (p.age || 0), 0) / (allPatients?.length || 1)
+      const allPatients = statsResult.data || []
+      const monthStartISO = monthStart.toISOString()
+
+      const totalPatients = allPatients.length
+      const newPatientsThisMonth = allPatients.filter(p => p.created_at >= monthStartISO).length
+      const maleCount = allPatients.filter((p) => p.gender === 'L').length
+      const femaleCount = allPatients.filter((p) => p.gender === 'P').length
+      const avgAge = totalPatients > 0
+        ? Math.round(allPatients.reduce((sum, p) => sum + (p.age || 0), 0) / totalPatients)
+        : 0
 
       setStats({
-        totalPatients: totalPatients.count || 0,
-        newPatientsThisMonth: newPatientsThisMonth.count || 0,
-        averageAge: Math.round(avgAge),
+        totalPatients,
+        newPatientsThisMonth,
+        averageAge: avgAge,
         maleCount,
         femaleCount,
       })
-    } catch {
+    } catch (error) {
+      console.error('Error fetching patients:', error)
       toast({
         title: 'Error',
-        description: 'Gagal memuat data pasien',
+        description: error instanceof Error ? error.message : 'Gagal memuat data pasien',
         variant: 'destructive',
       })
     } finally {
@@ -167,32 +177,50 @@ export default function PatientManagementContent() {
 
       const { data: exportData, error } = await query
 
-      if (error) throw error
+      if (error) {
+        console.error('Export error:', error)
+        throw new Error(`Gagal mengambil data: ${error.message}`)
+      }
+
+      if (!exportData || exportData.length === 0) {
+        toast({
+          title: 'Info',
+          description: 'Tidak ada data untuk di-export',
+          variant: 'default',
+        })
+        return
+      }
 
       // Transform data for Excel
-      const excelData =
-        exportData?.map((patient) => ({
-          ID: patient.id,
-          'Nama Lengkap': patient.name,
-          Umur: patient.age,
-          'Jenis Kelamin': patient.gender === 'L' ? 'Laki-laki' : 'Perempuan',
-          'No. Telepon': patient.phone || 'N/A',
-          Alamat: patient.address || 'N/A',
-          Fasilitas: patient.facility_name || 'N/A',
-          'Kontak Darurat': patient.emergency_contact || 'N/A',
-          'Telepon Darurat': patient.emergency_phone || 'N/A',
-          'Riwayat Medis': patient.medical_history || 'N/A',
-          Alergi: patient.allergies || 'N/A',
-          'Obat Saat Ini': patient.current_medications || 'N/A',
-          'Tanggal Daftar': format(new Date(patient.created_at), 'dd/MM/yyyy HH:mm', {
-            locale: idLocale,
-          }),
-        })) || []
+      const excelData = exportData.map((patient) => ({
+        ID: patient.id || 'N/A',
+        'Nama Lengkap': patient.name || 'N/A',
+        Umur: patient.age || 0,
+        'Jenis Kelamin': patient.gender === 'L' ? 'Laki-laki' : patient.gender === 'P' ? 'Perempuan' : 'N/A',
+        'No. Telepon': patient.phone || 'N/A',
+        Alamat: patient.address || 'N/A',
+        Fasilitas: patient.facility_name || 'N/A',
+        'Kontak Darurat': patient.emergency_contact || 'N/A',
+        'Telepon Darurat': patient.emergency_phone || 'N/A',
+        'Riwayat Medis': patient.medical_history || 'N/A',
+        Alergi: patient.allergies || 'N/A',
+        'Obat Saat Ini': patient.current_medications || 'N/A',
+        'Tanggal Daftar': patient.created_at
+          ? format(new Date(patient.created_at), 'dd/MM/yyyy HH:mm', { locale: idLocale })
+          : 'N/A',
+        'Terakhir Diupdate': patient.updated_at
+          ? format(new Date(patient.updated_at), 'dd/MM/yyyy HH:mm', { locale: idLocale })
+          : 'N/A',
+      }))
 
-      // Create Excel workbook
+      // Create Excel workbook with proper formatting
       const ws = XLSX.utils.json_to_sheet(excelData)
       const wb = XLSX.utils.book_new()
       XLSX.utils.book_append_sheet(wb, ws, 'Data Pasien')
+
+      // Auto-size columns for better readability
+      const colWidths = Object.keys(excelData[0] || {}).map(() => ({ wch: 15 }))
+      ws['!cols'] = colWidths
 
       // Generate filename with date
       const fileName = `Data_Pasien_${format(new Date(), 'dd-MM-yyyy_HH-mm', { locale: idLocale })}.xlsx`
@@ -202,12 +230,13 @@ export default function PatientManagementContent() {
 
       toast({
         title: 'Export Berhasil',
-        description: `Data pasien berhasil di-export ke ${fileName}`,
+        description: `Data ${exportData.length} pasien berhasil di-export ke ${fileName}`,
       })
-    } catch {
+    } catch (error) {
+      console.error('Export failed:', error)
       toast({
         title: 'Export Gagal',
-        description: 'Gagal mengexport data ke Excel',
+        description: error instanceof Error ? error.message : 'Gagal mengexport data ke Excel',
         variant: 'destructive',
       })
     }
@@ -418,14 +447,7 @@ export default function PatientManagementContent() {
                     {patients.map((patient) => (
                       <TableRow key={patient.id}>
                         <TableCell className="font-medium">
-                          <div>
-                            <div className="font-semibold">{patient.name}</div>
-                            {patient.emergency_contact && (
-                              <div className="text-sm text-gray-500">
-                                Darurat: {patient.emergency_contact}
-                              </div>
-                            )}
-                          </div>
+                          {patient.name}
                         </TableCell>
                         <TableCell>{patient.age} th</TableCell>
                         <TableCell>
