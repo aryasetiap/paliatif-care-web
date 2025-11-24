@@ -71,7 +71,7 @@ export function Footer() {
         }}
       />
 
-      <div className="relative container mx-auto px-6 py-20">
+      <div className="relative container mx-auto px-6 pt-20 pb-12">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 lg:gap-12">
           {/* Brand Section */}
@@ -262,8 +262,11 @@ export function Footer() {
             className="text-center"
           >
             <p className="text-white/70 text-sm leading-relaxed">
-              Keperawatan Paliatif 2025 - Jurusan Keperawatan KI TK3 - Poltekkes Kemenkes Tanjung
-              Karang
+              Ns. Sulastri, M.Kep., Sp.Jiwa.
+              <br />
+              Keperawatan Paliatif 2025 - Jurusan Keperawatan KI TK3
+              <br />
+              Poltekkes Kemenkes Tanjung Karang
             </p>
             <p className="text-white/50 text-xs mt-2">© 2025 Sihat. All rights reserved.</p>
           </motion.div>

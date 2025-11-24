@@ -1,9 +1,38 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { UserRole } from './types'
+import { wsManager } from './websocket-helper'
 
-// Client-side Supabase client
+// Client-side Supabase client with better WebSocket management
 export const createClient = () => {
-  return createClientComponentClient()
+  const client = createClientComponentClient({
+    options: {
+      realtime: {
+        params: {
+          eventsPerSecond: 2, // Reduced to prevent connection overload
+        },
+      },
+      db: {
+        schema: 'public',
+      },
+      global: {
+        headers: {
+          'x-application-name': 'paliatif-care-web',
+        },
+      },
+    },
+  })
+
+  // Register with WebSocket manager
+  const clientId = `client-${Date.now()}-${Math.random()}`
+  wsManager.setSupabaseClient(client)
+  wsManager.getConnection(clientId)
+
+  return client
+}
+
+// Global cleanup function
+export const cleanupSupabaseConnections = () => {
+  wsManager.cleanupAllConnections()
 }
 
 // Server-side Supabase client - only use this in server components
